@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>crawling-panther: a quadruped robot</title>
+<meta name="description" content="crawling-panther is a 318 g, eight-servo quadruped robot with an Arduino Uno brain and a trot gait. It is now learning to walk in MuJoCo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ECEEF1;
+  --panel:#E1E4E9;
+  --ink:#12161C;
+  --soft:#47505C;
+  --rule:#C3C9D1;
+  --signal:#3D3BF3;
+  --open:#B83E0B;
+  --font:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 1.0625rem/1.62 var(--font);-webkit-text-size-adjust:100%}
+a{color:var(--signal);text-underline-offset:3px}
+a:hover{color:var(--ink)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+img,video,iframe,svg{max-width:100%}
+p{margin:.7em 0;max-width:64ch}
+code{font-family:var(--mono);font-size:.86em;background:var(--panel);padding:.08em .38em;border-radius:2px}
+
+/* layout */
+.shell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+.rail{position:sticky;top:0;align-self:start;height:100vh;padding:30px 26px;border-right:1px solid var(--rule);display:flex;flex-direction:column;gap:36px}
+.brand{font-weight:800;font-stretch:80%;font-size:1.3rem;line-height:1.05;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.rail ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.rail li a{display:block;padding:6px 0 6px 14px;border-left:2px solid transparent;color:var(--soft);text-decoration:none;font-size:.98rem}
+.rail li a:hover{color:var(--ink)}
+.rail li a[aria-current="true"]{border-left-color:var(--signal);color:var(--ink);font-weight:600}
+.rail li.ext{margin-top:18px}
+.rail li.ext a{color:var(--signal);text-decoration:underline}
+main{padding:0 clamp(20px,5vw,64px) 96px;max-width:1000px}
+
+/* headings */
+h1{font-weight:800;font-stretch:78%;font-size:clamp(3.4rem,11vw,7rem);line-height:.92;letter-spacing:-.025em;margin:0 0 .3em}
+h2{font-weight:700;font-stretch:90%;font-size:clamp(1.9rem,4.4vw,2.6rem);line-height:1.08;letter-spacing:-.02em;margin:0 0 .5em}
+h3{font-weight:700;font-size:1.15rem;line-height:1.25;margin:2.2em 0 .5em}
+.sec{margin-top:104px;padding-top:18px;border-top:2px solid var(--ink)}
+.lead{font-size:1.25rem;line-height:1.5;color:var(--soft);max-width:42ch}
+.status-tag{display:inline-flex;align-items:center;gap:8px;font-size:.95rem;font-weight:600;color:var(--open);margin-left:14px;vertical-align:middle;font-stretch:100%;letter-spacing:0}
+.status-tag::before{content:"";width:9px;height:9px;border-radius:50%;border:2px solid var(--open)}
+
+/* hero */
+.hero{position:relative;isolation:isolate;padding-top:72px}
+.hero::before{content:"";position:absolute;z-index:-1;top:0;right:0;width:70%;height:460px;background:repeating-linear-gradient(to bottom,transparent 0 9px,rgba(18,22,28,.07) 9px 10px);-webkit-mask-image:linear-gradient(to left,#000 10%,transparent);mask-image:linear-gradient(to left,#000 10%,transparent)}
+.gait{margin-top:44px;border:1px solid var(--ink);background:var(--paper)}
+.gait-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--ink)}
+.gait-title{font-weight:600;font-size:.98rem}
+.btns{display:flex;gap:8px}
+.btn{font:600 .95rem var(--font);background:transparent;color:var(--ink);border:1px solid var(--ink);padding:6px 16px;cursor:pointer;min-width:84px}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.gait-body{display:grid;grid-template-columns:minmax(0,1fr) 270px}
+.gait-view{padding:12px 8px 8px;border-right:1px solid var(--rule)}
+.gait-view svg{display:block;width:100%;height:auto}
+.gait-state{padding:14px 16px 0}
+.gait-state strong{display:block;font-size:1.05rem}
+.gait-state span{display:block;color:var(--soft);font-size:.95rem;min-height:3em}
+.readout{width:calc(100% - 32px);margin:8px 16px 16px;border-collapse:collapse;font-size:.92rem}
+.readout td{padding:4px 0;border-bottom:1px solid var(--rule)}
+.readout td:last-child{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.readout tr.moving td{color:var(--signal);font-weight:600}
+.readout td.dim{color:var(--soft)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 22px;padding:10px 16px 14px;border-top:1px solid var(--rule);font-size:.9rem;color:var(--soft)}
+.sw{display:inline-block;width:18px;height:4px;vertical-align:middle;margin-right:8px}
+.sw.a{background:var(--signal)}
+.sw.b{background:var(--ink)}
+.ring{display:inline-block;width:11px;height:11px;border-radius:50%;border:2px solid var(--signal);vertical-align:-1px;margin-right:8px}
+.dotf{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--ink);vertical-align:-1px;margin-right:8px}
+.video{position:relative;margin-top:40px;aspect-ratio:16/9;background:var(--panel);border:1px solid var(--rule);overflow:hidden}
+.video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video .ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--soft)}
+.cap{font-size:.95rem;color:var(--soft);margin-top:10px}
+
+/* hardware */
+.facts{margin:28px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px}
+.facts div{padding:12px 0;border-top:1px solid var(--rule)}
+.facts dt{font-weight:700}
+.facts dd{margin:0;color:var(--soft)}
+.tbl{width:100%;border-collapse:collapse;font-size:.98rem}
+.tblwrap{overflow-x:auto}
+.tbl th{text-align:left;font-weight:600;color:var(--soft);padding:8px 16px 8px 0;border-bottom:2px solid var(--ink);white-space:nowrap}
+.tbl td{padding:9px 16px 9px 0;border-bottom:1px solid var(--rule);vertical-align:middle}
+.tbl td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.scale{display:inline-block;position:relative;width:120px;height:4px;background:var(--rule);vertical-align:middle;margin-left:14px}
+.scale i{position:absolute;top:-5px;width:3px;height:14px;background:var(--signal);margin-left:-1px}
+.flow{margin:6px 0 0;display:grid;gap:14px}
+.lane{display:flex;gap:18px;align-items:flex-start}
+.lane>b{flex:0 0 58px;padding-top:7px;font-weight:700}
+.lane ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 22px}
+.lane li{position:relative;border:1px solid var(--ink);padding:5px 11px;font-size:.95rem}
+.lane li+li::before{content:"";position:absolute;left:-23px;top:50%;width:22px;height:1px;background:var(--ink)}
+.gallery{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+figure{margin:0}
+.imgbox{aspect-ratio:4/3;background:var(--panel);border:1px dashed var(--rule);display:grid;place-items:center;text-align:center;padding:12px;color:var(--soft);font-size:.9rem;overflow:hidden}
+.imgbox img{width:100%;height:100%;object-fit:cover;display:block}
+figcaption{font-size:.92rem;color:var(--soft);margin-top:8px}
+
+/* software */
+.seq{counter-reset:s;list-style:none;margin:0;padding:0;max-width:64ch}
+.seq li{counter-increment:s;position:relative;padding:10px 0 10px 40px;border-bottom:1px solid var(--rule)}
+.seq li::before{content:counter(s);position:absolute;left:0;top:10px;font-family:var(--mono);color:var(--signal);font-weight:600}
+.code{position:relative;background:var(--ink);color:#DDE3EC}
+.code pre{margin:0;padding:22px 20px;overflow-x:auto;font:400 .82rem/1.6 var(--mono)}
+.code .k{color:#A5AEFF}
+.code .c{color:#7D8898}
+.code .n{color:#F2B880}
+.copy{position:absolute;top:10px;right:10px;font:600 .8rem var(--font);color:#DDE3EC;background:transparent;border:1px solid #5A6472;padding:4px 12px;cursor:pointer}
+.copy:hover{background:#DDE3EC;color:var(--ink)}
+
+/* simulation */
+.track{list-style:none;margin:8px 0 0;padding:0 0 0 28px;border-left:2px solid var(--rule);max-width:64ch}
+.track li{position:relative;padding:0 0 26px}
+.track li::before{content:"";position:absolute;left:-37px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--soft)}
+.track li.now::before{background:var(--signal);border-color:var(--signal)}
+.track b{display:block}
+.track span{color:var(--soft)}
+
+/* challenges */
+.issues{margin-top:20px}
+.issue{display:grid;grid-template-columns:190px minmax(0,1fr) 120px;gap:8px 28px;padding:18px 0;border-top:1px solid var(--rule)}
+.issue:last-child{border-bottom:1px solid var(--rule)}
+.issue h3{margin:0;font-size:1.05rem}
+.issue p{margin:0}
+.state{display:flex;align-items:flex-start;gap:9px;font-weight:600;font-size:.95rem}
+.state::before{content:"";flex:none;width:12px;height:12px;border-radius:50%;margin-top:6px}
+.state.fixed::before{background:var(--ink)}
+.state.open{color:var(--open)}
+.state.open::before{border:2px solid var(--open)}
+.state.managed::before{border:2px solid var(--ink);background:linear-gradient(90deg,var(--ink) 50%,transparent 50%)}
+
+/* team */
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px 40px;margin-top:20px}
+.person{border-top:1px solid var(--rule);padding-top:14px}
+.person h3{margin:0;font-size:1.7rem;font-weight:700;font-stretch:90%;letter-spacing:-.015em}
+.person p{color:var(--soft);margin:.4em 0 0}
+.repo{display:inline-block;margin-top:36px;font-size:1.25rem;font-weight:600;word-break:break-all}
+footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-size:.92rem;color:var(--soft)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* small screens */
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  main{min-width:0}
+  .rail nav{min-width:0}
+  .rail{position:sticky;z-index:10;height:auto;flex-direction:row;align-items:center;gap:18px;padding:10px 20px;border-right:0;border-bottom:1px solid var(--rule);background:var(--paper)}
+  .brand{white-space:nowrap}
+  .rail nav{overflow-x:auto;scrollbar-width:none}
+  .rail nav::-webkit-scrollbar{display:none}
+  .rail ul{flex-direction:row;gap:14px}
+  .rail li a{padding:6px 0;border-left:0;border-bottom:2px solid transparent;white-space:nowrap}
+  .rail li a[aria-current="true"]{border-bottom-color:var(--signal)}
+  .rail li.ext{margin-top:0}
+  html{scroll-padding-top:70px}
+  .hero{padding-top:44px}
+}
+@media (max-width:760px){
+  .gait-body{grid-template-columns:1fr}
+  .gait-view{border-right:0;border-bottom:1px solid var(--rule)}
+  .facts{grid-template-columns:1fr}
+  .issue{grid-template-columns:1fr;gap:6px}
+  .lane{flex-direction:column;gap:8px}
+  .lane>b{flex:none;padding-top:0}
+  .lane ol{flex-direction:column;gap:20px;align-items:flex-start}
+  .lane li+li::before{left:50%;top:-21px;width:1px;height:20px}
+  .sec{margin-top:80px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header class="rail">
+  <a class="brand" href="#top">crawling-<br>panther</a>
+  <nav aria-label="Sections">
+    <ul>
+      <li><a href="#hardware">Hardware</a></li>
+      <li><a href="#software">Software</a></li>
+      <li><a href="#simulation">Simulation</a></li>
+      <li><a href="#challenges">Challenges</a></li>
+      <li><a href="#team">Team</a></li>
+      <li class="ext"><a href="#" data-repo="link">GitHub</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <h1>crawling-<br>panther</h1>
+  <p class="lead">A 318 g quadruped that walks on eight hobby servos and an Arduino Uno. The diagram below runs the same gait as the sketch, with the same angles.</p>
+
+  <div class="gait" id="gait">
+    <div class="gait-bar">
+      <span class="gait-title">Gait, top view (live)</span>
+      <div class="btns">
+        <button class="btn" type="button" id="gPlay">Pause</button>
+        <button class="btn" type="button" id="gStep">Step</button>
+      </div>
+    </div>
+    <div class="gait-body">
+      <div class="gait-view" id="gView"></div>
+      <div>
+        <div class="gait-state">
+          <strong id="gHead">Starting</strong>
+          <span id="gMove"></span>
+        </div>
+        <table class="readout" id="gTable" aria-label="Current servo angles"></table>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="sw a"></i>R1 + L2</span>
+      <span><i class="sw b"></i>R2 + L1</span>
+      <span><i class="dotf"></i>on the ground</span>
+      <span><i class="ring"></i>knee lifted</span>
+    </div>
+  </div>
+
+  <div class="video" id="video"><div class="ph">The walking test video goes here. Set <code>video</code> in the CONFIG block at the end of this file.</div></div>
+  <p class="cap">First successful walking test: five steps forward, five steps back.</p>
+</section>
+
+<section class="sec" id="hardware">
+  <h2>Hardware</h2>
+  <p>The body and legs are 3D printed. Each leg has a hip servo that swings it forward and back, and a knee servo that lifts it.</p>
+
+  <dl class="facts">
+    <div><dt>Controller</dt><dd>Arduino Uno with a Sensor Shield v5.0</dd></div>
+    <div><dt>Actuators</dt><dd>8 TowerPro MG90S micro servos, 2 per leg</dd></div>
+    <div><dt>Structure</dt><dd>3D-printed body and legs</dd></div>
+    <div><dt>Weight</dt><dd>318 g, ready to walk</dd></div>
+  </dl>
+
+  <h3>Parts</h3>
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th>Part</th><th>Qty</th><th>Job</th></tr></thead>
+    <tbody>
+      <tr><td>Arduino Uno</td><td class="n">1</td><td>Runs the gait and generates the servo signals</td></tr>
+      <tr><td>Sensor Shield v5.0</td><td class="n">1</td><td>Breaks out signal, power and ground pins for each servo</td></tr>
+      <tr><td>TowerPro MG90S servo</td><td class="n">8</td><td>4 hips and 4 knees</td></tr>
+      <tr><td>External battery</td><td class="n">1</td><td>Powers the servos</td></tr>
+      <tr><td>5 V voltage regulator</td><td class="n">1</td><td>Turns the battery voltage into the servo supply</td></tr>
+      <tr><td>Rocker switch</td><td class="n">1</td><td>Cuts the servo power</td></tr>
+      <tr><td>Capacitor</td><td class="n">1</td><td>Smooths the supply when servos start</td></tr>
+      <tr><td>3D-printed body and legs</td><td class="n">1 set</td><td>Frame and four two-joint legs</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Power and signal</h3>
+  <p>Eight servos draw far more current than the Arduino can supply, so they run from their own battery through a regulator and a switch. The Arduino only sends the control signals. Both supplies share a common ground.</p>
+  <div class="flow">
+    <div class="lane"><b>Power</b><ol><li>Battery</li><li>Rocker switch</li><li>5 V regulator + capacitor</li><li>Servo rail on the shield</li><li>8 servos</li></ol></div>
+    <div class="lane"><b>Signal</b><ol><li>Arduino Uno</li><li>Sensor Shield v5.0</li><li>8 servo signal pins</li></ol></div>
+  </div>
+
+  <h3>Servo map</h3>
+  <p>The scale shows each neutral angle on the servo's 0 to 180 degree range.</p>
+  <div class="tblwrap"><table class="tbl" id="servoMap">
+    <thead><tr><th>Servo</th><th>Pin</th><th>Joint</th><th>Neutral angle</th></tr></thead>
+    <tbody>
+      <tr data-deg="85"><td>R1</td><td class="n">4</td><td>Hip</td><td class="n">85°</td></tr>
+      <tr data-deg="110"><td>R2</td><td class="n">6</td><td>Hip</td><td class="n">110°</td></tr>
+      <tr data-deg="170"><td>R3</td><td class="n">5</td><td>Knee</td><td class="n">170°</td></tr>
+      <tr data-deg="30"><td>R4</td><td class="n">7</td><td>Knee</td><td class="n">30°</td></tr>
+      <tr data-deg="110"><td>L1</td><td class="n">8</td><td>Hip</td><td class="n">110°</td></tr>
+      <tr data-deg="40"><td>L2</td><td class="n">10</td><td>Hip</td><td class="n">40°</td></tr>
+      <tr data-deg="70"><td>L3</td><td class="n">9</td><td>Knee</td><td class="n">70°</td></tr>
+      <tr data-deg="145"><td>L4</td><td class="n">11</td><td>Knee</td><td class="n">145°</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Photos</h3>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<section class="sec" id="software">
+  <h2>Software</h2>
+
+  <h3 style="margin-top:.6em">Calibration</h3>
+  <p>Servo horns never sit at exactly the same angle, so 90° is a different pose on every leg. We calibrated each servo by hand:</p>
+  <ol class="seq">
+    <li>Power the servos from the battery and send each one a test angle.</li>
+    <li>Adjust until the leg stands neutral: hip pointing straight out, knee at its resting height.</li>
+    <li>Write that angle into the neutral table shown in the servo map.</li>
+    <li>Describe every movement as an offset from the neutral angle, never as an absolute angle.</li>
+  </ol>
+
+  <h3>Trot gait</h3>
+  <p>The legs move as two diagonal pairs, <code>R1 + L2</code> and <code>R2 + L1</code>. While one pair steps, the other stays on the ground and pushes the body forward. The hips swing 20° and the knees lift 45°. Every move is split into 20 small sub-steps so the servos glide instead of jumping.</p>
+  <p>One full step is six moves:</p>
+  <ol class="seq">
+    <li>Lift the knees of R3 and L4.</li>
+    <li>Swing R1 and L2 forward, and R2 and L1 back.</li>
+    <li>Lower the knees of R3 and L4.</li>
+    <li>Lift the knees of R4 and L3.</li>
+    <li>Swing R2 and L1 forward, and R1 and L2 back.</li>
+    <li>Lower the knees of R4 and L3.</li>
+  </ol>
+  <p>The test routine does five steps forward, rests in the neutral pose, then does five steps backward.</p>
+
+  <h3>The sketch</h3>
+  <p>The <code>sign</code> array compensates for how each servo is mounted, since the left side is mirrored.</p>
+  <div class="code">
+    <button class="copy" type="button" data-copy="code1">Copy</button>
+<pre id="code1"><span class="k">#include</span> &lt;Servo.h&gt;
+
+<span class="k">enum</span> { R1, R2, R3, R4, L1, L2, L3, L4, N };
+
+<span class="k">const int</span> pins[N]    = {4,   6,   5,   7,  8,   10, 9,  11};
+<span class="k">const int</span> neutral[N] = {85, 110, 170, 30, 110, 40, 70, 145};  <span class="c">// calibrated angles</span>
+<span class="k">const int</span> sign[N]    = {1,   1,  -1,   1, -1,  -1,  1,  -1};  <span class="c">// mounting direction</span>
+
+<span class="k">const int</span> HIP_SWING     = <span class="n">20</span>;
+<span class="k">const int</span> KNEE_LIFT     = <span class="n">45</span>;
+<span class="k">const int</span> STEPS         = <span class="n">5</span>;    <span class="c">// steps forward, then backward</span>
+<span class="k">const int</span> INTERP_STEPS  = <span class="n">20</span>;   <span class="c">// sub-steps per movement</span>
+<span class="k">const int</span> STEP_DELAY    = <span class="n">12</span>;   <span class="c">// ms between sub-steps</span>
+
+<span class="c">// If the robot walks backward instead of forward, swap these two values</span>
+<span class="k">const int</span> FORWARD  =  <span class="n">1</span>;
+<span class="k">const int</span> BACKWARD = -<span class="n">1</span>;
+
+Servo servos[N];
+<span class="k">int</span> cur[N];      <span class="c">// current angles</span>
+<span class="k">int</span> target[N];   <span class="c">// target angles</span>
+<span class="k">int</span> moveDir = FORWARD;
+
+<span class="c">// Move all servos smoothly from cur[] to target[]</span>
+<span class="k">void</span> apply() {
+  <span class="k">int</span> start[N];
+  <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; N; i++) start[i] = cur[i];
+  <span class="k">for</span> (<span class="k">int</span> s = 1; s &lt;= INTERP_STEPS; s++) {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; N; i++) {
+      cur[i] = start[i] + (<span class="k">long</span>)(target[i] - start[i]) * s / INTERP_STEPS;
+      servos[i].write(cur[i]);
+    }
+    delay(STEP_DELAY);
+  }
+}
+
+<span class="k">void</span> hip(<span class="k">int</span> i, <span class="k">int</span> d) {
+  target[i] = neutral[i] + sign[i] * HIP_SWING * d * moveDir;
+}
+
+<span class="k">void</span> knee(<span class="k">int</span> i, <span class="k">bool</span> lifted) {
+  target[i] = neutral[i] + (lifted ? sign[i] * KNEE_LIFT : <span class="n">0</span>);
+}
+
+<span class="c">// One full step: both diagonal groups move once</span>
+<span class="k">void</span> gaitStep() {
+  <span class="c">// Group R1+L2</span>
+  knee(R3, <span class="k">true</span>); knee(L4, <span class="k">true</span>); apply();                              <span class="c">// lift</span>
+  hip(R1, +1); hip(L2, +1); hip(R2, -1); hip(L1, -1); apply();           <span class="c">// swing</span>
+  knee(R3, <span class="k">false</span>); knee(L4, <span class="k">false</span>); apply();                           <span class="c">// lower</span>
+
+  <span class="c">// Group R2+L1</span>
+  knee(R4, <span class="k">true</span>); knee(L3, <span class="k">true</span>); apply();
+  hip(R2, +1); hip(L1, +1); hip(R1, -1); hip(L2, -1); apply();
+  knee(R4, <span class="k">false</span>); knee(L3, <span class="k">false</span>); apply();
+}
+
+<span class="k">void</span> rest() {
+  <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; N; i++) target[i] = neutral[i];
+  apply();
+}
+
+<span class="k">void</span> setup() {
+  <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; N; i++) {
+    cur[i] = target[i] = neutral[i];
+    servos[i].write(cur[i]);
+    servos[i].attach(pins[i]);
+    delay(<span class="n">500</span>);   <span class="c">// start servos one by one (protects the regulator)</span>
+  }
+  delay(<span class="n">2000</span>);    <span class="c">// wait 2 s before walking</span>
+}
+
+<span class="k">void</span> loop() {
+  moveDir = FORWARD;
+  <span class="k">for</span> (<span class="k">int</span> k = 0; k &lt; STEPS; k++) gaitStep();
+  rest();
+  delay(<span class="n">1000</span>);
+
+  moveDir = BACKWARD;
+  <span class="k">for</span> (<span class="k">int</span> k = 0; k &lt; STEPS; k++) gaitStep();
+  rest();
+  delay(<span class="n">1000</span>);
+}</pre>
+  </div>
+</section>
+
+<section class="sec" id="simulation">
+  <h2>Simulation <span class="status-tag">Work in progress</span></h2>
+  <p>We want the robot to find its own way of walking in simulation, then compare that with our hand-written trot gait. The stack is Python and MuJoCo for the physics, and PPO from <code>stable-baselines3</code> for reinforcement learning.</p>
+  <ol class="track">
+    <li class="now"><b>Build the MuJoCo model</b><span>In progress. The link and leg lengths are not measured yet, so the model can't be finished.</span></li>
+    <li><b>Replay the trot gait</b><span>Check that the hand-coded gait looks right in simulation.</span></li>
+    <li><b>Train with PPO</b><span>Let the agent learn to walk, then compare it with the trot gait.</span></li>
+    <li><b>Transfer to the real robot</b><span>Run the learned walking on the hardware.</span></li>
+  </ol>
+</section>
+
+<section class="sec" id="challenges">
+  <h2>Challenges</h2>
+  <p>What went wrong, and what we know so far.</p>
+  <div class="issues">
+    <div class="issue">
+      <h3>Regulator protection</h3>
+      <p>The voltage regulator went into protection and blinked when all 8 servos started at once. We now start the servos one at a time in code, and added a power switch and a capacitor.</p>
+      <div class="state fixed">Fixed</div>
+    </div>
+    <div class="issue">
+      <h3>Servo on pin 11</h3>
+      <p>This servo (L4) sometimes does not respond. We suspect a power drop or a loose connector, but haven't confirmed it.</p>
+      <div class="state open">Open</div>
+    </div>
+    <div class="issue">
+      <h3>Limited torque</h3>
+      <p>The MG90S has little torque for a 318 g robot, so the gait needs careful tuning of angles and timing. Small changes decide whether a step lifts the body or stalls.</p>
+      <div class="state managed">Managed by tuning</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="team">
+  <h2>Team</h2>
+  <div class="people">
+    <div class="person">
+      <h3 data-cfg="friendName">Rodi Ercan</h3>
+      <p>3D printing and mechanical assembly. Servo calibration and Arduino code, together with Boran. Simulation work.</p>
+    </div>
+    <div class="person">
+      <h3 data-cfg="myName">Boran Akgün</h3>
+      <p>Servo calibration and Arduino code, together with Rodi. Simulation work.</p>
+    </div>
+  </div>
+  <a class="repo" id="repoLink" data-repo="link" data-repo-text="1" href="#">github.com/spiderbot-project/crawling-panther</a>
+  <footer>crawling-panther, a student robotics project by Rodi Ercan and Boran Akgün.</footer>
+</section>
+
+</main>
+</div>
+
+<script>
+/* ========= CONFIG: edit these values, nothing else needs to change ========= */
+var CONFIG = {
+  // Local file in docs/assets/ (e.g. "assets/walk.mp4") OR a YouTube link. Leave "" to show a placeholder.
+  video: "",
+  poster: "",                         // optional poster image, e.g. "assets/poster.jpg"
+  friendName: "Rodi Ercan",
+  myName: "Boran Akgün",
+  org: "spiderbot-project",
+  repo: "crawling-panther",
+  // Photos in docs/assets/. Missing files show a placeholder box.
+  photos: [
+    { src: "assets/robot-front.jpg", alt: "Front view of the robot",          caption: "Front view" },
+    { src: "assets/robot-top.jpg",   alt: "Top view showing the electronics", caption: "Electronics: Uno, Sensor Shield, regulator" },
+    { src: "assets/robot-leg.jpg",   alt: "Close-up of a leg",                caption: "A leg with hip and knee servo" }
+  ]
+};
+/* ========================================================================== */
+
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var NS = "http://www.w3.org/2000/svg";
+
+  /* ---- names and repo links ---- */
+  $$("[data-cfg]").forEach(function (el) { el.textContent = CONFIG[el.getAttribute("data-cfg")]; });
+  var repoUrl = "https://github.com/" + CONFIG.org + "/" + CONFIG.repo;
+  $$("[data-repo]").forEach(function (a) {
+    a.href = repoUrl; a.target = "_blank"; a.rel = "noopener";
+    if (a.hasAttribute("data-repo-text")) a.textContent = "github.com/" + CONFIG.org + "/" + CONFIG.repo;
+  });
+
+  /* ---- video ---- */
+  var box = $("#video"), v = CONFIG.video;
+  if (v) {
+    var yt = v.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+    box.innerHTML = "";
+    if (yt) {
+      var f = document.createElement("iframe");
+      f.src = "https://www.youtube-nocookie.com/embed/" + yt[1];
+      f.title = "Walking test video";
+      f.allow = "accelerometer; encrypted-media; picture-in-picture";
+      f.allowFullscreen = true; f.loading = "lazy";
+      box.appendChild(f);
+    } else {
+      var vid = document.createElement("video");
+      vid.src = v; vid.controls = true; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.preload = "metadata";
+      if (CONFIG.poster) vid.poster = CONFIG.poster;
+      box.appendChild(vid);
+    }
+  }
+
+  /* ---- gallery ---- */
+  var gal = $("#gallery");
+  CONFIG.photos.forEach(function (p) {
+    var fig = document.createElement("figure");
+    var wrap = document.createElement("div"); wrap.className = "imgbox"; wrap.textContent = p.src;
+    var img = new Image(); img.alt = p.alt;
+    img.onload = function () { wrap.textContent = ""; wrap.style.border = "0"; wrap.appendChild(img); };
+    img.onerror = function () { wrap.textContent = p.src + " has not been added yet"; };
+    img.src = p.src;
+    var cap = document.createElement("figcaption"); cap.textContent = p.caption;
+    fig.appendChild(wrap); fig.appendChild(cap); gal.appendChild(fig);
+  });
+
+  /* ---- neutral-angle scales in the servo map ---- */
+  $$("#servoMap tbody tr").forEach(function (tr) {
+    var deg = +tr.getAttribute("data-deg");
+    var cell = tr.lastElementChild;
+    var s = document.createElement("span"); s.className = "scale"; s.setAttribute("aria-hidden", "true");
+    var i = document.createElement("i"); i.style.left = (deg / 180 * 100) + "%";
+    s.appendChild(i); cell.appendChild(s);
+  });
+
+  /* ---- copy buttons ---- */
+  $$(".copy").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var text = document.getElementById(b.getAttribute("data-copy")).innerText;
+      var done = function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500); };
+      if (navigator.clipboard) { navigator.clipboard.writeText(text).then(done); }
+      else {
+        var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
+        ta.select(); document.execCommand("copy"); document.body.removeChild(ta); done();
+      }
+    });
+  });
+
+  /* ---- current section in the side rail ---- */
+  var links = {};
+  $$(".rail li a[href^='#']").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        for (var k in links) links[k].removeAttribute("aria-current");
+        if (links[e.target.id]) links[e.target.id].setAttribute("aria-current", "true");
+      });
+    }, { rootMargin: "-25% 0px -65% 0px" });
+    $$("main section[id]").forEach(function (s) { io.observe(s); });
+  }
+
+  /* ================= Live gait diagram =================
+     Same data and same logic as the Arduino sketch:
+     targets = neutral + sign * amount, applied move by move. */
+  var NAMES   = ["R1", "R2", "R3", "R4", "L1", "L2", "L3", "L4"];
+  var PINS    = [4, 6, 5, 7, 8, 10, 9, 11];
+  var NEUTRAL = [85, 110, 170, 30, 110, 40, 70, 145];
+  var SIGN    = [1, 1, -1, 1, -1, -1, 1, -1];
+  var HIP = 20, KNEE = 45, STEPS = 5;
+  var R1 = 0, R2 = 1, R3 = 2, R4 = 3, L1 = 4, L2 = 5, L3 = 6, L4 = 7;
+
+  var T = NEUTRAL.slice(), moves = [];
+  function hip(i, d, dir) { T[i] = NEUTRAL[i] + SIGN[i] * HIP * d * dir; }
+  function knee(i, up) { T[i] = NEUTRAL[i] + (up ? SIGN[i] * KNEE : 0); }
+  function add(label, mut, meta, hold) {
+    var before = T.slice(); mut();
+    var changed = [];
+    for (var i = 0; i < 8; i++) if (T[i] !== before[i]) changed.push(i);
+    moves.push({ label: label, t: T.slice(), changed: changed, meta: meta, hold: hold || 140 });
+  }
+  [1, -1].forEach(function (dir) {
+    var fw = dir > 0 ? "forward" : "back", bw = dir > 0 ? "back" : "forward";
+    for (var k = 1; k <= STEPS; k++) {
+      var m = { dir: dir, step: k };
+      add("Lift knees R3 and L4", function () { knee(R3, 1); knee(L4, 1); }, m);
+      add("Swing R1 and L2 " + fw + ", R2 and L1 " + bw, function () { hip(R1, 1, dir); hip(L2, 1, dir); hip(R2, -1, dir); hip(L1, -1, dir); }, m);
+      add("Lower knees R3 and L4", function () { knee(R3, 0); knee(L4, 0); }, m);
+      add("Lift knees R4 and L3", function () { knee(R4, 1); knee(L3, 1); }, m);
+      add("Swing R2 and L1 " + fw + ", R1 and L2 " + bw, function () { hip(R2, 1, dir); hip(L1, 1, dir); hip(R1, -1, dir); hip(L2, -1, dir); }, m);
+      add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, m);
+    }
+    add("Back to the neutral pose", function () { for (var i = 0; i < 8; i++) T[i] = NEUTRAL[i]; }, { dir: dir, rest: true }, 800);
+  });
+
+  /* legs: hip servo, knee servo, pivot position, side (+1 right, -1 left), group */
+  var LEGS = [
+    { h: R1, k: R3, x: 290, y: 125, s: 1,  g: "a" },
+    { h: R2, k: R4, x: 290, y: 235, s: 1,  g: "b" },
+    { h: L1, k: L3, x: 170, y: 125, s: -1, g: "b" },
+    { h: L2, k: L4, x: 170, y: 235, s: -1, g: "a" }
+  ];
+  var LEN = 100;
+
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var a in attrs) e.setAttribute(a, attrs[a]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  var view = $("#gView");
+  var svg = el("svg", { viewBox: "0 0 460 330", role: "img", "aria-label": "Top view of the four legs in their current gait pose" });
+  view.appendChild(svg);
+  el("rect", { x: 170, y: 95, width: 120, height: 170, rx: 8, fill: "#ECEEF1", stroke: "#12161C", "stroke-width": 2 }, svg);
+  el("path", { d: "M230 66 l-8 12 h16 z", fill: "#47505C" }, svg);
+  var front = el("text", { x: 230, y: 58, "text-anchor": "middle", "font-size": 14, fill: "#47505C", "font-family": "inherit" }, svg);
+  front.textContent = "front";
+
+  LEGS.forEach(function (L) {
+    el("line", { x1: L.x, y1: L.y, x2: L.x + L.s * (LEN + 12), y2: L.y, stroke: "#C3C9D1", "stroke-width": 1.5, "stroke-dasharray": "4 4" }, svg);
+    L.shadow = el("circle", { r: 9, fill: "none", stroke: "#47505C", "stroke-width": 1.5, "stroke-dasharray": "3 3", opacity: 0 }, svg);
+    L.line = el("line", { x1: L.x, y1: L.y, "stroke-width": 8, "stroke-linecap": "round", stroke: L.g === "a" ? "#3D3BF3" : "#12161C" }, svg);
+    L.foot = el("circle", { r: 9, "stroke-width": 3 }, svg);
+    L.pivot = el("circle", { cx: L.x, cy: L.y, r: 5, fill: "#ECEEF1", stroke: "#12161C", "stroke-width": 2 }, svg);
+    var tx = L.x - L.s * 12, ty = L.y + 5;
+    var t = el("text", { x: tx, y: ty, "text-anchor": L.s > 0 ? "end" : "start", "font-size": 14, "font-weight": 600, fill: "#12161C", "font-family": "inherit" }, svg);
+    t.textContent = NAMES[L.h] + " / " + NAMES[L.k];
+  });
+
+  /* readout table */
+  var table = $("#gTable"), rows = [];
+  for (var i = 0; i < 8; i++) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + NAMES[i] + "</td><td class='dim'>pin " + PINS[i] + "</td><td class='dim'>" + (i === 2 || i === 3 || i === 6 || i === 7 ? "knee" : "hip") + "</td><td></td>";
+    table.appendChild(tr); rows.push(tr);
+  }
+
+  var cur = NEUTRAL.slice(), from = NEUTRAL.slice();
+  var idx = -1, elapsed = 0, DUR = 620, moving = false, gap = 500;
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var playing = !reduce, stepping = false, last = null;
+  var head = $("#gHead"), mv = $("#gMove"), playBtn = $("#gPlay"), stepBtn = $("#gStep");
+
+  function draw() {
+    LEGS.forEach(function (L) {
+      var swing = (cur[L.h] - NEUTRAL[L.h]) * SIGN[L.h];
+      var lift = Math.max(0, Math.min(1, (cur[L.k] - NEUTRAL[L.k]) * SIGN[L.k] / KNEE));
+      var th = swing * Math.PI / 180;
+      var fx = L.x + L.s * LEN * Math.cos(th), fy = L.y - LEN * Math.sin(th);
+      L.line.setAttribute("x2", fx); L.line.setAttribute("y2", fy);
+      L.foot.setAttribute("cx", fx); L.foot.setAttribute("cy", fy);
+      L.foot.setAttribute("r", 9 + 5 * lift);
+      L.foot.setAttribute("fill", lift > 0.5 ? "#ECEEF1" : "#12161C");
+      L.foot.setAttribute("stroke", lift > 0.05 ? "#3D3BF3" : "#12161C");
+      L.shadow.setAttribute("cx", fx); L.shadow.setAttribute("cy", fy);
+      L.shadow.setAttribute("opacity", lift > 0.05 ? 1 : 0);
+    });
+    var m = idx >= 0 ? moves[idx] : null;
+    for (var i = 0; i < 8; i++) {
+      rows[i].lastChild.textContent = Math.round(cur[i]) + "°";
+      rows[i].className = (m && moving && m.changed.indexOf(i) > -1) ? "moving" : "";
+    }
+  }
+  function label() {
+    var m = idx >= 0 ? moves[idx] : null;
+    if (!m) { head.textContent = "Neutral pose"; mv.textContent = reduce ? "Press Play or Step to start." : ""; return; }
+    head.textContent = m.meta.rest ? "Rest" : (m.meta.dir > 0 ? "Forward" : "Backward") + ", step " + m.meta.step + " of " + STEPS;
+    mv.textContent = m.label;
+  }
+  function begin(i) { idx = i; from = cur.slice(); elapsed = 0; moving = true; label(); }
+
+  function frame(ts) {
+    if (last === null) last = ts;
+    var dt = Math.min(64, ts - last); last = ts;
+    if (playing || stepping) {
+      if (moving) {
+        elapsed += dt;
+        var p = Math.min(1, elapsed / DUR), m = moves[idx];
+        for (var i = 0; i < 8; i++) cur[i] = from[i] + (m.t[i] - from[i]) * p;
+        if (p >= 1) { moving = false; gap = m.hold; stepping = false; }
+      } else {
+        gap -= dt;
+        if (playing && gap <= 0) begin((idx + 1) % moves.length);
+      }
+    }
+    draw();
+    requestAnimationFrame(frame);
+  }
+
+  playBtn.textContent = playing ? "Pause" : "Play";
+  playBtn.addEventListener("click", function () {
+    playing = !playing; playBtn.textContent = playing ? "Pause" : "Play";
+    if (playing) { stepping = false; if (!moving && idx < 0) gap = 200; }
+  });
+  stepBtn.addEventListener("click", function () {
+    if (playing) { playing = false; playBtn.textContent = "Play"; }
+    if (moving) { stepping = true; return; }
+    stepping = true; begin((idx + 1) % moves.length);
+  });
+
+  label(); draw();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
