@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>crawling-panther: a quadruped robot</title>
-<meta name="description" content="crawling-panther is a 318 g, eight-servo quadruped robot with an Arduino Uno brain and a trot gait. It is now learning to walk in MuJoCo.">
+<meta name="description" content="crawling-panther is a 342 g, eight-servo quadruped robot with an Arduino Uno brain. A hand-tuned trot gait runs on the robot; a second gait was learned in a PyBullet simulation and is waiting for its real-robot test.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#12161C">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
@@ -34,6 +37,7 @@ code{font-family:var(--mono);font-size:.86em;background:var(--panel);padding:.08
 .shell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
 .rail{position:sticky;top:0;align-self:start;height:100vh;padding:30px 26px;border-right:1px solid var(--rule);display:flex;flex-direction:column;gap:36px}
 .brand{font-weight:800;font-stretch:80%;font-size:1.3rem;line-height:1.05;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.brand span{display:block}
 .rail ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
 .rail li a{display:block;padding:6px 0 6px 14px;border-left:2px solid transparent;color:var(--soft);text-decoration:none;font-size:.98rem}
 .rail li a:hover{color:var(--ink)}
@@ -43,44 +47,84 @@ code{font-family:var(--mono);font-size:.86em;background:var(--panel);padding:.08
 main{padding:0 clamp(20px,5vw,64px) 96px;max-width:1000px}
 
 /* headings */
-h1{font-weight:800;font-stretch:78%;font-size:clamp(3.4rem,11vw,7rem);line-height:.92;letter-spacing:-.025em;margin:0 0 .3em}
+h1{font-weight:800;font-stretch:78%;font-size:clamp(3.4rem,11vw,7rem);line-height:.9;letter-spacing:-.025em;margin:0 0 .3em}
+h1 span{display:block}
 h2{font-weight:700;font-stretch:90%;font-size:clamp(1.9rem,4.4vw,2.6rem);line-height:1.08;letter-spacing:-.02em;margin:0 0 .5em}
 h3{font-weight:700;font-size:1.15rem;line-height:1.25;margin:2.2em 0 .5em}
 .sec{margin-top:104px;padding-top:18px;border-top:2px solid var(--ink)}
 .lead{font-size:1.25rem;line-height:1.5;color:var(--soft);max-width:42ch}
 .status-tag{display:inline-flex;align-items:center;gap:8px;font-size:.95rem;font-weight:600;color:var(--open);margin-left:14px;vertical-align:middle;font-stretch:100%;letter-spacing:0}
 .status-tag::before{content:"";width:9px;height:9px;border-radius:50%;border:2px solid var(--open)}
+.tag{display:inline-block;font-size:.85rem;font-weight:600;color:var(--open);border:1px solid var(--open);padding:0 8px;margin-left:10px;vertical-align:middle;line-height:1.5}
+.pend{color:var(--open);font-weight:600}
+.pend::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;border:2px solid var(--open);margin-right:8px;vertical-align:0}
 
 /* hero */
 .hero{position:relative;isolation:isolate;padding-top:72px}
 .hero::before{content:"";position:absolute;z-index:-1;top:0;right:0;width:70%;height:460px;background:repeating-linear-gradient(to bottom,transparent 0 9px,rgba(18,22,28,.07) 9px 10px);-webkit-mask-image:linear-gradient(to left,#000 10%,transparent);mask-image:linear-gradient(to left,#000 10%,transparent)}
+.statusrow{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:8px;max-width:64ch}
+.statusrow li{display:flex;gap:10px;align-items:flex-start}
+.statusrow li::before{content:"";flex:none;width:12px;height:12px;border-radius:50%;margin-top:7px}
+.statusrow li.ok::before{background:var(--ink)}
+.statusrow li.wait::before{border:2px solid var(--open)}
 .gait{margin-top:44px;border:1px solid var(--ink);background:var(--paper)}
 .gait-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--ink)}
 .gait-title{font-weight:600;font-size:.98rem}
-.btns{display:flex;gap:8px}
+.bar-right{display:flex;flex-wrap:wrap;gap:12px}
+.btns,.seg{display:flex}
+.btns{gap:8px}
 .btn{font:600 .95rem var(--font);background:transparent;color:var(--ink);border:1px solid var(--ink);padding:6px 16px;cursor:pointer;min-width:84px}
-.btn:hover{background:var(--ink);color:var(--paper)}
+.btn:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.4;cursor:default}
+.seg .btn{min-width:0;margin-left:-1px}
+.seg .btn:first-child{margin-left:0}
+.seg .btn[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .gait-body{display:grid;grid-template-columns:minmax(0,1fr) 270px}
 .gait-view{padding:12px 8px 8px;border-right:1px solid var(--rule)}
 .gait-view svg{display:block;width:100%;height:auto}
 .gait-state{padding:14px 16px 0}
 .gait-state strong{display:block;font-size:1.05rem}
-.gait-state span{display:block;color:var(--soft);font-size:.95rem;min-height:3em}
+.gait-state span{display:block;color:var(--soft);font-size:.95rem;min-height:4.4em}
 .readout{width:calc(100% - 32px);margin:8px 16px 16px;border-collapse:collapse;font-size:.92rem}
 .readout td{padding:4px 0;border-bottom:1px solid var(--rule)}
 .readout td:last-child{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
 .readout tr.moving td{color:var(--signal);font-weight:600}
 .readout td.dim{color:var(--soft)}
+.gait-note{padding:10px 16px;border-top:1px solid var(--rule);font-size:.95rem}
+.manual{margin:0 16px 16px;display:grid;gap:6px;font-size:.9rem}
+.manual[hidden]{display:none}
+.manual label{display:grid;grid-template-columns:34px 1fr 44px;align-items:center;gap:8px}
+.manual input{width:100%;accent-color:var(--signal)}
+.manual output{font-family:var(--mono);text-align:right}
+.manual button{justify-self:start;margin-top:4px;min-width:0}
 .legend{display:flex;flex-wrap:wrap;gap:6px 22px;padding:10px 16px 14px;border-top:1px solid var(--rule);font-size:.9rem;color:var(--soft)}
 .sw{display:inline-block;width:18px;height:4px;vertical-align:middle;margin-right:8px}
-.sw.a{background:var(--signal)}
-.sw.b{background:var(--ink)}
+.sw.a{background:#D4452F}
+.sw.b{background:#7A2A1E}
 .ring{display:inline-block;width:11px;height:11px;border-radius:50%;border:2px solid var(--signal);vertical-align:-1px;margin-right:8px}
 .dotf{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--ink);vertical-align:-1px;margin-right:8px}
 .video{position:relative;margin-top:40px;aspect-ratio:16/9;background:var(--panel);border:1px solid var(--rule);overflow:hidden}
 .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0}
 .video .ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--soft)}
 .cap{font-size:.95rem;color:var(--soft);margin-top:10px}
+.stats{list-style:none;margin:30px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ink);background:var(--paper)}
+.stats li{padding:14px 16px;border-left:1px solid var(--rule)}
+.stats li:first-child{border-left:0}
+.stats b{display:block;font-size:1.9rem;line-height:1.1;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stats b i{font-style:normal;font-size:1rem;font-weight:500;color:var(--soft);margin-left:3px}
+.stats span{display:block;margin-top:4px;font-size:.88rem;color:var(--soft)}
+.pipe{display:flex;align-items:stretch;margin:22px 0 6px;border:1px solid var(--ink);background:var(--paper)}
+.pipe>div{flex:1;padding:14px 14px 16px;border-left:1px solid var(--rule);position:relative}
+.pipe>div:first-child{border-left:0}
+.pipe>div+div::before{content:"";position:absolute;left:-7px;top:50%;margin-top:-6px;width:12px;height:12px;background:var(--paper);border-top:1px solid var(--ink);border-right:1px solid var(--ink);transform:rotate(45deg)}
+.pipe small{display:block;font-family:var(--mono);font-size:.75rem;color:var(--signal);margin-bottom:6px}
+.pipe strong{display:block;font-size:1rem}
+.pipe span{display:block;margin-top:4px;font-size:.88rem;color:var(--soft)}
+.blueprint{position:absolute;right:0;top:20px;width:340px;max-width:34%;opacity:.5;z-index:-1;pointer-events:none}
+.simvid{margin-top:20px}
+@media (max-width:1100px){.blueprint{display:none}}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.stats li:nth-child(3){border-left:0}.stats li:nth-child(n+3){border-top:1px solid var(--rule)}.pipe{flex-direction:column}.pipe>div{border-left:0;border-top:1px solid var(--rule)}.pipe>div:first-child{border-top:0}.pipe>div+div::before{left:50%;top:-7px;margin:0 0 0 -6px;transform:rotate(135deg)}}
+
 
 /* hardware */
 .facts{margin:28px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px}
@@ -90,13 +134,15 @@ h3{font-weight:700;font-size:1.15rem;line-height:1.25;margin:2.2em 0 .5em}
 .tbl{width:100%;border-collapse:collapse;font-size:.98rem}
 .tblwrap{overflow-x:auto}
 .tbl th{text-align:left;font-weight:600;color:var(--soft);padding:8px 16px 8px 0;border-bottom:2px solid var(--ink);white-space:nowrap}
-.tbl td{padding:9px 16px 9px 0;border-bottom:1px solid var(--rule);vertical-align:middle}
+.tbl td{padding:9px 16px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.tbl tbody th{color:var(--ink);border-bottom:1px solid var(--rule);padding:9px 16px 9px 0;white-space:normal;vertical-align:top}
 .tbl td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl td.num{font-variant-numeric:tabular-nums}
 .scale{display:inline-block;position:relative;width:120px;height:4px;background:var(--rule);vertical-align:middle;margin-left:14px}
 .scale i{position:absolute;top:-5px;width:3px;height:14px;background:var(--signal);margin-left:-1px}
 .flow{margin:6px 0 0;display:grid;gap:14px}
 .lane{display:flex;gap:18px;align-items:flex-start}
-.lane>b{flex:0 0 58px;padding-top:7px;font-weight:700}
+.lane>b{flex:0 0 76px;padding-top:7px;font-weight:700}
 .lane ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 22px}
 .lane li{position:relative;border:1px solid var(--ink);padding:5px 11px;font-size:.95rem}
 .lane li+li::before{content:"";position:absolute;left:-23px;top:50%;width:22px;height:1px;background:var(--ink)}
@@ -110,15 +156,33 @@ figcaption{font-size:.92rem;color:var(--soft);margin-top:8px}
 .seq{counter-reset:s;list-style:none;margin:0;padding:0;max-width:64ch}
 .seq li{counter-increment:s;position:relative;padding:10px 0 10px 40px;border-bottom:1px solid var(--rule)}
 .seq li::before{content:counter(s);position:absolute;left:0;top:10px;font-family:var(--mono);color:var(--signal);font-weight:600}
+.tabs{display:flex;border-bottom:2px solid var(--ink);margin-top:16px}
+.tabs button{font:600 .98rem var(--font);padding:9px 18px;border:0;background:transparent;cursor:pointer;color:var(--soft)}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.tabnote{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between;margin:10px 0;font-size:.95rem;color:var(--soft)}
 .code{position:relative;background:var(--ink);color:#DDE3EC}
 .code pre{margin:0;padding:22px 20px;overflow-x:auto;font:400 .82rem/1.6 var(--mono)}
 .code .k{color:#A5AEFF}
 .code .c{color:#7D8898}
 .code .n{color:#F2B880}
-.copy{position:absolute;top:10px;right:10px;font:600 .8rem var(--font);color:#DDE3EC;background:transparent;border:1px solid #5A6472;padding:4px 12px;cursor:pointer}
+.copy{position:absolute;top:10px;right:10px;font:600 .8rem var(--font);color:#DDE3EC;background:var(--ink);border:1px solid #5A6472;padding:4px 12px;cursor:pointer;z-index:1}
 .copy:hover{background:#DDE3EC;color:var(--ink)}
 
 /* simulation */
+.formula{border-left:3px solid var(--signal);padding:10px 16px;background:var(--panel);font-family:var(--mono);font-size:.88rem;line-height:1.6;max-width:64ch;margin:14px 0}
+.chart{margin-top:16px;border:1px solid var(--rule);padding:14px 14px 8px;background:var(--paper)}
+.chart svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.chart svg:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+.chart-read{min-height:3.4em;margin:6px 4px 4px;font-size:.95rem;max-width:none}
+.chart-read b{font-variant-numeric:tabular-nums}
+details.data{margin-top:10px}
+details.data summary{cursor:pointer;font-weight:600}
+details.data .tblwrap{max-height:340px;overflow:auto;margin-top:8px}
+.files{list-style:none;margin:0;padding:0}
+.files li{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:4px 24px;padding:9px 0;border-bottom:1px solid var(--rule)}
+.files li:first-child{border-top:1px solid var(--rule)}
+.files a{font-family:var(--mono);font-size:.86rem;word-break:break-all}
 .track{list-style:none;margin:8px 0 0;padding:0 0 0 28px;border-left:2px solid var(--rule);max-width:64ch}
 .track li{position:relative;padding:0 0 26px}
 .track li::before{content:"";position:absolute;left:-37px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--soft)}
@@ -128,7 +192,7 @@ figcaption{font-size:.92rem;color:var(--soft);margin-top:8px}
 
 /* challenges */
 .issues{margin-top:20px}
-.issue{display:grid;grid-template-columns:190px minmax(0,1fr) 120px;gap:8px 28px;padding:18px 0;border-top:1px solid var(--rule)}
+.issue{display:grid;grid-template-columns:190px minmax(0,1fr) 170px;gap:8px 28px;padding:18px 0;border-top:1px solid var(--rule)}
 .issue:last-child{border-bottom:1px solid var(--rule)}
 .issue h3{margin:0;font-size:1.05rem}
 .issue p{margin:0}
@@ -169,6 +233,7 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
   .gait-view{border-right:0;border-bottom:1px solid var(--rule)}
   .facts{grid-template-columns:1fr}
   .issue{grid-template-columns:1fr;gap:6px}
+  .files li{grid-template-columns:minmax(0,1fr)}
   .lane{flex-direction:column;gap:8px}
   .lane>b{flex:none;padding-top:0}
   .lane ol{flex-direction:column;gap:20px;align-items:flex-start}
@@ -181,15 +246,17 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
 <div class="shell">
 
 <header class="rail">
-  <a class="brand" href="#top">crawling-<br>panther</a>
+  <a class="brand" href="#top" aria-label="crawling-panther, back to top"><span>crawling-</span><span>panther</span></a>
   <nav aria-label="Sections">
     <ul>
       <li><a href="#hardware">Hardware</a></li>
       <li><a href="#software">Software</a></li>
       <li><a href="#simulation">Simulation</a></li>
+      <li><a href="#results">Results</a></li>
       <li><a href="#challenges">Challenges</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
       <li><a href="#team">Team</a></li>
-      <li class="ext"><a href="#" data-repo="link">GitHub</a></li>
+      <li class="ext"><a href="https://github.com/spiderbot-project/crawling-panther" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
   </nav>
 </header>
@@ -197,15 +264,40 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
 <main id="top">
 
 <section class="hero">
-  <h1>crawling-<br>panther</h1>
-  <p class="lead">A 318 g quadruped that walks on eight hobby servos and an Arduino Uno. The diagram below runs the same gait as the sketch, with the same angles.</p>
+  <svg class="blueprint" viewBox="0 0 340 300" aria-hidden="true" fill="none" stroke="#12161C" stroke-width="1.2">
+    <rect x="115" y="75" width="110" height="130" rx="8"/><rect x="142" y="92" width="56" height="70" rx="3" stroke-dasharray="4 3"/>
+    <g stroke-linecap="round"><path d="M115 100h-70M115 180h-70M225 100h70M225 180h70" stroke-width="3"/></g>
+    <g fill="#ECEEF1"><rect x="105" y="90" width="20" height="20" rx="3"/><rect x="105" y="170" width="20" height="20" rx="3"/><rect x="215" y="90" width="20" height="20" rx="3"/><rect x="215" y="170" width="20" height="20" rx="3"/></g>
+    <path d="M170 255v12M115 261h110" stroke-width=".9"/>
+    <text x="170" y="282" text-anchor="middle" font-size="11" fill="#47505C" stroke="none" font-family="monospace">0.1262 m</text>
+  </svg>
+  <h1 aria-label="crawling-panther"><span>crawling-</span><span>panther</span></h1>
+  <p class="lead">A 342 g quadruped that walks on eight hobby servos and an Arduino Uno. The diagram below runs the same gait as the sketch, with the same angles.</p>
+  <ul class="statusrow">
+    <li class="ok"><span>Gait v1, tuned by hand, walks on the real robot.</span></li>
+    <li class="wait"><span>Gait v2 was learned in simulation. It has not been tested on the real robot yet.</span></li>
+  </ul>
+
+  <ul class="stats" aria-label="Key numbers">
+    <li><b>342<i>g</i></b><span>total weight</span></li>
+    <li><b>8<i>servos</i></b><span>MG90S, two per leg</span></li>
+    <li><b>500<i>candidates</i></b><span>gaits tried in simulation</span></li>
+    <li><b>174<i>cm</i></b><span>simulated in 40 cycles</span></li>
+  </ul>
 
   <div class="gait" id="gait">
     <div class="gait-bar">
-      <span class="gait-title">Gait, top view (live)</span>
-      <div class="btns">
-        <button class="btn" type="button" id="gPlay">Pause</button>
-        <button class="btn" type="button" id="gStep">Step</button>
+      <span class="gait-title">Robot model, top view (live)</span>
+      <div class="bar-right">
+        <div class="seg" role="group" aria-label="Gait version">
+          <button class="btn" type="button" id="gV1" aria-pressed="true">v1 manual</button>
+          <button class="btn" type="button" id="gV2" aria-pressed="false">v2 learned</button>
+          <button class="btn" type="button" id="gMan" aria-pressed="false">Manual</button>
+        </div>
+        <div class="btns">
+          <button class="btn" type="button" id="gPlay">Pause</button>
+          <button class="btn" type="button" id="gStep">Step</button>
+        </div>
       </div>
     </div>
     <div class="gait-body">
@@ -216,8 +308,10 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
           <span id="gMove"></span>
         </div>
         <table class="readout" id="gTable" aria-label="Current servo angles"></table>
+        <div class="manual" id="gManual" hidden></div>
       </div>
     </div>
+    <div class="gait-note" id="gNote"></div>
     <div class="legend">
       <span><i class="sw a"></i>R1 + L2</span>
       <span><i class="sw b"></i>R2 + L1</span>
@@ -238,7 +332,7 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     <div><dt>Controller</dt><dd>Arduino Uno with a Sensor Shield v5.0</dd></div>
     <div><dt>Actuators</dt><dd>8 TowerPro MG90S micro servos, 2 per leg</dd></div>
     <div><dt>Structure</dt><dd>3D-printed body and legs</dd></div>
-    <div><dt>Weight</dt><dd>318 g, ready to walk</dd></div>
+    <div><dt>Weight</dt><dd>342 g, ready to walk</dd></div>
   </dl>
 
   <h3>Parts</h3>
@@ -248,18 +342,19 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
       <tr><td>Arduino Uno</td><td class="n">1</td><td>Runs the gait and generates the servo signals</td></tr>
       <tr><td>Sensor Shield v5.0</td><td class="n">1</td><td>Breaks out signal, power and ground pins for each servo</td></tr>
       <tr><td>TowerPro MG90S servo</td><td class="n">8</td><td>4 hips and 4 knees</td></tr>
-      <tr><td>External battery</td><td class="n">1</td><td>Powers the servos</td></tr>
-      <tr><td>5 V voltage regulator</td><td class="n">1</td><td>Turns the battery voltage into the servo supply</td></tr>
-      <tr><td>Rocker switch</td><td class="n">1</td><td>Cuts the servo power</td></tr>
-      <tr><td>Capacitor</td><td class="n">1</td><td>Smooths the supply when servos start</td></tr>
+      <tr><td>External battery</td><td class="n">1</td><td>7.4 V. Powers the servos and the Arduino</td></tr>
+      <tr><td>5 V voltage regulator module</td><td class="n">1</td><td>Turns the battery voltage into 5 V for the servos and, through its USB port, for the Arduino. Its own capacitors smooth the supply</td></tr>
+      <tr><td>Rocker switch</td><td class="n">1</td><td>Cuts the power from the battery</td></tr>
+      <tr><td>MPU6050 module</td><td class="n">1</td><td>Gyroscope and accelerometer, mounted on the body. Sketch v2 does not read it yet</td></tr>
       <tr><td>3D-printed body and legs</td><td class="n">1 set</td><td>Frame and four two-joint legs</td></tr>
     </tbody>
   </table></div>
 
   <h3>Power and signal</h3>
-  <p>Eight servos draw far more current than the Arduino can supply, so they run from their own battery through a regulator and a switch. The Arduino only sends the control signals. Both supplies share a common ground.</p>
+  <p>Eight servos draw far more current than the Arduino's own 5 V pin can supply. So the battery feeds a 5 V regulator through a switch, and the regulator powers two things: the servo rail on the shield, and the Arduino through the regulator's USB port. The Arduino only sends the control signals. When all servos start at once the supply dips, which is why the sketches start them one by one.</p>
   <div class="flow">
-    <div class="lane"><b>Power</b><ol><li>Battery</li><li>Rocker switch</li><li>5 V regulator + capacitor</li><li>Servo rail on the shield</li><li>8 servos</li></ol></div>
+    <div class="lane"><b>Servos</b><ol><li>Battery</li><li>Rocker switch</li><li>5 V regulator</li><li>Servo rail on the shield</li><li>8 servos</li></ol></div>
+    <div class="lane"><b>Arduino</b><ol><li>5 V regulator</li><li>USB port</li><li>Arduino Uno</li></ol></div>
     <div class="lane"><b>Signal</b><ol><li>Arduino Uno</li><li>Sensor Shield v5.0</li><li>8 servo signal pins</li></ol></div>
   </div>
 
@@ -296,8 +391,8 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
   </ol>
 
   <h3>Trot gait</h3>
-  <p>The legs move as two diagonal pairs, <code>R1 + L2</code> and <code>R2 + L1</code>. While one pair steps, the other stays on the ground and pushes the body forward. The hips swing 20° and the knees lift 45°. Every move is split into 20 small sub-steps so the servos glide instead of jumping.</p>
-  <p>One full step is six moves:</p>
+  <p>The legs move as two diagonal pairs, <code>R1 + L2</code> and <code>R2 + L1</code>. While one pair steps, the other stays on the ground and pushes the body forward. In gait v1 the hips swing 20° and the knees lift 45°. Every move is split into 20 small sub-steps so the servos glide instead of jumping.</p>
+  <p>In gait v1, one full step is six moves:</p>
   <ol class="seq">
     <li>Lift the knees of R3 and L4.</li>
     <li>Swing R1 and L2 forward, and R2 and L1 back.</li>
@@ -306,29 +401,52 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     <li>Swing R2 and L1 forward, and R1 and L2 back.</li>
     <li>Lower the knees of R4 and L3.</li>
   </ol>
-  <p>The test routine does five steps forward, rests in the neutral pose, then does five steps backward.</p>
+  <p>The v1 test routine does five steps forward, rests in the neutral pose, then does five steps backward.</p>
 
-  <h3>The sketch</h3>
-  <p>The <code>sign</code> array compensates for how each servo is mounted, since the left side is mirrored.</p>
+  <h3>Two versions of the sketch</h3>
+  <p>Gait v2 keeps the structure of v1. Its numbers come from the simulation (see below), and a few things change:</p>
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th></th><th>v1 manual</th><th>v2 learned</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Status</th><td>Runs on the real robot</td><td class="pend">Not tested on the real robot yet</td></tr>
+      <tr><th scope="row">Hip swing</th><td>20°, both sides</td><td>Right 17°, left 25°</td></tr>
+      <tr><th scope="row">Knee lift</th><td>45°</td><td>45°</td></tr>
+      <tr><th scope="row">Sub-steps per move</th><td>20</td><td>22</td></tr>
+      <tr><th scope="row">Delay per sub-step</th><td>12 ms</td><td>8 ms (the simulation uses about 4 ms)</td></tr>
+      <tr><th scope="row">Moves per cycle</th><td>6: lift, swing, lower for each pair</td><td>4: lift and swing together, then lower, for each pair</td></tr>
+      <tr><th scope="row">Direction</th><td>5 steps forward, rest, 5 steps backward</td><td>Forward only, until powered off</td></tr>
+    </tbody>
+  </table></div>
+  <p>The hips swing by different amounts on the two sides because that is what the search found. We think the weight of the battery is part of the reason, but we have not confirmed it.</p>
+
+  <div class="tabs" role="tablist" aria-label="Arduino sketch version">
+    <button type="button" role="tab" id="tab-v1" aria-selected="true" aria-controls="panel-v1">v1 manual</button>
+    <button type="button" role="tab" id="tab-v2" aria-selected="false" aria-controls="panel-v2" tabindex="-1">v2 learned</button>
+  </div>
+  <div class="tabnote">
+    <span id="tabStatus">Runs on the real robot. The <code>sign</code> array compensates for how each servo is mounted, since the left side is mirrored.</span>
+    <a id="tabLink" href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/trot_gait_v1_manual/trot_gait_v1_manual.ino" target="_blank" rel="noopener">Open on GitHub</a>
+  </div>
   <div class="code">
-    <button class="copy" type="button" data-copy="code1">Copy</button>
-<pre id="code1"><span class="k">#include</span> &lt;Servo.h&gt;
+    <button class="copy" type="button" id="copyBtn">Copy</button>
+    <div role="tabpanel" id="panel-v1" aria-labelledby="tab-v1">
+<pre id="code-v1"><span class="k">#include</span> &lt;Servo.h&gt;
 
 <span class="k">enum</span> { R1, R2, R3, R4, L1, L2, L3, L4, N };
 
-<span class="k">const int</span> pins[N]    = {4,   6,   5,   7,  8,   10, 9,  11};
-<span class="k">const int</span> neutral[N] = {85, 110, 170, 30, 110, 40, 70, 145};  <span class="c">// calibrated angles</span>
-<span class="k">const int</span> sign[N]    = {1,   1,  -1,   1, -1,  -1,  1,  -1};  <span class="c">// mounting direction</span>
+<span class="k">const</span> <span class="k">int</span> pins[N]    = {<span class="n">4</span>,   <span class="n">6</span>,   <span class="n">5</span>,   <span class="n">7</span>,  <span class="n">8</span>,   <span class="n">10</span>, <span class="n">9</span>,  <span class="n">11</span>};
+<span class="k">const</span> <span class="k">int</span> neutral[N] = {<span class="n">85</span>, <span class="n">110</span>, <span class="n">170</span>, <span class="n">30</span>, <span class="n">110</span>, <span class="n">40</span>, <span class="n">70</span>, <span class="n">145</span>};  <span class="c">// calibrated angles</span>
+<span class="k">const</span> <span class="k">int</span> sign[N]    = {<span class="n">1</span>,   <span class="n">1</span>,  -<span class="n">1</span>,   <span class="n">1</span>, -<span class="n">1</span>,  -<span class="n">1</span>,  <span class="n">1</span>,  -<span class="n">1</span>};  <span class="c">// mounting direction</span>
 
-<span class="k">const int</span> HIP_SWING     = <span class="n">20</span>;
-<span class="k">const int</span> KNEE_LIFT     = <span class="n">45</span>;
-<span class="k">const int</span> STEPS         = <span class="n">5</span>;    <span class="c">// steps forward, then backward</span>
-<span class="k">const int</span> INTERP_STEPS  = <span class="n">20</span>;   <span class="c">// sub-steps per movement</span>
-<span class="k">const int</span> STEP_DELAY    = <span class="n">12</span>;   <span class="c">// ms between sub-steps</span>
+<span class="k">const</span> <span class="k">int</span> HIP_SWING     = <span class="n">20</span>;
+<span class="k">const</span> <span class="k">int</span> KNEE_LIFT     = <span class="n">45</span>;
+<span class="k">const</span> <span class="k">int</span> STEPS         = <span class="n">5</span>;    <span class="c">// steps forward, then backward</span>
+<span class="k">const</span> <span class="k">int</span> INTERP_STEPS  = <span class="n">20</span>;   <span class="c">// sub-steps per movement</span>
+<span class="k">const</span> <span class="k">int</span> STEP_DELAY    = <span class="n">12</span>;   <span class="c">// ms between sub-steps</span>
 
 <span class="c">// If the robot walks backward instead of forward, swap these two values</span>
-<span class="k">const int</span> FORWARD  =  <span class="n">1</span>;
-<span class="k">const int</span> BACKWARD = -<span class="n">1</span>;
+<span class="k">const</span> <span class="k">int</span> FORWARD  =  <span class="n">1</span>;
+<span class="k">const</span> <span class="k">int</span> BACKWARD = -<span class="n">1</span>;
 
 Servo servos[N];
 <span class="k">int</span> cur[N];      <span class="c">// current angles</span>
@@ -338,9 +456,9 @@ Servo servos[N];
 <span class="c">// Move all servos smoothly from cur[] to target[]</span>
 <span class="k">void</span> apply() {
   <span class="k">int</span> start[N];
-  <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; N; i++) start[i] = cur[i];
-  <span class="k">for</span> (<span class="k">int</span> s = 1; s &lt;= INTERP_STEPS; s++) {
-    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; N; i++) {
+  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) start[i] = cur[i];
+  <span class="k">for</span> (<span class="k">int</span> s = <span class="n">1</span>; s &lt;= INTERP_STEPS; s++) {
+    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) {
       cur[i] = start[i] + (<span class="k">long</span>)(target[i] - start[i]) * s / INTERP_STEPS;
       servos[i].write(cur[i]);
     }
@@ -360,22 +478,22 @@ Servo servos[N];
 <span class="k">void</span> gaitStep() {
   <span class="c">// Group R1+L2</span>
   knee(R3, <span class="k">true</span>); knee(L4, <span class="k">true</span>); apply();                              <span class="c">// lift</span>
-  hip(R1, +1); hip(L2, +1); hip(R2, -1); hip(L1, -1); apply();           <span class="c">// swing</span>
+  hip(R1, +<span class="n">1</span>); hip(L2, +<span class="n">1</span>); hip(R2, -<span class="n">1</span>); hip(L1, -<span class="n">1</span>); apply();           <span class="c">// swing</span>
   knee(R3, <span class="k">false</span>); knee(L4, <span class="k">false</span>); apply();                           <span class="c">// lower</span>
 
   <span class="c">// Group R2+L1</span>
   knee(R4, <span class="k">true</span>); knee(L3, <span class="k">true</span>); apply();
-  hip(R2, +1); hip(L1, +1); hip(R1, -1); hip(L2, -1); apply();
+  hip(R2, +<span class="n">1</span>); hip(L1, +<span class="n">1</span>); hip(R1, -<span class="n">1</span>); hip(L2, -<span class="n">1</span>); apply();
   knee(R4, <span class="k">false</span>); knee(L3, <span class="k">false</span>); apply();
 }
 
 <span class="k">void</span> rest() {
-  <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; N; i++) target[i] = neutral[i];
+  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) target[i] = neutral[i];
   apply();
 }
 
 <span class="k">void</span> setup() {
-  <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; N; i++) {
+  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) {
     cur[i] = target[i] = neutral[i];
     servos[i].write(cur[i]);
     servos[i].attach(pins[i]);
@@ -386,36 +504,202 @@ Servo servos[N];
 
 <span class="k">void</span> loop() {
   moveDir = FORWARD;
-  <span class="k">for</span> (<span class="k">int</span> k = 0; k &lt; STEPS; k++) gaitStep();
+  <span class="k">for</span> (<span class="k">int</span> k = <span class="n">0</span>; k &lt; STEPS; k++) gaitStep();
   rest();
   delay(<span class="n">1000</span>);
 
   moveDir = BACKWARD;
-  <span class="k">for</span> (<span class="k">int</span> k = 0; k &lt; STEPS; k++) gaitStep();
+  <span class="k">for</span> (<span class="k">int</span> k = <span class="n">0</span>; k &lt; STEPS; k++) gaitStep();
   rest();
   delay(<span class="n">1000</span>);
 }</pre>
+    </div>
+    <div role="tabpanel" id="panel-v2" aria-labelledby="tab-v2" hidden>
+<pre id="code-v2"><span class="c">// crawling-panther: trot gait v2 (parameters learned in simulation), walks forward only.</span>
+<span class="c">// Same structure as v1; differences:</span>
+<span class="c">//   * left and right hips swing by different amounts (found by simulation)</span>
+<span class="c">//   * knee lift and hip swing happen together, then the knees come down (4 moves per cycle)</span>
+<span class="c">//   * slower than the simulation on purpose (STEP_DELAY)</span>
+<span class="k">#include</span> &lt;Servo.h&gt;
+
+<span class="k">enum</span> { R1, R2, R3, R4, L1, L2, L3, L4, N };
+
+<span class="k">const</span> <span class="k">int</span> pins[N]    = {<span class="n">4</span>,   <span class="n">6</span>,   <span class="n">5</span>,   <span class="n">7</span>,  <span class="n">8</span>,   <span class="n">10</span>, <span class="n">9</span>,  <span class="n">11</span>};
+<span class="k">const</span> <span class="k">int</span> neutral[N] = {<span class="n">85</span>, <span class="n">110</span>, <span class="n">170</span>, <span class="n">30</span>, <span class="n">110</span>, <span class="n">40</span>, <span class="n">70</span>, <span class="n">145</span>};  <span class="c">// calibrated angles</span>
+<span class="k">const</span> <span class="k">int</span> sign[N]    = {<span class="n">1</span>,   <span class="n">1</span>,  -<span class="n">1</span>,   <span class="n">1</span>, -<span class="n">1</span>,  -<span class="n">1</span>,  <span class="n">1</span>,  -<span class="n">1</span>};  <span class="c">// mounting direction</span>
+
+<span class="c">// Learned in simulation (simulation/best_gait_v2.json): right 17.4, left 24.8, knee 45</span>
+<span class="k">const</span> <span class="k">int</span> HIP_SWING_R  = <span class="n">17</span>;
+<span class="k">const</span> <span class="k">int</span> HIP_SWING_L  = <span class="n">25</span>;
+<span class="k">const</span> <span class="k">int</span> KNEE_LIFT    = <span class="n">45</span>;
+
+<span class="k">const</span> <span class="k">int</span> INTERP_STEPS = <span class="n">22</span>;    <span class="c">// sub-steps per movement (same as simulation)</span>
+<span class="k">const</span> <span class="k">int</span> STEP_DELAY   = <span class="n">8</span>;     <span class="c">// ms between sub-steps (simulation is ~4 ms; 8 ms = about half speed)</span>
+
+<span class="c">// If the robot walks backward instead of forward, change to -1</span>
+<span class="k">const</span> <span class="k">int</span> FORWARD = <span class="n">1</span>;
+
+Servo servos[N];
+<span class="k">int</span> cur[N];      <span class="c">// current angles</span>
+<span class="k">int</span> target[N];   <span class="c">// target angles</span>
+
+<span class="c">// Move all servos smoothly from cur[] to target[]</span>
+<span class="k">void</span> apply() {
+  <span class="k">int</span> start[N];
+  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) start[i] = cur[i];
+  <span class="k">for</span> (<span class="k">int</span> s = <span class="n">1</span>; s &lt;= INTERP_STEPS; s++) {
+    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) {
+      cur[i] = start[i] + (<span class="k">long</span>)(target[i] - start[i]) * s / INTERP_STEPS;
+      servos[i].write(cur[i]);
+    }
+    delay(STEP_DELAY);
+  }
+}
+
+<span class="c">// d = +1 swings the leg forward, d = -1 backward</span>
+<span class="k">void</span> hip(<span class="k">int</span> i, <span class="k">int</span> d) {
+  <span class="k">int</span> swing = (i == R1 || i == R2) ? HIP_SWING_R : HIP_SWING_L;
+  target[i] = neutral[i] + sign[i] * swing * d * FORWARD;
+}
+
+<span class="k">void</span> knee(<span class="k">int</span> i, <span class="k">bool</span> lifted) {
+  target[i] = neutral[i] + (lifted ? sign[i] * KNEE_LIFT : <span class="n">0</span>);
+}
+
+<span class="c">// One full cycle: both diagonal groups move once</span>
+<span class="k">void</span> gaitCycle() {
+  <span class="c">// Group R1+L2: lift knees R3, L4 while R1, L2 swing forward and R2, L1 push back</span>
+  knee(R3, <span class="k">true</span>); knee(L4, <span class="k">true</span>);
+  hip(R1, +<span class="n">1</span>); hip(L2, +<span class="n">1</span>); hip(R2, -<span class="n">1</span>); hip(L1, -<span class="n">1</span>);
+  apply();
+  knee(R3, <span class="k">false</span>); knee(L4, <span class="k">false</span>); apply();
+
+  <span class="c">// Group R2+L1: lift knees R4, L3 while R2, L1 swing forward and R1, L2 push back</span>
+  knee(R4, <span class="k">true</span>); knee(L3, <span class="k">true</span>);
+  hip(R2, +<span class="n">1</span>); hip(L1, +<span class="n">1</span>); hip(R1, -<span class="n">1</span>); hip(L2, -<span class="n">1</span>);
+  apply();
+  knee(R4, <span class="k">false</span>); knee(L3, <span class="k">false</span>); apply();
+}
+
+<span class="k">void</span> setup() {
+  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) {
+    cur[i] = target[i] = neutral[i];
+    servos[i].write(cur[i]);
+    servos[i].attach(pins[i]);
+    delay(<span class="n">500</span>);   <span class="c">// start servos one by one (protects the regulator)</span>
+  }
+  delay(<span class="n">2000</span>);    <span class="c">// wait 2 s before walking</span>
+}
+
+<span class="k">void</span> loop() {
+  gaitCycle();    <span class="c">// walks forward until powered off</span>
+}</pre>
+    </div>
   </div>
 </section>
 
 <section class="sec" id="simulation">
-  <h2>Simulation <span class="status-tag">Work in progress</span></h2>
-  <p>We want the robot to find its own way of walking in simulation, then compare that with our hand-written trot gait. The stack is Python and MuJoCo for the physics, and PPO from <code>stable-baselines3</code> for reinforcement learning.</p>
-  <ol class="track">
-    <li class="now"><b>Build the MuJoCo model</b><span>In progress. The link and leg lengths are not measured yet, so the model can't be finished.</span></li>
-    <li><b>Replay the trot gait</b><span>Check that the hand-coded gait looks right in simulation.</span></li>
-    <li><b>Train with PPO</b><span>Let the agent learn to walk, then compare it with the trot gait.</span></li>
-    <li><b>Transfer to the real robot</b><span>Run the learned walking on the hardware.</span></li>
+  <h2>Simulation <span class="status-tag">Real-robot test pending</span></h2>
+  <p>We built a physics model of the robot, let a search algorithm find a walking gait in it, and wrote that gait into the Arduino sketch v2. Everything labelled "simulation" on this page comes from the model. It has not been measured on the real robot yet.</p>
+
+  <div class="pipe" role="group" aria-label="From simulation to the real robot">
+    <div><small>01</small><strong>URDF model</strong><span>Body, legs and servo limits</span></div>
+    <div><small>02</small><strong>PyBullet</strong><span>Physics simulation, 4 ms steps</span></div>
+    <div><small>03</small><strong>Search</strong><span>25 generations of 20 gaits</span></div>
+    <div><small>04</small><strong>Sketch v2</strong><span>Learned angles written into the Arduino code</span></div>
+    <div><small>05</small><strong>Real robot</strong><span>Test pending</span></div>
+  </div>
+
+  <h3>Robot model</h3>
+  <p>The robot is described in a URDF file: a body, four hips and four legs, joined by eight revolute joints. Each joint is limited like an MG90S servo: 0.2 N·m of torque, 8 rad/s and a range of ±1 rad. The model weighs 342 g in total.</p>
+  <p><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v1.urdf" target="_blank" rel="noopener">crawling-panther_v1.urdf</a> is Rodi's first model. <a href="https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v2.urdf" target="_blank" rel="noopener">crawling-panther_v2.urdf</a> is the corrected one, with the right weight, the servo limits and a fix for the root mass (see Challenges).</p>
+  <p>The physics engine is PyBullet. Floor friction and motor strength are estimates, so the simulation shows what is plausible, not what the real robot will do.</p>
+
+  <div class="video simvid" id="simVideo"><div class="ph">A recording of the PyBullet simulation goes here. Set <code>simVideo</code> in the CONFIG block at the end of this file.</div></div>
+  <p class="cap">The learned gait v2 walking in the PyBullet simulation.</p>
+
+  <h3>How the gait was learned</h3>
+  <p>We used an evolutionary search. It needs no extra libraries and runs in a few minutes.</p>
+  <ol class="seq">
+    <li>A candidate gait is six numbers: right and left hip swing, right and left knee lift, speed, and a heading-correction gain.</li>
+    <li>Every candidate walks 40 cycles in PyBullet.</li>
+    <li>It receives a score (below).</li>
+    <li>The five best candidates of a generation are averaged. The next 20 candidates are random variations around that average, and the variation shrinks a little each generation.</li>
+    <li>This repeats for 25 generations of 20 candidates, which is 500 walks.</li>
   </ol>
+  <div class="formula">score = forward distance (cm) − sideways drift (cm) − 0.3 × heading change (°) − 60 if the body tilts more than 35°</div>
+  <p>The search ranges were chosen to suit the real robot: hip swing 5° to 25°, knee lift 20° to 45°, 15 to 60 sub-steps per move, gain 0 to 1.5. Bigger swings make the legs collide, and the MG90S knee is limited.</p>
+
+  <h3>What it learned</h3>
+  <p>The search ends with six numbers. The table shows each one next to the number that went into sketch v2. They differ slightly for two reasons. The search uses decimals, but an Arduino servo only moves in whole degrees, so the values are rounded. And the sketch waits 8 ms between sub-steps while the simulation steps every 4 ms, so on the real robot the gait runs at about half the simulated speed.</p>
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th>Parameter</th><th>What it controls</th><th>Simulation's answer</th><th>Number in sketch v2</th></tr></thead>
+    <tbody>
+      <tr><td>Right hip swing</td><td>How far the right hips swing the legs forward and back</td><td class="num">17.4°</td><td class="num">17°</td></tr>
+      <tr><td>Left hip swing</td><td>The same for the left hips</td><td class="num">24.8°</td><td class="num">25°</td></tr>
+      <tr><td>Knee lift</td><td>How high the knees raise a foot (both sides)</td><td class="num">45°</td><td class="num">45°</td></tr>
+      <tr><td>Speed</td><td>How many small steps one leg movement is split into. More steps is slower</td><td class="num">22.3 steps</td><td class="num">22 steps, 8 ms each</td></tr>
+      <tr><td>Heading-correction gain</td><td>How strongly the gyroscope steers the robot back on course</td><td class="num">0.64</td><td>Not used yet. The sketch does not read the gyroscope</td></tr>
+    </tbody>
+  </table></div>
+  <p>Two values sit at the edge of the allowed range: the knee lift (45°) and the left hip (24.8° of 25°). A wider range might score higher, but it would ask more from the real servos.</p>
+
+  <div class="chart" id="chart">
+    <svg id="curve" viewBox="0 0 720 320" role="img" tabindex="0" aria-label="Line chart of the best score in each generation. It rises from 32.5 in generation 1 to 167.5 in generation 25. Use the left and right arrow keys to move between generations." aria-describedby="curveRead"></svg>
+    <p class="chart-read" id="curveRead" aria-live="polite"></p>
+    <details class="data">
+      <summary>Show the data as a table</summary>
+      <div class="tblwrap"><table class="tbl" id="curveTable">
+        <thead><tr><th>Generation</th><th>Score</th><th>Forward (cm)</th><th>Sideways (cm)</th><th>Heading change (°)</th><th>Max tilt (°)</th><th>Hips R / L (°)</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </details>
+  </div>
+  <p class="cap">Learning curve in simulation: the best score in each generation. It climbed from 32.5 to 167.5. The best single candidate scored 170.4 in generation 24.</p>
+
+  <h3>Heading correction</h3>
+  <p>A walking robot drifts off its line. The correction works like a gyroscope loop: when the heading error grows, the stride on one side gets longer and on the other side shorter, in proportion to the error. The strength of the correction is the learned gain.</p>
+  <p>In the simulation the heading comes straight from the physics engine. The MPU6050 gyroscope is already mounted on the robot, but sketch v2 does not read it yet, so it walks without any correction.</p>
+
+  <h3>Cross-check in Gazebo <span class="tag">Experimental</span></h3>
+  <p>We also load the same URDF into Gazebo to check the PyBullet result. The gait runs without feedback there, and the robot still tips over. We treat Gazebo as experimental and do not use its results.</p>
+
+  <h3>Files</h3>
+  <ul class="files">
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/learn_gait.py" target="_blank" rel="noopener">simulation/learn_gait.py</a><span>Runs the evolutionary search and writes the best gait.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/best_gait_v2.json" target="_blank" rel="noopener">simulation/best_gait_v2.json</a><span>The best gait found and its simulated result.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/walk_demo.py" target="_blank" rel="noopener">simulation/walk_demo.py</a><span>An earlier, hand-tuned gait with heading correction in PyBullet.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/gazebo_make_world.py" target="_blank" rel="noopener">simulation/gazebo_make_world.py</a><span>Builds the Gazebo world from the v2 URDF (experimental).</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/gazebo_walk.py" target="_blank" rel="noopener">simulation/gazebo_walk.py</a><span>Walks the Gazebo robot without feedback (experimental).</span></li>
+  </ul>
+</section>
+
+<section class="sec" id="results">
+  <h2>Results</h2>
+  <p>The two columns are not the same experiment. The simulation column is the result of gait v2 in the model, with heading correction switched on. The real-robot column stays empty until we have measured it.</p>
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th></th><th>Simulation</th><th>Real robot</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Gait</th><td>v2 learned</td><td>v2 learned (planned)</td></tr>
+      <tr><th scope="row">Heading correction</th><td>On (gain 0.64)</td><td>Off (the gyroscope is not read yet)</td></tr>
+      <tr><th scope="row">Forward distance in 40 cycles</th><td class="num">175 cm</td><td class="pend">To be tested</td></tr>
+      <tr><th scope="row">Sideways drift</th><td class="num">−0.3 cm</td><td class="pend">To be tested</td></tr>
+      <tr><th scope="row">Heading change</th><td class="num">14.5°</td><td class="pend">To be tested</td></tr>
+      <tr><th scope="row">Maximum tilt</th><td class="num">5.8°</td><td class="pend">To be tested</td></tr>
+    </tbody>
+  </table></div>
+  <p>The walking video at the top of this page shows gait v1.</p>
 </section>
 
 <section class="sec" id="challenges">
   <h2>Challenges</h2>
   <p>What went wrong, and what we know so far.</p>
+
+  <h3 style="margin-top:1em">On the robot</h3>
   <div class="issues">
     <div class="issue">
       <h3>Regulator protection</h3>
-      <p>The voltage regulator went into protection and blinked when all 8 servos started at once. We now start the servos one at a time in code, and added a power switch and a capacitor.</p>
+      <p>The voltage regulator went into protection and blinked when all 8 servos started at once. We now start the servos one at a time in code and added a power switch. The regulator module has its own capacitors that smooth the supply.</p>
       <div class="state fixed">Fixed</div>
     </div>
     <div class="issue">
@@ -425,25 +709,60 @@ Servo servos[N];
     </div>
     <div class="issue">
       <h3>Limited torque</h3>
-      <p>The MG90S has little torque for a 318 g robot, so the gait needs careful tuning of angles and timing. Small changes decide whether a step lifts the body or stalls.</p>
+      <p>The MG90S has little torque for a 342 g robot, so the gait needs careful tuning of angles and timing. Small changes decide whether a step lifts the body or stalls.</p>
       <div class="state managed">Managed by tuning</div>
     </div>
   </div>
+
+  <h3>In the simulation</h3>
+  <div class="issues">
+    <div class="issue">
+      <h3>A heavy root link</h3>
+      <p>PyBullet gave the first (root) link of the URDF a default mass of 1 kg. On top of the robot's 342 g, the model looked about four times too heavy, and its servos could not lift the legs. We added a tiny root mass (0.1 g) to the URDF, which fixed it. Lesson: add up the masses the simulator really uses and compare them with the scale.</p>
+      <div class="state fixed">Fixed</div>
+    </div>
+    <div class="issue">
+      <h3>A gait that looked good for 15 cycles</h3>
+      <p>Our first learning runs scored every candidate on 15 cycles. The winner looked good for 15 cycles, then started to turn, because its small heading error kept adding up. A short test rewarded gaits that only look good briefly. We made the test 40 cycles long and turned the heading-correction gain into a learned parameter.</p>
+      <div class="state fixed">Fixed in simulation</div>
+    </div>
+    <div class="issue">
+      <h3>Different servo directions</h3>
+      <p>In the simulation, each joint turns in the direction set by the URDF. On the real robot, the direction depends on how each servo horn was mounted. The two sets of signs differ, so a gait from the simulation can move a real leg the wrong way. We added a command that moves each servo on its own, so every direction can be checked one by one.</p>
+      <div class="state managed">Managed by testing</div>
+    </div>
+    <div class="issue">
+      <h3>Tipping over in Gazebo</h3>
+      <p>The robot falls over in Gazebo, even with a gait that works in PyBullet. We have not found the cause yet, and Gazebo stays experimental.</p>
+      <div class="state open">Open</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="roadmap">
+  <h2>Roadmap</h2>
+  <ol class="track">
+    <li class="now"><b>Test gait v2 on the real robot</b><span>Run sketch v2, measure distance, drift and heading, and fill in the Results table.</span></li>
+    <li><b>Heading correction with the MPU6050</b><span>Wire the gyroscope to the Arduino, read the heading in the sketch and use the same correction as in the simulation.</span></li>
+    <li><b>Bluetooth telemetry (HC-05 or HC-06)</b><span>Send the robot's motion to a computer, so the real movement can be compared with the simulation.</span></li>
+    <li><b>Reinforcement learning with PPO</b><span>Replace the evolutionary search with PPO from <code>stable-baselines3</code> and compare the two gaits.</span></li>
+    <li><b>Cross-check in Gazebo</b><span>Make the robot stay upright in Gazebo and compare it with PyBullet.</span></li>
+  </ol>
 </section>
 
 <section class="sec" id="team">
   <h2>Team</h2>
   <div class="people">
     <div class="person">
-      <h3 data-cfg="friendName">Rodi Ercan</h3>
+      <h3>Rodi Ercan</h3>
       <p>3D printing and mechanical assembly. Servo calibration and Arduino code, together with Boran. Simulation work.</p>
     </div>
     <div class="person">
-      <h3 data-cfg="myName">Boran Akgün</h3>
+      <h3>Boran Akgün</h3>
       <p>Servo calibration and Arduino code, together with Rodi. Simulation work.</p>
     </div>
   </div>
-  <a class="repo" id="repoLink" data-repo="link" data-repo-text="1" href="#">github.com/spiderbot-project/crawling-panther</a>
+  <a class="repo" href="https://github.com/spiderbot-project/crawling-panther" target="_blank" rel="noopener">github.com/spiderbot-project/crawling-panther</a>
   <footer>crawling-panther, a student robotics project by Rodi Ercan and Boran Akgün.</footer>
 </section>
 
@@ -455,11 +774,9 @@ Servo servos[N];
 var CONFIG = {
   // Local file in docs/assets/ (e.g. "assets/walk.mp4") OR a YouTube link. Leave "" to show a placeholder.
   video: "assets/walk.mp4",
+  // Recording of the PyBullet simulation (save as docs/assets/sim.mp4). Leave "" to show a placeholder.
+  simVideo: "assets/sim.mp4",
   poster: "",                         // optional poster image, e.g. "assets/poster.jpg"
-  friendName: "Rodi Ercan",
-  myName: "Boran Akgün",
-  org: "spiderbot-project",
-  repo: "crawling-panther",
   // Photos in docs/assets/. Missing files show a placeholder box.
   photos: [
     { src: "assets/robot-front.jpg", alt: "Front view of the robot",          caption: "Front view" },
@@ -469,40 +786,45 @@ var CONFIG = {
 };
 /* ========================================================================== */
 
-(function () {
-  var $ = function (s, r) { return (r || document).querySelector(s); };
-  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var NS = "http://www.w3.org/2000/svg";
+/* Learning curve data: simulation/learning_curve.csv (best result of each generation) */
+var CURVE = [{"g":1,"score":32.5,"fwd":44.2,"side":5.7,"turn":19.9,"tilt":4.5,"hr":16,"hl":20,"kr":39,"kl":36,"steps":28},{"g":2,"score":24.8,"fwd":33.6,"side":-2.3,"turn":21.6,"tilt":4.5,"hr":18,"hl":17,"kr":41,"kl":42,"steps":46},{"g":3,"score":75.2,"fwd":79.6,"side":-0.8,"turn":11.6,"tilt":7.4,"hr":17,"hl":17,"kr":45,"kl":45,"steps":43},{"g":4,"score":116.9,"fwd":128.4,"side":-9.7,"turn":6.0,"tilt":5.8,"hr":18,"hl":25,"kr":44,"kl":43,"steps":25},{"g":5,"score":97.2,"fwd":103.6,"side":-1.4,"turn":16.8,"tilt":6.4,"hr":15,"hl":20,"kr":42,"kl":44,"steps":34},{"g":6,"score":115.9,"fwd":120.4,"side":-0.3,"turn":13.9,"tilt":6.3,"hr":15,"hl":21,"kr":45,"kl":45,"steps":33},{"g":7,"score":119.2,"fwd":128.0,"side":2.9,"turn":19.7,"tilt":6.6,"hr":15,"hl":23,"kr":44,"kl":45,"steps":32},{"g":8,"score":121.9,"fwd":126.5,"side":-0.4,"turn":14.0,"tilt":7.2,"hr":17,"hl":25,"kr":45,"kl":45,"steps":36},{"g":9,"score":138.1,"fwd":143.3,"side":1.0,"turn":13.8,"tilt":5.9,"hr":15,"hl":20,"kr":45,"kl":45,"steps":24},{"g":10,"score":143.3,"fwd":149.9,"side":2.2,"turn":15.0,"tilt":6.3,"hr":16,"hl":22,"kr":45,"kl":45,"steps":28},{"g":11,"score":138.8,"fwd":149.1,"side":-7.2,"turn":10.5,"tilt":6.3,"hr":18,"hl":23,"kr":45,"kl":45,"steps":30},{"g":12,"score":141.7,"fwd":159.9,"side":-14.6,"turn":12.1,"tilt":5.4,"hr":18,"hl":23,"kr":45,"kl":45,"steps":27},{"g":13,"score":146.6,"fwd":158.5,"side":-8.0,"turn":13.3,"tilt":6.2,"hr":18,"hl":23,"kr":45,"kl":45,"steps":28},{"g":14,"score":150.5,"fwd":156.2,"side":2.6,"turn":10.6,"tilt":6.2,"hr":16,"hl":24,"kr":45,"kl":45,"steps":25},{"g":15,"score":148.9,"fwd":155.5,"side":-0.8,"turn":19.2,"tilt":5.4,"hr":17,"hl":25,"kr":44,"kl":44,"steps":26},{"g":16,"score":162.1,"fwd":170.3,"side":-3.4,"turn":15.8,"tilt":5.3,"hr":18,"hl":25,"kr":44,"kl":45,"steps":23},{"g":17,"score":162.1,"fwd":168.0,"side":-1.6,"turn":14.3,"tilt":5.9,"hr":16,"hl":25,"kr":45,"kl":45,"steps":24},{"g":18,"score":161.8,"fwd":167.4,"side":-2.4,"turn":11.0,"tilt":6.0,"hr":17,"hl":24,"kr":45,"kl":45,"steps":23},{"g":19,"score":162.5,"fwd":173.6,"side":7.1,"turn":13.1,"tilt":5.8,"hr":18,"hl":25,"kr":45,"kl":45,"steps":23},{"g":20,"score":165.6,"fwd":170.7,"side":0.6,"turn":15.3,"tilt":5.3,"hr":17,"hl":25,"kr":44,"kl":45,"steps":23},{"g":21,"score":169.5,"fwd":174.4,"side":-0.1,"turn":15.8,"tilt":5.5,"hr":18,"hl":25,"kr":45,"kl":45,"steps":23},{"g":22,"score":161.3,"fwd":167.5,"side":-2.1,"turn":13.9,"tilt":5.9,"hr":17,"hl":25,"kr":44,"kl":45,"steps":25},{"g":23,"score":166.3,"fwd":171.5,"side":-0.6,"turn":15.3,"tilt":6.2,"hr":18,"hl":24,"kr":45,"kl":45,"steps":22},{"g":24,"score":170.4,"fwd":175.1,"side":-0.3,"turn":14.5,"tilt":5.8,"hr":17,"hl":25,"kr":45,"kl":45,"steps":22},{"g":25,"score":167.5,"fwd":174.1,"side":-2.3,"turn":14.0,"tilt":5.7,"hr":18,"hl":25,"kr":44,"kl":44,"steps":23}];
 
-  /* ---- names and repo links ---- */
-  $$("[data-cfg]").forEach(function (el) { el.textContent = CONFIG[el.getAttribute("data-cfg")]; });
-  var repoUrl = "https://github.com/" + CONFIG.org + "/" + CONFIG.repo;
-  $$("[data-repo]").forEach(function (a) {
-    a.href = repoUrl; a.target = "_blank"; a.rel = "noopener";
-    if (a.hasAttribute("data-repo-text")) a.textContent = "github.com/" + CONFIG.org + "/" + CONFIG.repo;
-  });
+var NS = "http://www.w3.org/2000/svg";
+function mk(tag, attrs, parent) {
+  var e = document.createElementNS(NS, tag);
+  for (var a in attrs) e.setAttribute(a, attrs[a]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function fmt(n, d) { return (n < 0 ? "−" : "") + Math.abs(n).toFixed(d === undefined ? 1 : d); }
 
-  /* ---- video ---- */
-  var box = $("#video"), v = CONFIG.video;
-  if (v) {
-    var yt = v.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
-    box.innerHTML = "";
-    if (yt) {
-      var f = document.createElement("iframe");
-      f.src = "https://www.youtube-nocookie.com/embed/" + yt[1];
-      f.title = "Walking test video";
-      f.allow = "accelerometer; encrypted-media; picture-in-picture";
-      f.allowFullscreen = true; f.loading = "lazy";
-      box.appendChild(f);
-    } else {
-      var vid = document.createElement("video");
-      vid.src = v; vid.controls = true; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.preload = "metadata";
-      if (CONFIG.poster) vid.poster = CONFIG.poster;
-      box.appendChild(vid);
-    }
+/* ---- videos ---- */
+function loadVideo(sel, v, title) {
+  var box = $(sel);
+  if (!box || !v) return;
+  var yt = v.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+  box.innerHTML = "";
+  if (yt) {
+    var f = document.createElement("iframe");
+    f.src = "https://www.youtube-nocookie.com/embed/" + yt[1];
+    f.title = title;
+    f.allow = "accelerometer; encrypted-media; picture-in-picture";
+    f.allowFullscreen = true; f.loading = "lazy";
+    box.appendChild(f);
+  } else {
+    var vid = document.createElement("video");
+    vid.src = v; vid.controls = true; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.preload = "metadata";
+    if (sel === "#video" && CONFIG.poster) vid.poster = CONFIG.poster;
+    box.appendChild(vid);
   }
+}
+loadVideo("#video", CONFIG.video, "Walking test video");
+loadVideo("#simVideo", CONFIG.simVideo, "PyBullet simulation video");
 
-  /* ---- gallery ---- */
+/* ---- gallery ---- */
+(function () {
   var gal = $("#gallery");
   CONFIG.photos.forEach(function (p) {
     var fig = document.createElement("figure");
@@ -514,109 +836,166 @@ var CONFIG = {
     var cap = document.createElement("figcaption"); cap.textContent = p.caption;
     fig.appendChild(wrap); fig.appendChild(cap); gal.appendChild(fig);
   });
+})();
 
-  /* ---- neutral-angle scales in the servo map ---- */
-  $$("#servoMap tbody tr").forEach(function (tr) {
-    var deg = +tr.getAttribute("data-deg");
-    var cell = tr.lastElementChild;
-    var s = document.createElement("span"); s.className = "scale"; s.setAttribute("aria-hidden", "true");
-    var i = document.createElement("i"); i.style.left = (deg / 180 * 100) + "%";
-    s.appendChild(i); cell.appendChild(s);
-  });
+/* ---- neutral-angle scales in the servo map ---- */
+$$("#servoMap tbody tr").forEach(function (tr) {
+  var deg = +tr.getAttribute("data-deg");
+  var cell = tr.lastElementChild;
+  var s = document.createElement("span"); s.className = "scale"; s.setAttribute("aria-hidden", "true");
+  var i = document.createElement("i"); i.style.left = (deg / 180 * 100) + "%";
+  s.appendChild(i); cell.appendChild(s);
+});
 
-  /* ---- copy buttons ---- */
-  $$(".copy").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var text = document.getElementById(b.getAttribute("data-copy")).innerText;
-      var done = function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500); };
-      if (navigator.clipboard) { navigator.clipboard.writeText(text).then(done); }
-      else {
-        var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
-        ta.select(); document.execCommand("copy"); document.body.removeChild(ta); done();
+/* ---- sketch tabs and copy button ---- */
+(function () {
+  var tabs = [$("#tab-v1"), $("#tab-v2")];
+  var panels = [$("#panel-v1"), $("#panel-v2")];
+  var base = "https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/";
+  var info = [
+    { s: "Runs on the real robot. The <code>sign</code> array compensates for how each servo is mounted, since the left side is mirrored.",
+      u: base + "trot_gait_v1_manual/trot_gait_v1_manual.ino" },
+    { s: "Learned in simulation. Not tested on the real robot yet. Same structure as v1, with the numbers from <code>best_gait_v2.json</code>.",
+      u: base + "trot_gait_v2_learned/trot_gait_v2_learned.ino" }
+  ];
+  function select(n) {
+    tabs.forEach(function (t, i) {
+      t.setAttribute("aria-selected", i === n ? "true" : "false");
+      t.tabIndex = i === n ? 0 : -1;
+      panels[i].hidden = i !== n;
+    });
+    $("#tabStatus").innerHTML = info[n].s;
+    $("#tabLink").href = info[n].u;
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { select(i); });
+    t.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        var n = 1 - i; select(n); tabs[n].focus(); e.preventDefault();
       }
     });
   });
+  var btn = $("#copyBtn");
+  btn.addEventListener("click", function () {
+    var pre = $("[role=tabpanel]:not([hidden]) pre");
+    var text = pre.innerText;
+    var done = function () { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 1500); };
+    if (navigator.clipboard) { navigator.clipboard.writeText(text).then(done); }
+    else {
+      var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
+      ta.select(); document.execCommand("copy"); document.body.removeChild(ta); done();
+    }
+  });
+})();
 
-  /* ---- current section in the side rail ---- */
+/* ---- current section in the side rail ---- */
+(function () {
   var links = {};
   $$(".rail li a[href^='#']").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
-  if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        for (var k in links) links[k].removeAttribute("aria-current");
-        if (links[e.target.id]) links[e.target.id].setAttribute("aria-current", "true");
-      });
-    }, { rootMargin: "-25% 0px -65% 0px" });
-    $$("main section[id]").forEach(function (s) { io.observe(s); });
-  }
+  if (!("IntersectionObserver" in window)) return;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      for (var k in links) links[k].removeAttribute("aria-current");
+      if (links[e.target.id]) links[e.target.id].setAttribute("aria-current", "true");
+    });
+  }, { rootMargin: "-25% 0px -65% 0px" });
+  $$("main section[id]").forEach(function (s) { io.observe(s); });
+})();
 
-  /* ================= Live gait diagram =================
-     Same data and same logic as the Arduino sketch:
-     targets = neutral + sign * amount, applied move by move. */
+/* ================= Live gait diagram =================
+   Same data and same logic as the Arduino sketches:
+   target = neutral + sign * amount, applied move by move.
+   v1: firmware/trot_gait_v1_manual   v2: firmware/trot_gait_v2_learned */
+(function () {
   var NAMES   = ["R1", "R2", "R3", "R4", "L1", "L2", "L3", "L4"];
   var PINS    = [4, 6, 5, 7, 8, 10, 9, 11];
   var NEUTRAL = [85, 110, 170, 30, 110, 40, 70, 145];
   var SIGN    = [1, 1, -1, 1, -1, -1, 1, -1];
-  var HIP = 20, KNEE = 45, STEPS = 5;
   var R1 = 0, R2 = 1, R3 = 2, R4 = 3, L1 = 4, L2 = 5, L3 = 6, L4 = 7;
+  var KNEE = 45;
+  var V1 = { hip: 20, steps: 5 };
+  var V2 = { hipR: 17, hipL: 25 };
+  var NOTES = {
+    v1: "Gait v1, tuned by hand. Runs on the real robot: hips swing 20°, knees lift 45°, 20 sub-steps per move.",
+    man: "Manual mode. Each slider moves one servo from its neutral angle, the same way the sketch does. Try lifting one knee and swinging its hip to see how a step works.",
+    v2: "Gait v2, learned in simulation. Not tested on the real robot yet: right hips swing 17°, left hips 25°, knees lift 45°, 22 sub-steps per move, and lift and swing happen together."
+  };
 
-  var T = NEUTRAL.slice(), moves = [];
-  function hip(i, d, dir) { T[i] = NEUTRAL[i] + SIGN[i] * HIP * d * dir; }
-  function knee(i, up) { T[i] = NEUTRAL[i] + (up ? SIGN[i] * KNEE : 0); }
-  function add(label, mut, meta, hold) {
-    var before = T.slice(); mut();
-    var changed = [];
-    for (var i = 0; i < 8; i++) if (T[i] !== before[i]) changed.push(i);
-    moves.push({ label: label, t: T.slice(), changed: changed, meta: meta, hold: hold || 140 });
-  }
-  [1, -1].forEach(function (dir) {
-    var fw = dir > 0 ? "forward" : "back", bw = dir > 0 ? "back" : "forward";
-    for (var k = 1; k <= STEPS; k++) {
-      var m = { dir: dir, step: k };
-      add("Lift knees R3 and L4", function () { knee(R3, 1); knee(L4, 1); }, m);
-      add("Swing R1 and L2 " + fw + ", R2 and L1 " + bw, function () { hip(R1, 1, dir); hip(L2, 1, dir); hip(R2, -1, dir); hip(L1, -1, dir); }, m);
-      add("Lower knees R3 and L4", function () { knee(R3, 0); knee(L4, 0); }, m);
-      add("Lift knees R4 and L3", function () { knee(R4, 1); knee(L3, 1); }, m);
-      add("Swing R2 and L1 " + fw + ", R1 and L2 " + bw, function () { hip(R2, 1, dir); hip(L1, 1, dir); hip(R1, -1, dir); hip(L2, -1, dir); }, m);
-      add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, m);
+  function build(mode) {
+    var T = NEUTRAL.slice(), out = [];
+    function add(label, mut, meta, hold) {
+      var before = T.slice(); mut();
+      var changed = [];
+      for (var i = 0; i < 8; i++) if (T[i] !== before[i]) changed.push(i);
+      out.push({ label: label, t: T.slice(), changed: changed, meta: meta, hold: hold || 140 });
     }
-    add("Back to the neutral pose", function () { for (var i = 0; i < 8; i++) T[i] = NEUTRAL[i]; }, { dir: dir, rest: true }, 800);
-  });
-
-  /* legs: hip servo, knee servo, pivot position, side (+1 right, -1 left), group */
-  var LEGS = [
-    { h: R1, k: R3, x: 290, y: 125, s: 1,  g: "a" },
-    { h: R2, k: R4, x: 290, y: 235, s: 1,  g: "b" },
-    { h: L1, k: L3, x: 170, y: 125, s: -1, g: "b" },
-    { h: L2, k: L4, x: 170, y: 235, s: -1, g: "a" }
-  ];
-  var LEN = 100;
-
-  function el(tag, attrs, parent) {
-    var e = document.createElementNS(NS, tag);
-    for (var a in attrs) e.setAttribute(a, attrs[a]);
-    if (parent) parent.appendChild(e);
-    return e;
+    function knee(i, up) { T[i] = NEUTRAL[i] + (up ? SIGN[i] * KNEE : 0); }
+    if (mode === "v1") {
+      var hip = function (i, d, dir) { T[i] = NEUTRAL[i] + SIGN[i] * V1.hip * d * dir; };
+      [1, -1].forEach(function (dir) {
+        var fw = dir > 0 ? "forward" : "back", bw = dir > 0 ? "back" : "forward";
+        for (var k = 1; k <= V1.steps; k++) {
+          var m = { dir: dir, step: k };
+          add("Lift knees R3 and L4", function () { knee(R3, 1); knee(L4, 1); }, m);
+          add("Swing R1 and L2 " + fw + ", R2 and L1 " + bw, function () { hip(R1, 1, dir); hip(L2, 1, dir); hip(R2, -1, dir); hip(L1, -1, dir); }, m);
+          add("Lower knees R3 and L4", function () { knee(R3, 0); knee(L4, 0); }, m);
+          add("Lift knees R4 and L3", function () { knee(R4, 1); knee(L3, 1); }, m);
+          add("Swing R2 and L1 " + fw + ", R1 and L2 " + bw, function () { hip(R2, 1, dir); hip(L1, 1, dir); hip(R1, -1, dir); hip(L2, -1, dir); }, m);
+          add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, m);
+        }
+        add("Back to the neutral pose", function () { for (var i = 0; i < 8; i++) T[i] = NEUTRAL[i]; }, { dir: dir, rest: true }, 800);
+      });
+    } else {
+      var hip2 = function (i, d) { T[i] = NEUTRAL[i] + SIGN[i] * ((i === R1 || i === R2) ? V2.hipR : V2.hipL) * d; };
+      add("Lift knees R3 and L4 while R1 and L2 swing forward and R2 and L1 swing back",
+        function () { knee(R3, 1); knee(L4, 1); hip2(R1, 1); hip2(L2, 1); hip2(R2, -1); hip2(L1, -1); }, {});
+      add("Lower knees R3 and L4", function () { knee(R3, 0); knee(L4, 0); }, {});
+      add("Lift knees R4 and L3 while R2 and L1 swing forward and R1 and L2 swing back",
+        function () { knee(R4, 1); knee(L3, 1); hip2(R2, 1); hip2(L1, 1); hip2(R1, -1); hip2(L2, -1); }, {});
+      add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, {});
+    }
+    return out;
   }
+
+  /* legs drawn in the URDF layout (top view, x forward = up, 1300 px per metre):
+     body 0.116 x 0.1262 m, battery slab 0.065 x 0.035 m, hips at +-0.0365 m, leg length 0.068 m */
+  var CX = 230, CY = 150, K = 1300;
+  var BW = 0.1262 * K, BL = 0.116 * K, LEN = 0.068 * K;
+  var C_LEG_A = "#D4452F", C_LEG_B = "#7A2A1E";
+  var LEGS = [
+    { h: R1, k: R3, x: CX + BW / 2, y: CY - 0.0365 * K, s: 1,  g: "a" },
+    { h: R2, k: R4, x: CX + BW / 2, y: CY + 0.0365 * K, s: 1,  g: "b" },
+    { h: L1, k: L3, x: CX - BW / 2, y: CY - 0.0365 * K, s: -1, g: "b" },
+    { h: L2, k: L4, x: CX - BW / 2, y: CY + 0.0365 * K, s: -1, g: "a" }
+  ];
 
   var view = $("#gView");
-  var svg = el("svg", { viewBox: "0 0 460 330", role: "img", "aria-label": "Top view of the four legs in their current gait pose" });
-  view.appendChild(svg);
-  el("rect", { x: 170, y: 95, width: 120, height: 170, rx: 8, fill: "#ECEEF1", stroke: "#12161C", "stroke-width": 2 }, svg);
-  el("path", { d: "M230 66 l-8 12 h16 z", fill: "#47505C" }, svg);
-  var front = el("text", { x: 230, y: 58, "text-anchor": "middle", "font-size": 14, fill: "#47505C", "font-family": "inherit" }, svg);
-  front.textContent = "front";
+  var svg = mk("svg", { viewBox: "0 0 460 300", role: "img", "aria-label": "Top view of the robot model with its four legs in their current gait pose" }, view);
+  /* ground grid */
+  for (var gx0 = -3; gx0 <= 3; gx0++) mk("line", { x1: CX + gx0 * 60, x2: CX + gx0 * 60, y1: 20, y2: 290, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, svg);
+  for (var gy0 = -2; gy0 <= 2; gy0++) mk("line", { x1: 20, x2: 440, y1: CY + gy0 * 60, y2: CY + gy0 * 60, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, svg);
+  /* body, battery slab, front mark (URDF colours) */
+  mk("rect", { x: CX - BW / 2, y: CY - BL / 2, width: BW, height: BL, rx: 10, fill: "#5E9B7A", stroke: "#12161C", "stroke-width": 2 }, svg);
+  /* Arduino + shield at the front (top), battery lying across the body at the rear (bottom) */
+  mk("rect", { x: CX - 0.055 * K, y: CY - BL / 2 + 8, width: 0.11 * K, height: 0.052 * K, rx: 3, fill: "#2F5FA8", stroke: "#12161C", "stroke-width": 1.5 }, svg);
+  mk("text", { x: CX, y: CY - BL / 2 + 8 + 0.052 * K / 2 + 4, "text-anchor": "middle", "font-size": 10, "font-weight": 600, fill: "#ECEEF1", "font-family": "inherit" }, svg).textContent = "Arduino";
+  var BATW = 0.085 * K, BATH = 0.04 * K, BATY = CY + 0.0285 * K + 0.012 * K;
+  mk("rect", { x: CX - BATW / 2, y: BATY - BATH / 2, width: BATW, height: BATH, rx: 5, fill: "#3D3BF3", stroke: "#12161C", "stroke-width": 1.5 }, svg);
+  mk("text", { x: CX, y: BATY + 4, "text-anchor": "middle", "font-size": 10, "font-weight": 600, fill: "#ECEEF1", "font-family": "inherit" }, svg).textContent = "battery";
+  mk("path", { d: "M" + CX + " " + (CY - BL / 2 - 22) + " l-8 12 h16 z", fill: "#47505C" }, svg);
+  mk("text", { x: CX, y: CY - BL / 2 - 27, "text-anchor": "middle", "font-size": 13, fill: "#47505C", "font-family": "inherit" }, svg).textContent = "front";
 
   LEGS.forEach(function (L) {
-    el("line", { x1: L.x, y1: L.y, x2: L.x + L.s * (LEN + 12), y2: L.y, stroke: "#C3C9D1", "stroke-width": 1.5, "stroke-dasharray": "4 4" }, svg);
-    L.shadow = el("circle", { r: 9, fill: "none", stroke: "#47505C", "stroke-width": 1.5, "stroke-dasharray": "3 3", opacity: 0 }, svg);
-    L.line = el("line", { x1: L.x, y1: L.y, "stroke-width": 8, "stroke-linecap": "round", stroke: L.g === "a" ? "#3D3BF3" : "#12161C" }, svg);
-    L.foot = el("circle", { r: 9, "stroke-width": 3 }, svg);
-    L.pivot = el("circle", { cx: L.x, cy: L.y, r: 5, fill: "#ECEEF1", stroke: "#12161C", "stroke-width": 2 }, svg);
-    var tx = L.x - L.s * 12, ty = L.y + 5;
-    var t = el("text", { x: tx, y: ty, "text-anchor": L.s > 0 ? "end" : "start", "font-size": 14, "font-weight": 600, fill: "#12161C", "font-family": "inherit" }, svg);
-    t.textContent = NAMES[L.h] + " / " + NAMES[L.k];
+    mk("line", { x1: L.x, y1: L.y, x2: L.x + L.s * (LEN + 8), y2: L.y, stroke: "#47505C", "stroke-width": 1, "stroke-dasharray": "4 4", opacity: .7 }, svg);
+    L.shadow = mk("circle", { r: 8, fill: "none", stroke: "#47505C", "stroke-width": 1.5, "stroke-dasharray": "3 3", opacity: 0 }, svg);
+    L.line = mk("line", { x1: L.x, y1: L.y, "stroke-width": 9, "stroke-linecap": "round", stroke: L.g === "a" ? C_LEG_A : C_LEG_B }, svg);
+    L.foot = mk("circle", { r: 7, "stroke-width": 3 }, svg);
+    /* hip servo block, teal */
+    mk("rect", { x: L.x - 11, y: L.y - 11, width: 22, height: 22, rx: 4, fill: "#2A9D8F", stroke: "#12161C", "stroke-width": 1.5 }, svg);
+    mk("circle", { cx: L.x, cy: L.y, r: 3.5, fill: "#ECEEF1", stroke: "#12161C", "stroke-width": 1.5 }, svg);
+    mk("text", { x: L.x + L.s * (LEN + 12), y: L.y + 4, "text-anchor": L.s > 0 ? "start" : "end", "font-size": 11, "font-weight": 600, fill: "#12161C", "font-family": "inherit" }, svg)
+      .textContent = NAMES[L.h] + "/" + NAMES[L.k];
   });
 
   /* readout table */
@@ -627,21 +1006,25 @@ var CONFIG = {
     table.appendChild(tr); rows.push(tr);
   }
 
+  var mode = "v1", moves = build(mode), cycles = 0;
   var cur = NEUTRAL.slice(), from = NEUTRAL.slice();
   var idx = -1, elapsed = 0, DUR = 620, moving = false, gap = 500;
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var playing = !reduce, stepping = false, last = null;
-  var head = $("#gHead"), mv = $("#gMove"), playBtn = $("#gPlay"), stepBtn = $("#gStep");
+  var head = $("#gHead"), mv = $("#gMove"), playBtn = $("#gPlay"), stepBtn = $("#gStep"), note = $("#gNote");
+  var b1 = $("#gV1"), b2 = $("#gV2"), b3 = $("#gMan"), manual = $("#gManual");
+  var sliders = [];
 
   function draw() {
     LEGS.forEach(function (L) {
       var swing = (cur[L.h] - NEUTRAL[L.h]) * SIGN[L.h];
       var lift = Math.max(0, Math.min(1, (cur[L.k] - NEUTRAL[L.k]) * SIGN[L.k] / KNEE));
       var th = swing * Math.PI / 180;
-      var fx = L.x + L.s * LEN * Math.cos(th), fy = L.y - LEN * Math.sin(th);
+      var reach = LEN + 7 * lift;                       /* a lifted foot swings slightly outward */
+      var fx = L.x + L.s * reach * Math.cos(th), fy = L.y - reach * Math.sin(th);
       L.line.setAttribute("x2", fx); L.line.setAttribute("y2", fy);
       L.foot.setAttribute("cx", fx); L.foot.setAttribute("cy", fy);
-      L.foot.setAttribute("r", 9 + 5 * lift);
+      L.foot.setAttribute("r", 7 + 5 * lift);
       L.foot.setAttribute("fill", lift > 0.5 ? "#ECEEF1" : "#12161C");
       L.foot.setAttribute("stroke", lift > 0.05 ? "#3D3BF3" : "#12161C");
       L.shadow.setAttribute("cx", fx); L.shadow.setAttribute("cy", fy);
@@ -654,12 +1037,55 @@ var CONFIG = {
     }
   }
   function label() {
+    if (mode === "man") { head.textContent = "Manual"; mv.textContent = "Drag a slider to move one servo. Hips: plus swings the leg forward. Knees: plus lifts the foot."; return; }
     var m = idx >= 0 ? moves[idx] : null;
-    if (!m) { head.textContent = "Neutral pose"; mv.textContent = reduce ? "Press Play or Step to start." : ""; return; }
-    head.textContent = m.meta.rest ? "Rest" : (m.meta.dir > 0 ? "Forward" : "Backward") + ", step " + m.meta.step + " of " + STEPS;
+    if (!m) { head.textContent = mode === "v1" ? "Gait v1" : "Gait v2"; mv.textContent = playing ? "" : "Press Play or Step to start."; return; }
+    if (mode === "v2") head.textContent = "Forward, cycle " + cycles;
+    else head.textContent = m.meta.rest ? "Rest" : (m.meta.dir > 0 ? "Forward" : "Backward") + ", step " + m.meta.step + " of " + V1.steps;
     mv.textContent = m.label;
   }
-  function begin(i) { idx = i; from = cur.slice(); elapsed = 0; moving = true; label(); }
+  function begin(i) {
+    if (mode === "v2" && i === 0) cycles++;
+    idx = i; from = cur.slice(); elapsed = 0; moving = true; label();
+  }
+  function setMode(m) {
+    var prev = mode; mode = m; idx = -1; moving = false; stepping = false; cycles = 0; gap = 300;
+    b1.setAttribute("aria-pressed", m === "v1" ? "true" : "false");
+    b2.setAttribute("aria-pressed", m === "v2" ? "true" : "false");
+    b3.setAttribute("aria-pressed", m === "man" ? "true" : "false");
+    manual.hidden = m !== "man";
+    playBtn.disabled = stepBtn.disabled = (m === "man");
+    if (m === "man") {
+      moves = []; playing = false; playBtn.textContent = "Play";
+      resetManual();
+      note.textContent = NOTES.man;
+    } else {
+      moves = build(m); note.textContent = NOTES[m];
+      if (prev === "man") { for (var j = 0; j < 8; j++) cur[j] = NEUTRAL[j]; playing = !reduce; playBtn.textContent = playing ? "Pause" : "Play"; }
+    }
+    label();
+  }
+  function resetManual() {
+    sliders.forEach(function (sl) { sl.input.value = 0; sl.out.textContent = "0°"; });
+    for (var i = 0; i < 8; i++) cur[i] = NEUTRAL[i];
+  }
+  [R1, L1, R2, L2, R3, L3, R4, L4].forEach(function (i) {
+    var isKnee = (i === R3 || i === R4 || i === L3 || i === L4);
+    var lab = document.createElement("label");
+    lab.innerHTML = "<span>" + NAMES[i] + "</span>";
+    var inp = document.createElement("input");
+    inp.type = "range"; inp.min = isKnee ? 0 : -30; inp.max = isKnee ? KNEE : 30; inp.step = 1; inp.value = 0;
+    inp.setAttribute("aria-label", NAMES[i] + (isKnee ? " knee lift in degrees" : " hip swing in degrees"));
+    var out = document.createElement("output"); out.textContent = "0°";
+    inp.addEventListener("input", function () {
+      var d = +inp.value; out.textContent = d + "°";
+      cur[i] = NEUTRAL[i] + SIGN[i] * d;
+    });
+    lab.appendChild(inp); lab.appendChild(out); manual.appendChild(lab);
+    sliders.push({ input: inp, out: out });
+  });
+  var rb = document.createElement("button"); rb.type = "button"; rb.className = "btn"; rb.textContent = "Reset pose";
+  rb.addEventListener("click", resetManual); manual.appendChild(rb);
 
   function frame(ts) {
     if (last === null) last = ts;
@@ -683,15 +1109,98 @@ var CONFIG = {
   playBtn.addEventListener("click", function () {
     playing = !playing; playBtn.textContent = playing ? "Pause" : "Play";
     if (playing) { stepping = false; if (!moving && idx < 0) gap = 200; }
+    if (idx < 0) label();
   });
   stepBtn.addEventListener("click", function () {
     if (playing) { playing = false; playBtn.textContent = "Play"; }
     if (moving) { stepping = true; return; }
     stepping = true; begin((idx + 1) % moves.length);
   });
+  b1.addEventListener("click", function () { if (mode !== "v1") setMode("v1"); });
+  b2.addEventListener("click", function () { if (mode !== "v2") setMode("v2"); });
+  b3.addEventListener("click", function () { if (mode !== "man") setMode("man"); });
 
+  note.textContent = NOTES.v1;
   label(); draw();
   requestAnimationFrame(frame);
+})();
+
+/* ================= Learning curve ================= */
+(function () {
+  var svg = $("#curve"), read = $("#curveRead");
+  var W = 720, H = 320, L = 48, R = 24, TP = 40, B = 46, YMAX = 200;
+  var n = CURVE.length;
+  var gx = function (g) { return L + (g - 1) / (n - 1) * (W - L - R); };
+  var gy = function (v) { return H - B - v / YMAX * (H - B - TP); };
+  var INK = "#12161C", SOFT = "#47505C", RULE = "#C3C9D1", SIGNAL = "#3D3BF3", PAPER = "#ECEEF1";
+
+  var best = 0;
+  CURVE.forEach(function (d, i) { if (d.score > CURVE[best].score) best = i; });
+
+  /* grid and axes */
+  [0, 50, 100, 150, 200].forEach(function (v) {
+    mk("line", { x1: L, x2: W - R, y1: gy(v), y2: gy(v), stroke: RULE, "stroke-width": v === 0 ? 1.5 : 1, opacity: v === 0 ? 1 : .6 }, svg);
+    mk("text", { x: L - 8, y: gy(v) + 4, "text-anchor": "end", "font-size": 12, fill: SOFT, "font-family": "inherit" }, svg).textContent = v;
+  });
+  [1, 5, 10, 15, 20, 25].forEach(function (g) {
+    if (g > n) return;
+    mk("line", { x1: gx(g), x2: gx(g), y1: gy(0), y2: gy(0) + 5, stroke: SOFT, "stroke-width": 1 }, svg);
+    mk("text", { x: gx(g), y: gy(0) + 20, "text-anchor": "middle", "font-size": 12, fill: SOFT, "font-family": "inherit" }, svg).textContent = g;
+  });
+  mk("text", { x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle", "font-size": 13, fill: SOFT, "font-family": "inherit" }, svg).textContent = "Generation";
+  mk("text", { x: L, y: 20, "font-size": 13, fill: SOFT, "font-family": "inherit" }, svg).textContent = "Best score in the generation (simulation)";
+
+  /* line */
+  var d = CURVE.map(function (p, i) { return (i ? "L" : "M") + gx(p.g).toFixed(1) + " " + gy(p.score).toFixed(1); }).join(" ");
+  mk("path", { d: d, fill: "none", stroke: SIGNAL, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+
+  /* hover layer */
+  var cross = mk("line", { y1: gy(YMAX), y2: gy(0), stroke: INK, "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0 }, svg);
+  var dots = CURVE.map(function (p) {
+    return mk("circle", { cx: gx(p.g), cy: gy(p.score), r: 4, fill: SIGNAL, stroke: PAPER, "stroke-width": 2 }, svg);
+  });
+  var ring = mk("circle", { r: 8, fill: "none", stroke: INK, "stroke-width": 2 }, svg);
+
+  /* a few direct labels: the start and the best generation */
+  var first = CURVE[0];
+  mk("text", { x: gx(first.g) + 2, y: gy(first.score) + 30, "font-size": 13, "font-weight": 600, fill: INK, "font-family": "inherit" }, svg).textContent = "Start " + fmt(first.score);
+  var bp = CURVE[best];
+  mk("text", { x: gx(bp.g) - 8, y: gy(bp.score) - 16, "text-anchor": "end", "font-size": 13, "font-weight": 600, fill: INK, "font-family": "inherit" }, svg).textContent = "Best " + fmt(bp.score) + " (generation " + bp.g + ")";
+
+  var active = best;
+  function show(i) {
+    active = Math.max(0, Math.min(n - 1, i));
+    var p = CURVE[active];
+    cross.setAttribute("x1", gx(p.g)); cross.setAttribute("x2", gx(p.g)); cross.setAttribute("opacity", active === best ? 0 : 1);
+    ring.setAttribute("cx", gx(p.g)); ring.setAttribute("cy", gy(p.score));
+    read.innerHTML = "<b>Generation " + p.g + ":</b> score <b>" + fmt(p.score) + "</b>. Forward <b>" + fmt(p.fwd) + " cm</b>, sideways <b>" + fmt(p.side) +
+      " cm</b>, heading change <b>" + fmt(p.turn) + "°</b>, hips <b>" + p.hr + "°</b> right and <b>" + p.hl + "°</b> left.";
+  }
+  function at(ev) {
+    var r = svg.getBoundingClientRect();
+    var x = (ev.clientX - r.left) / r.width * W;
+    return Math.round((x - L) / (W - L - R) * (n - 1));
+  }
+  svg.addEventListener("pointermove", function (ev) { show(at(ev)); });
+  svg.addEventListener("pointerdown", function (ev) { show(at(ev)); });
+  svg.addEventListener("pointerleave", function () { show(best); });
+  svg.addEventListener("keydown", function (ev) {
+    if (ev.key === "ArrowRight") { show(active + 1); ev.preventDefault(); }
+    else if (ev.key === "ArrowLeft") { show(active - 1); ev.preventDefault(); }
+    else if (ev.key === "Home") { show(0); ev.preventDefault(); }
+    else if (ev.key === "End") { show(n - 1); ev.preventDefault(); }
+  });
+  svg.addEventListener("blur", function () { show(best); });
+  show(best);
+
+  /* table view */
+  var tb = $("#curveTable tbody");
+  CURVE.forEach(function (p) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td class='num'>" + p.g + "</td><td class='num'>" + fmt(p.score) + "</td><td class='num'>" + fmt(p.fwd) + "</td><td class='num'>" +
+      fmt(p.side) + "</td><td class='num'>" + fmt(p.turn) + "</td><td class='num'>" + fmt(p.tilt) + "</td><td class='num'>" + p.hr + " / " + p.hl + "</td>";
+    tb.appendChild(tr);
+  });
 })();
 </script>
 </body>
