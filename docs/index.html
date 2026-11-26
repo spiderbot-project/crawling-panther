@@ -7,7 +7,8 @@
 <meta name="description" content="crawling-panther is a 363 g, eight-servo quadruped robot with an Arduino Uno brain. It trots with angles found in a PyBullet simulation, measures the distance ahead, backs away from obstacles and does push-ups.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#12161C">
+<meta name="theme-color" content="#ECEEF1">
+<script>try{var t=localStorage.getItem("theme");if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
@@ -20,9 +21,13 @@
   --rule:#C3C9D1;
   --signal:#3D3BF3;
   --open:#B83E0B;
+  --code-bg:#12161C;
+  --grid:rgba(18,22,28,.07);
   --font:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
 }
+html[data-theme="dark"]{color-scheme:dark;--paper:#12161C;--panel:#1C222B;--ink:#E8EBEF;--soft:#A7B0BC;--rule:#343C48;--signal:#9694FF;--open:#F2905C;--code-bg:#0A0D11;--grid:rgba(232,235,239,.07)}
+[hidden]{display:none!important}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:24px}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 1.0625rem/1.62 var(--font);-webkit-text-size-adjust:100%}
@@ -35,7 +40,7 @@ code{font-family:var(--mono);font-size:.86em;background:var(--panel);padding:.08
 
 /* layout */
 .shell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
-.rail{position:sticky;top:0;align-self:start;height:100vh;padding:30px 26px;border-right:1px solid var(--rule);display:flex;flex-direction:column;gap:36px}
+.rail{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:30px 26px;border-right:1px solid var(--rule);display:flex;flex-direction:column;gap:36px}
 .brand{font-weight:800;font-stretch:80%;font-size:1.3rem;line-height:1.05;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
 .brand span{display:block}
 .rail ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
@@ -61,7 +66,7 @@ h3{font-weight:700;font-size:1.15rem;line-height:1.25;margin:2.2em 0 .5em}
 
 /* hero */
 .hero{position:relative;isolation:isolate;padding-top:72px}
-.hero::before{content:"";position:absolute;z-index:-1;top:0;right:0;width:70%;height:460px;background:repeating-linear-gradient(to bottom,transparent 0 9px,rgba(18,22,28,.07) 9px 10px);-webkit-mask-image:linear-gradient(to left,#000 10%,transparent);mask-image:linear-gradient(to left,#000 10%,transparent)}
+.hero::before{content:"";position:absolute;z-index:-1;top:0;right:0;width:70%;height:460px;background:repeating-linear-gradient(to bottom,transparent 0 9px,var(--grid) 9px 10px);-webkit-mask-image:linear-gradient(to left,#000 10%,transparent);mask-image:linear-gradient(to left,#000 10%,transparent)}
 .statusrow{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:8px;max-width:64ch}
 .statusrow li{display:flex;gap:10px;align-items:flex-start}
 .statusrow li::before{content:"";flex:none;width:12px;height:12px;border-radius:50%;margin-top:7px}
@@ -120,16 +125,25 @@ h3{font-weight:700;font-size:1.15rem;line-height:1.25;margin:2.2em 0 .5em}
 .pipe small{display:block;font-family:var(--mono);font-size:.75rem;color:var(--signal);margin-bottom:6px}
 .pipe strong{display:block;font-size:1rem}
 .pipe span{display:block;margin-top:4px;font-size:.88rem;color:var(--soft)}
-.blueprint{position:absolute;right:0;top:20px;width:340px;max-width:34%;opacity:.5;z-index:-1;pointer-events:none}
+.blueprint{color:var(--ink);position:absolute;right:0;top:20px;width:340px;max-width:34%;opacity:.5;z-index:-1;pointer-events:none}
 .lang{display:flex;margin-top:18px}
 .lang button{font:600 .85rem var(--font);padding:4px 12px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;margin-left:-1px}
 .lang button:first-child{margin-left:0}
 .lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.lang{align-items:stretch}
+.lang button#themeBtn{margin:0 8px 0 0;padding:4px 8px;display:grid;place-items:center}
+.lang button#themeBtn[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.media{margin-top:44px}
+.media h3{margin-top:0}
+.media #photosBlock{margin-top:40px}
+.media #photosBlock h3{margin-bottom:14px}
+.media .vgrid{margin-top:0}
+.person .links{margin:.3em 0 0}
 .vslot{margin:28px 0 0}
 .vslot[hidden]{display:none}
 .vslot .video{margin-top:0}
 .vslot .cap{margin-top:8px}
-.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 24px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:4px 24px}
 .vgrid .vslot{margin-top:20px}
 .sec[hidden],.rail li[hidden]{display:none}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin-top:22px;border:1px solid var(--ink);background:var(--paper)}
@@ -161,9 +175,20 @@ h3{font-weight:700;font-size:1.15rem;line-height:1.25;margin:2.2em 0 .5em}
 .lane ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 22px}
 .lane li{position:relative;border:1px solid var(--ink);padding:5px 11px;font-size:.95rem}
 .lane li+li::before{content:"";position:absolute;left:-23px;top:50%;width:22px;height:1px;background:var(--ink)}
-.gallery{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
-.gallery figure{margin:0}
-.gallery figure[hidden]{display:none}
+.gallery{columns:3 220px;column-gap:14px}
+.gallery figure{margin:0 0 14px;break-inside:avoid}
+.ph-btn{display:block;width:100%;padding:0;border:1px solid var(--rule);background:var(--panel);cursor:zoom-in;line-height:0}
+.ph-btn img{width:100%;height:auto;display:block}
+.ph-btn:hover{border-color:var(--ink)}
+#lb{border:0;padding:0;margin:0;max-width:100vw;max-height:100vh;width:100vw;height:100vh;background:transparent;color:#fff}
+#lb[open]{display:flex;align-items:center;justify-content:center}
+#lb::backdrop{background:rgba(6,8,11,.9)}
+#lb img{max-width:92vw;max-height:88vh;object-fit:contain;display:block;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+#lb button{position:absolute;background:rgba(20,24,30,.7);color:#fff;border:1px solid rgba(255,255,255,.35);font:400 2rem/1 var(--font);width:48px;height:48px;cursor:pointer}
+#lb button:hover{background:#fff;color:#12161C}
+#lb .lb-x{top:16px;right:16px}
+#lb .lb-p{left:16px;top:50%;transform:translateY(-50%)}
+#lb .lb-n{right:16px;top:50%;transform:translateY(-50%)}
 figure{margin:0}
 .imgbox{aspect-ratio:4/3;background:var(--panel);border:1px dashed var(--rule);display:grid;place-items:center;text-align:center;padding:12px;color:var(--soft);font-size:.9rem;overflow:hidden}
 .imgbox img{width:100%;height:100%;object-fit:cover;display:block}
@@ -178,13 +203,13 @@ figcaption{font-size:.92rem;color:var(--soft);margin-top:8px}
 .tabs button:hover{color:var(--ink)}
 .tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
 .tabnote{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between;margin:10px 0;font-size:.95rem;color:var(--soft)}
-.code{position:relative;background:var(--ink);color:#DDE3EC}
+.code{position:relative;background:var(--code-bg);color:#DDE3EC}
 .code pre{margin:0;padding:22px 20px;overflow-x:auto;font:400 .82rem/1.6 var(--mono)}
 .code .k{color:#A5AEFF}
 .code .c{color:#7D8898}
 .code .n{color:#F2B880}
-.copy{position:absolute;top:10px;right:10px;font:600 .8rem var(--font);color:#DDE3EC;background:var(--ink);border:1px solid #5A6472;padding:4px 12px;cursor:pointer;z-index:1}
-.copy:hover{background:#DDE3EC;color:var(--ink)}
+.copy{position:absolute;top:10px;right:10px;font:600 .8rem var(--font);color:#DDE3EC;background:var(--code-bg);border:1px solid #5A6472;padding:4px 12px;cursor:pointer;z-index:1}
+.copy:hover{background:#DDE3EC;color:#12161C}
 
 /* simulation */
 .formula{border-left:3px solid var(--signal);padding:10px 16px;background:var(--panel);font-family:var(--mono);font-size:.88rem;line-height:1.6;max-width:64ch;margin:14px 0}
@@ -271,28 +296,35 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     <ul>
       <li><a href="#hardware" data-i="0">Hardware</a></li>
       <li><a href="#software" data-i="1">Software</a></li>
-      <li data-needs="videos"><a href="#videos" data-i="2">Videos</a></li>
       <li data-needs="pushup"><a href="#pushup" data-i="3">Push-ups</a></li>
       <li><a href="#simulation" data-i="4">Simulation</a></li>
       <li><a href="#results" data-i="5">Results</a></li>
       <li><a href="#challenges" data-i="6">Challenges</a></li>
       <li><a href="#future" data-i="7">Future</a></li>
       <li><a href="#team" data-i="8">Team</a></li>
-      <li class="lang"><button type="button" id="langEn" aria-pressed="true" lang="en">EN</button><button type="button" id="langTr" aria-pressed="false" lang="tr">TR</button></li>
+      <li class="lang"><button type="button" id="themeBtn" aria-pressed="false" aria-label="Dark mode" title="Dark mode"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg></button><button type="button" id="langEn" aria-pressed="true" lang="en">EN</button><button type="button" id="langTr" aria-pressed="false" lang="tr">TR</button></li>
       <li class="ext"><a href="https://github.com/spiderbot-project/crawling-panther" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
   </nav>
 </header>
 
+<dialog id="lb" aria-label="Photo"><button type="button" class="lb-x" aria-label="Close">×</button><button type="button" class="lb-p" aria-label="Previous photo">‹</button><img alt=""><button type="button" class="lb-n" aria-label="Next photo">›</button></dialog>
+
 <main id="top">
 
 <section class="hero">
-  <svg class="blueprint" viewBox="0 0 340 300" aria-hidden="true" fill="none" stroke="#12161C" stroke-width="1.2">
-    <rect x="115" y="75" width="110" height="130" rx="8"/><rect x="142" y="92" width="56" height="70" rx="3" stroke-dasharray="4 3"/>
+  <svg class="blueprint" viewBox="0 0 340 300" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2">
+    <rect x="115" y="75" width="110" height="130" rx="8"/>
+    <rect x="148" y="66" width="44" height="12" rx="2"/><circle cx="159" cy="72" r="3.6"/><circle cx="181" cy="72" r="3.6"/>
+    <rect x="132" y="90" width="76" height="30" rx="3"/>
+    <rect x="140" y="130" width="60" height="52" rx="3"/>
+    <g stroke="none" font-size="8" font-family="monospace" text-anchor="middle" fill="currentColor" opacity=".8"><text x="170" y="109">battery</text><text x="170" y="159">Arduino</text></g>
     <g stroke-linecap="round"><path d="M115 100h-70M115 180h-70M225 100h70M225 180h70" stroke-width="3"/></g>
-    <g fill="#ECEEF1"><rect x="105" y="90" width="20" height="20" rx="3"/><rect x="105" y="170" width="20" height="20" rx="3"/><rect x="215" y="90" width="20" height="20" rx="3"/><rect x="215" y="170" width="20" height="20" rx="3"/></g>
+    <g style="fill:var(--paper)"><rect x="105" y="90" width="20" height="20" rx="3"/><rect x="105" y="170" width="20" height="20" rx="3"/><rect x="215" y="90" width="20" height="20" rx="3"/><rect x="215" y="170" width="20" height="20" rx="3"/></g>
+    <path d="M170 28v26M163 40l7-12 7 12" stroke-width="1.4"/>
+    <text x="170" y="20" text-anchor="middle" font-size="11" fill="currentColor" stroke="none" font-family="monospace">front</text>
     <path d="M170 255v12M115 261h110" stroke-width=".9"/>
-    <text x="170" y="282" text-anchor="middle" font-size="11" fill="#47505C" stroke="none" font-family="monospace">0.1262 m</text>
+    <text x="170" y="282" text-anchor="middle" font-size="11" fill="currentColor" stroke="none" font-family="monospace">0.1262 m</text>
   </svg>
   <h1 aria-label="crawling-panther"><span>crawling-</span><span>panther</span></h1>
   <p class="lead" data-i="9">A 363 g quadruped that walks on eight hobby servos and an Arduino Uno. It measures the distance ahead, backs away from obstacles, turns left and walks on. The diagram below runs the same gaits as the sketches, with the same angles.</p>
@@ -348,10 +380,20 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     </div>
   </div>
 
-  <figure class="vslot" data-video="walkV1" hidden>
-    <div class="video"></div>
-    <figcaption class="cap" data-i="27">The first walking test (gait v1, the first robot): five steps forward, five steps back.</figcaption>
-  </figure>
+  <div class="media" id="media" hidden>
+    <h3 id="mediaVideosH" data-i="2" hidden>Videos</h3>
+    <div class="vgrid" id="mediaVideos" hidden>
+      <figure class="vslot" data-video="walkV1" hidden><div class="video"></div><figcaption class="cap" data-i="27">The first walking test (gait v1, the first robot): five steps forward, five steps back.</figcaption></figure>
+      <figure class="vslot" data-video="standUp" hidden><div class="video"></div><figcaption class="cap" data-i="137">Standing up from a crouch.</figcaption></figure>
+      <figure class="vslot" data-video="straight" hidden><div class="video"></div><figcaption class="cap" data-i="138">Walking straight toward the distance sensor.</figcaption></figure>
+      <figure class="vslot" data-video="avoid" hidden><div class="video"></div><figcaption class="cap" data-i="139">Backing away from an obstacle, turning left and walking on.</figcaption></figure>
+      <figure class="vslot" data-video="pushup" hidden><div class="video"></div><figcaption class="cap" data-i="144">Push-ups on the real robot.</figcaption></figure>
+    </div>
+    <div id="photosBlock" hidden>
+      <h3 data-i="80">Photos</h3>
+      <div class="gallery" id="gallery"></div>
+    </div>
+  </div>
 </section>
 
 <section class="sec" id="hardware">
@@ -419,10 +461,7 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     </tbody>
   </table></div>
 
-  <div id="photosBlock" hidden>
-    <h3 data-i="80">Photos</h3>
-    <div class="gallery" id="gallery"></div>
-  </div>
+
 </section>
 
 <section class="sec" id="software">
@@ -815,17 +854,7 @@ Servo servos[N];
   </ul>
 </section>
 
-<section class="sec" id="videos" data-needs-media hidden>
-  <h2 data-i="2">Videos</h2>
-  <p data-i="136">The rebuilt robot, running sketch v3.</p>
-  <div class="vgrid">
-    <figure class="vslot" data-video="standUp" hidden><div class="video"></div><figcaption class="cap" data-i="137">Standing up from a crouch.</figcaption></figure>
-    <figure class="vslot" data-video="straight" hidden><div class="video"></div><figcaption class="cap" data-i="138">Walking straight toward the distance sensor.</figcaption></figure>
-    <figure class="vslot" data-video="avoid" hidden><div class="video"></div><figcaption class="cap" data-i="139">Backing away from an obstacle, turning left and walking on.</figcaption></figure>
-  </div>
-</section>
-
-<section class="sec" id="pushup" data-needs-media hidden>
+<section class="sec" id="pushup" data-needs-video="pushup" hidden>
   <h2 data-i="3">Push-ups</h2>
   <p data-i="140">The robot can also stand up from a crouch and do push-ups. A push-up uses all four knees at once: folding them lowers the body, straightening them pushes it back up. The hips stay at their neutral angles the whole time.</p>
   <ol class="seq">
@@ -833,7 +862,6 @@ Servo servos[N];
     <li data-i="142">It stands up slowly, then waits for a command.</li>
     <li data-i="143"><code>p</code> starts and stops the push-ups. <code>+</code> and <code>−</code> change the depth in steps of 5°, from 5° to 45°. <code>f</code> and <code>v</code> change the speed.</li>
   </ol>
-  <figure class="vslot" data-video="pushup" hidden><div class="video"></div><figcaption class="cap" data-i="144">Push-ups on the real robot.</figcaption></figure>
   <p><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/pushup_v3/pushup_v3.ino" target="_blank" rel="noopener">firmware/pushup_v3/pushup_v3.ino</a></p>
 </section>
 
@@ -1008,10 +1036,12 @@ Servo servos[N];
     <div class="person">
       <h3>Rodi Ercan</h3>
       <p data-i="244">3D printing and mechanical assembly. Servo calibration and Arduino code, together with Boran. Simulation work.</p>
+      <p class="links"><a href="https://www.linkedin.com/in/rodi-ercan-82021a202/" target="_blank" rel="noopener">LinkedIn</a></p>
     </div>
     <div class="person">
       <h3>Boran Akgün</h3>
       <p data-i="245">Servo calibration and Arduino code, together with Rodi. Simulation work.</p>
+      <p class="links"><a href="https://www.linkedin.com/in/boran-akg%C3%BCn-845449305/" target="_blank" rel="noopener">LinkedIn</a></p>
     </div>
   </div>
   <a class="repo" href="https://github.com/spiderbot-project/crawling-panther" target="_blank" rel="noopener">github.com/spiderbot-project/crawling-panther</a>
@@ -1058,7 +1088,11 @@ var CURVE = [{"g":1,"score":32.5,"fwd":44.2,"side":5.7,"turn":19.9,"tilt":4.5,"h
 var NS = "http://www.w3.org/2000/svg";
 function mk(tag, attrs, parent) {
   var e = document.createElementNS(NS, tag);
-  for (var a in attrs) e.setAttribute(a, attrs[a]);
+  for (var a in attrs) {
+    var v = attrs[a];
+    if (typeof v === "string" && v.indexOf("var(") === 0) e.style.setProperty(a, v);   /* theme colours */
+    else e.setAttribute(a, v);
+  }
   if (parent) parent.appendChild(e);
   return e;
 }
@@ -1068,11 +1102,21 @@ function fmt(n, d) { return (n < 0 ? "−" : "") + Math.abs(n).toFixed(d === und
 
 /* ---- videos: a slot appears only when its file loads ---- */
 function syncMedia() {
-  $$("[data-needs-media]").forEach(function (sec) {
-    var any = $$(".vslot", sec).some(function (f) { return !f.hidden; });
-    sec.hidden = !any;
-    $$("li[data-needs='" + sec.id + "']").forEach(function (li) { li.hidden = !any; });
+  var vids = $$("#mediaVideos .vslot").some(function (f) { return !f.hidden; });
+  var photos = $$("#gallery figure").some(function (f) { return !f.hidden; });
+  $("#mediaVideosH").hidden = !vids; $("#mediaVideos").hidden = !vids;
+  $("#photosBlock").hidden = !photos;
+  $("#media").hidden = !(vids || photos);
+  $$(".vgrid").forEach(function (g) { g.hidden = !$$(".vslot", g).some(function (f) { return !f.hidden; }); });
+  $$("[data-needs-video]").forEach(function (sec) {
+    var f = $(".vslot[data-video='" + sec.getAttribute("data-video".replace("video", "video")) + "']");
+    var key = sec.getAttribute("data-needs-video");
+    f = $(".vslot[data-video='" + key + "']");
+    var on = !!f && !f.hidden;
+    sec.hidden = !on;
+    $$("li[data-needs='" + sec.id + "']").forEach(function (li) { li.hidden = !on; });
   });
+  if (window.updateRailSpy) window.updateRailSpy();
 }
 $$("li[data-needs]").forEach(function (li) { li.hidden = true; });
 $$(".vslot[data-video]").forEach(function (fig) {
@@ -1096,16 +1140,39 @@ $$(".vslot[data-video]").forEach(function (fig) {
 });
 syncMedia();
 
-/* ---- gallery: a photo appears only when its file loads ---- */
+/* ---- gallery: a photo appears only when its file loads; a click opens it large ---- */
 (function () {
-  var gal = $("#gallery"), block = $("#photosBlock");
+  var gal = $("#gallery"), lb = $("#lb"), big = $("img", lb), cur = 0;
+  function shown() { return $$("#gallery figure").filter(function (f) { return !f.hidden; }).map(function (f) { return $("img", f); }); }
+  function open(i) {
+    var list = shown(); if (!list.length) return;
+    cur = (i + list.length) % list.length;
+    big.src = list[cur].src; big.alt = list[cur].alt;
+    if (!lb.open) { if (lb.showModal) lb.showModal(); else lb.setAttribute("open", ""); }
+    $(".lb-p", lb).hidden = $(".lb-n", lb).hidden = list.length < 2;
+  }
   CONFIG.photos.forEach(function (p) {
     var fig = document.createElement("figure"); fig.hidden = true;
-    var wrap = document.createElement("div"); wrap.className = "imgbox"; wrap.style.border = "0";
+    var btn = document.createElement("button"); btn.type = "button"; btn.className = "ph-btn"; btn.setAttribute("aria-label", "Enlarge photo");
     var img = new Image(); img.alt = p.alt;
-    img.onload = function () { fig.hidden = false; block.hidden = false; };
+    img.onload = function () { fig.hidden = false; syncMedia(); };
     img.src = p.src;
-    wrap.appendChild(img); fig.appendChild(wrap); gal.appendChild(fig);
+    btn.appendChild(img); fig.appendChild(btn); gal.appendChild(fig);
+    btn.addEventListener("click", function () { open(shown().indexOf(img)); });
+  });
+  $(".lb-x", lb).addEventListener("click", function () { lb.close(); });
+  $(".lb-p", lb).addEventListener("click", function () { open(cur - 1); });
+  $(".lb-n", lb).addEventListener("click", function () { open(cur + 1); });
+  lb.addEventListener("click", function (e) { if (e.target === lb) lb.close(); });
+  lb.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft") { open(cur - 1); e.preventDefault(); }
+    if (e.key === "ArrowRight") { open(cur + 1); e.preventDefault(); }
+  });
+  langHooks.push(function () {
+    $$(".ph-btn").forEach(function (b) { b.setAttribute("aria-label", tx("Enlarge photo", "Fotoğrafı büyüt")); });
+    $(".lb-x", lb).setAttribute("aria-label", tx("Close", "Kapat"));
+    $(".lb-p", lb).setAttribute("aria-label", tx("Previous photo", "Önceki fotoğraf"));
+    $(".lb-n", lb).setAttribute("aria-label", tx("Next photo", "Sonraki fotoğraf"));
   });
 })();
 
@@ -1172,15 +1239,20 @@ $$("#servoMap tbody tr").forEach(function (tr) {
 (function () {
   var links = {};
   $$(".rail li a[href^='#']").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
-  if (!("IntersectionObserver" in window)) return;
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (!e.isIntersecting) return;
-      for (var k in links) links[k].removeAttribute("aria-current");
-      if (links[e.target.id]) links[e.target.id].setAttribute("aria-current", "true");
-    });
-  }, { rootMargin: "-25% 0px -65% 0px" });
-  $$("main section[id]").forEach(function (s) { io.observe(s); });
+  function update() {
+    var secs = $$("main section[id]").filter(function (x) { return !x.hidden; });
+    if (!secs.length) return;
+    var line = window.innerHeight * 0.3, cur = null;
+    secs.forEach(function (x) { if (x.getBoundingClientRect().top <= line) cur = x; });
+    var atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 6;
+    if (atEnd) cur = secs[secs.length - 1];
+    for (var k in links) links[k].removeAttribute("aria-current");
+    if (cur && links[cur.id]) links[cur.id].setAttribute("aria-current", "true");
+  }
+  window.updateRailSpy = update;
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
 })();
 
 /* ================= Live gait diagram =================
@@ -1287,7 +1359,7 @@ $$("#servoMap tbody tr").forEach(function (tr) {
   /* ---------- geometry, in the URDF layout (1300 px per metre in the top view) ---------- */
   var CX = 230, CY = 150, K = 1300;
   var BW = 0.1262 * K, BL = 0.116 * K, LEN = 0.068 * K;
-  var C_LEG_A = "#D4452F", C_LEG_B = "#7A2A1E", INK = "#12161C", SOFT = "#47505C", PAPER = "#ECEEF1";
+  var C_LEG_A = "#D4452F", C_LEG_B = "#7A2A1E", INK = "var(--ink)", SOFT = "var(--soft)", RULE = "var(--rule)", PAPER = "var(--paper)", LIGHT = "#F4F6F8";
   /* hips of the first robot, front (R1, L1) at the top. The rebuilt robot is the same drawing turned by 180 degrees,
      so its sensor end (old rear, R2/L2) is at the top. */
   var OLD_LEGS = [
@@ -1300,7 +1372,7 @@ $$("#servoMap tbody tr").forEach(function (tr) {
 
   var SVGTR = { "front": "ön", "battery": "batarya", "front (sensor)": "ön (sensör)" }, svgTexts = [];
   function txt(svg, x, y, txt, o) {
-    var t = mk("text", { x: x, y: y, "text-anchor": (o && o.a) || "middle", "font-size": (o && o.size) || 10, "font-weight": 600, fill: (o && o.fill) || PAPER, "font-family": "inherit" }, svg);
+    var t = mk("text", { x: x, y: y, "text-anchor": (o && o.a) || "middle", "font-size": (o && o.size) || 10, "font-weight": 600, fill: (o && o.fill) || LIGHT, "font-family": "inherit" }, svg);
     t.textContent = txt;
     if (SVGTR[txt]) svgTexts.push({ el: t, en: txt, tr: SVGTR[txt] });
     return t;
@@ -1311,8 +1383,8 @@ $$("#servoMap tbody tr").forEach(function (tr) {
   var top = mk("svg", { viewBox: "0 0 460 300", role: "img", "aria-label": "Top view of the robot model with its four legs in their current gait pose" }, view);
   var side = mk("svg", { viewBox: "0 0 520 320", role: "img", "aria-label": "Side view of the robot model with its legs in their current gait pose" }, view);
   side.style.display = "none";
-  for (var gx0 = -3; gx0 <= 3; gx0++) mk("line", { x1: CX + gx0 * 60, x2: CX + gx0 * 60, y1: 20, y2: 290, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, top);
-  for (var gy0 = -2; gy0 <= 2; gy0++) mk("line", { x1: 20, x2: 440, y1: CY + gy0 * 60, y2: CY + gy0 * 60, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, top);
+  for (var gx0 = -3; gx0 <= 3; gx0++) mk("line", { x1: CX + gx0 * 60, x2: CX + gx0 * 60, y1: 20, y2: 290, stroke: RULE, "stroke-width": 1, opacity: .45 }, top);
+  for (var gy0 = -2; gy0 <= 2; gy0++) mk("line", { x1: 20, x2: 440, y1: CY + gy0 * 60, y2: CY + gy0 * 60, stroke: RULE, "stroke-width": 1, opacity: .45 }, top);
 
   /* ----- top view: the first robot (Arduino at the front, battery across the rear) ----- */
   var topOld = mk("g", {}, top), topNew = mk("g", {}, top);
@@ -1379,16 +1451,16 @@ $$("#servoMap tbody tr").forEach(function (tr) {
   }
   /* ground plane with a grid and a soft shadow under the body */
   var gnd = mk("g", {}, side);
-  poly(gnd, [PR(-.13, -.14, 0), PR(.13, -.14, 0), PR(.13, .14, 0), PR(-.13, .14, 0)], "#E1E4E9", 1.2).setAttribute("stroke", "#C3C9D1");
+  poly(gnd, [PR(-.13, -.14, 0), PR(.13, -.14, 0), PR(.13, .14, 0), PR(-.13, .14, 0)], "var(--panel)", 1.2).style.setProperty("stroke", "var(--rule)");
   for (var gi = -2; gi <= 2; gi++) {
     var l1 = PR(gi * .05, -.14, 0), l2 = PR(gi * .05, .14, 0);
-    mk("line", { x1: l1[0], y1: l1[1], x2: l2[0], y2: l2[1], stroke: "#C3C9D1", "stroke-width": 1, opacity: .8 }, gnd);
+    mk("line", { x1: l1[0], y1: l1[1], x2: l2[0], y2: l2[1], stroke: RULE, "stroke-width": 1, opacity: .8 }, gnd);
   }
   for (var gj = -2; gj <= 2; gj++) {
     var m1 = PR(-.13, gj * .05, 0), m2 = PR(.13, gj * .05, 0);
-    mk("line", { x1: m1[0], y1: m1[1], x2: m2[0], y2: m2[1], stroke: "#C3C9D1", "stroke-width": 1, opacity: .8 }, gnd);
+    mk("line", { x1: m1[0], y1: m1[1], x2: m2[0], y2: m2[1], stroke: RULE, "stroke-width": 1, opacity: .8 }, gnd);
   }
-  poly(gnd, [PR(-.062, -.066, 0), PR(.062, -.066, 0), PR(.062, .066, 0), PR(-.062, .066, 0)], "rgba(18,22,28,.13)", 0).setAttribute("stroke", "none");
+  poly(gnd, [PR(-.062, -.066, 0), PR(.062, -.066, 0), PR(.062, .066, 0), PR(-.062, .066, 0)], "rgba(0,0,0,.16)", 0).setAttribute("stroke", "none");
   var sideOld = mk("g", {}, side), sideNew = mk("g", {}, side);
   var sideLegs = { old: [], now: [] };
   var HZ = 0.05, EDGE = 0.0631, OUT = 0.014;
@@ -1461,8 +1533,8 @@ $$("#servoMap tbody tr").forEach(function (tr) {
   }
   function liftOf(k) { return Math.max(0, Math.min(1, (cur[k] - NEUTRAL[k]) * SIGN[k] / KNEE)); }
   function footStyle(foot, lift, near) {
-    foot.setAttribute("fill", lift > 0.5 ? PAPER : INK);
-    foot.setAttribute("stroke", lift > 0.05 ? "#3D3BF3" : INK);
+    foot.style.fill = lift > 0.5 ? "var(--paper)" : "var(--ink)";
+    foot.style.stroke = lift > 0.05 ? "var(--signal)" : "var(--ink)";
   }
 
   function draw() {
@@ -1611,7 +1683,7 @@ $$("#servoMap tbody tr").forEach(function (tr) {
   var n = CURVE.length;
   var gx = function (g) { return L + (g - 1) / (n - 1) * (W - L - R); };
   var gy = function (v) { return H - B - v / YMAX * (H - B - TP); };
-  var INK = "#12161C", SOFT = "#47505C", RULE = "#C3C9D1", SIGNAL = "#3D3BF3", PAPER = "#ECEEF1";
+  var INK = "var(--ink)", SOFT = "var(--soft)", RULE = "var(--rule)", SIGNAL = "var(--signal)", PAPER = "var(--paper)";
 
   var best = 0;
   CURVE.forEach(function (d, i) { if (d.score > CURVE[best].score) best = i; });
@@ -1690,6 +1762,22 @@ $$("#servoMap tbody tr").forEach(function (tr) {
       fmt(p.side) + "</td><td class='num'>" + fmt(p.turn) + "</td><td class='num'>" + fmt(p.tilt) + "</td><td class='num'>" + p.hr + " / " + p.hl + "</td>";
     tb.appendChild(tr);
   });
+})();
+
+/* ---- light / dark ---- */
+(function () {
+  var b = $("#themeBtn"), meta = $("meta[name=theme-color]");
+  function apply(t, save) {
+    document.documentElement.setAttribute("data-theme", t);
+    b.setAttribute("aria-pressed", t === "dark" ? "true" : "false");
+    if (meta) meta.content = t === "dark" ? "#12161C" : "#ECEEF1";
+    if (save) { try { localStorage.setItem("theme", t); } catch (e) {} }
+  }
+  b.addEventListener("click", function () {
+    apply(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark", true);
+  });
+  apply(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light", false);
+  langHooks.push(function () { var l = tx("Dark mode", "Karanlık mod"); b.setAttribute("aria-label", l); b.title = l; });
 })();
 
 /* ---- Turkish / English ---- */
