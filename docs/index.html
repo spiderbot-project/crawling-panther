@@ -121,6 +121,10 @@ h3{font-weight:700;font-size:1.15rem;line-height:1.25;margin:2.2em 0 .5em}
 .pipe strong{display:block;font-size:1rem}
 .pipe span{display:block;margin-top:4px;font-size:.88rem;color:var(--soft)}
 .blueprint{position:absolute;right:0;top:20px;width:340px;max-width:34%;opacity:.5;z-index:-1;pointer-events:none}
+.lang{display:flex;margin-top:18px}
+.lang button{font:600 .85rem var(--font);padding:4px 12px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;margin-left:-1px}
+.lang button:first-child{margin-left:0}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .vslot{margin:28px 0 0}
 .vslot[hidden]{display:none}
 .vslot .video{margin-top:0}
@@ -238,6 +242,7 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
   .rail li a{padding:6px 0;border-left:0;border-bottom:2px solid transparent;white-space:nowrap}
   .rail li a[aria-current="true"]{border-bottom-color:var(--signal)}
   .rail li.ext{margin-top:0}
+  .lang{margin-top:0}
   html{scroll-padding-top:70px}
   .hero{padding-top:44px}
 }
@@ -264,15 +269,16 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
   <a class="brand" href="#top" aria-label="crawling-panther, back to top"><span>crawling-</span><span>panther</span></a>
   <nav aria-label="Sections">
     <ul>
-      <li><a href="#hardware">Hardware</a></li>
-      <li><a href="#software">Software</a></li>
-      <li data-needs="videos"><a href="#videos">Videos</a></li>
-      <li data-needs="pushup"><a href="#pushup">Push-ups</a></li>
-      <li><a href="#simulation">Simulation</a></li>
-      <li><a href="#results">Results</a></li>
-      <li><a href="#challenges">Challenges</a></li>
-      <li><a href="#future">Future</a></li>
-      <li><a href="#team">Team</a></li>
+      <li><a href="#hardware" data-i="0">Hardware</a></li>
+      <li><a href="#software" data-i="1">Software</a></li>
+      <li data-needs="videos"><a href="#videos" data-i="2">Videos</a></li>
+      <li data-needs="pushup"><a href="#pushup" data-i="3">Push-ups</a></li>
+      <li><a href="#simulation" data-i="4">Simulation</a></li>
+      <li><a href="#results" data-i="5">Results</a></li>
+      <li><a href="#challenges" data-i="6">Challenges</a></li>
+      <li><a href="#future" data-i="7">Future</a></li>
+      <li><a href="#team" data-i="8">Team</a></li>
+      <li class="lang"><button type="button" id="langEn" aria-pressed="true" lang="en">EN</button><button type="button" id="langTr" aria-pressed="false" lang="tr">TR</button></li>
       <li class="ext"><a href="https://github.com/spiderbot-project/crawling-panther" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
   </nav>
@@ -289,36 +295,36 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     <text x="170" y="282" text-anchor="middle" font-size="11" fill="#47505C" stroke="none" font-family="monospace">0.1262 m</text>
   </svg>
   <h1 aria-label="crawling-panther"><span>crawling-</span><span>panther</span></h1>
-  <p class="lead">A 363 g quadruped that walks on eight hobby servos and an Arduino Uno. It measures the distance ahead, backs away from obstacles, turns left and walks on. The diagram below runs the same gaits as the sketches, with the same angles.</p>
+  <p class="lead" data-i="9">A 363 g quadruped that walks on eight hobby servos and an Arduino Uno. It measures the distance ahead, backs away from obstacles, turns left and walks on. The diagram below runs the same gaits as the sketches, with the same angles.</p>
   <ul class="statusrow">
-    <li class="ok"><span>Gait v3 runs on the real robot: it walks toward its distance sensor, avoids obstacles and does push-ups.</span></li>
-    <li class="ok"><span>Gaits v1 (by hand) and v2 (learned in simulation) are the earlier versions. Each keeps the robot drawing of its time.</span></li>
+    <li class="ok" data-i="10"><span>Gait v3 runs on the real robot: it walks toward its distance sensor, avoids obstacles and does push-ups.</span></li>
+    <li class="ok" data-i="11"><span>Gaits v1 (by hand) and v2 (learned in simulation) are the earlier versions. Each keeps the robot drawing of its time.</span></li>
   </ul>
 
   <ul class="stats" aria-label="Key numbers">
-    <li><b>363<i>g</i></b><span>total weight</span></li>
-    <li><b>8<i>servos</i></b><span>MG90S, two per leg</span></li>
-    <li><b>500<i>candidates</i></b><span>gaits tried in simulation</span></li>
-    <li><b>175<i>cm</i></b><span>simulated in 40 cycles</span></li>
+    <li><b>363<i>g</i></b><span data-i="12">total weight</span></li>
+    <li><b>8<i data-i="247">servos</i></b><span data-i="13">MG90S, two per leg</span></li>
+    <li><b>500<i data-i="16">candidates</i></b><span data-i="14">gaits tried in simulation</span></li>
+    <li><b>175<i>cm</i></b><span data-i="15">simulated in 40 cycles</span></li>
   </ul>
 
   <div class="gait" id="gait">
     <div class="gait-bar">
-      <span class="gait-title">Robot model (live)</span>
+      <span class="gait-title" data-i="17">Robot model (live)</span>
       <div class="bar-right">
         <div class="seg" role="group" aria-label="View">
-          <button class="btn" type="button" id="gTop" aria-pressed="true">Top</button>
-          <button class="btn" type="button" id="gSide" aria-pressed="false">Side</button>
+          <button class="btn" type="button" id="gTop" aria-pressed="true" data-i="18">Top</button>
+          <button class="btn" type="button" id="gSide" aria-pressed="false" data-i="19">Side</button>
         </div>
         <div class="seg" role="group" aria-label="Gait version">
-          <button class="btn" type="button" id="gV1" aria-pressed="false">v1 manual</button>
-          <button class="btn" type="button" id="gV2" aria-pressed="false">v2 learned</button>
-          <button class="btn" type="button" id="gV3" aria-pressed="true">v3 obstacle</button>
-          <button class="btn" type="button" id="gMan" aria-pressed="false">Manual</button>
+          <button class="btn" type="button" id="gV1" aria-pressed="false" data-i="20">v1 manual</button>
+          <button class="btn" type="button" id="gV2" aria-pressed="false" data-i="21">v2 learned</button>
+          <button class="btn" type="button" id="gV3" aria-pressed="true" data-i="22">v3 obstacle</button>
+          <button class="btn" type="button" id="gMan" aria-pressed="false" data-i="23">Manual</button>
         </div>
         <div class="btns">
           <button class="btn" type="button" id="gPlay">Pause</button>
-          <button class="btn" type="button" id="gStep">Step</button>
+          <button class="btn" type="button" id="gStep" data-i="24">Step</button>
         </div>
       </div>
     </div>
@@ -337,57 +343,57 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     <div class="legend">
       <span><i class="sw a"></i>R1 + L2</span>
       <span><i class="sw b"></i>R2 + L1</span>
-      <span><i class="dotf"></i>on the ground</span>
-      <span><i class="ring"></i>knee lifted</span>
+      <span data-i="25"><i class="dotf"></i>on the ground</span>
+      <span data-i="26"><i class="ring"></i>knee lifted</span>
     </div>
   </div>
 
   <figure class="vslot" data-video="walkV1" hidden>
     <div class="video"></div>
-    <figcaption class="cap">The first walking test (gait v1, the first robot): five steps forward, five steps back.</figcaption>
+    <figcaption class="cap" data-i="27">The first walking test (gait v1, the first robot): five steps forward, five steps back.</figcaption>
   </figure>
 </section>
 
 <section class="sec" id="hardware">
-  <h2>Hardware</h2>
-  <p>The body and legs are 3D printed. Each leg has a hip servo that swings it forward and back, and a knee servo that lifts it.</p>
+  <h2 data-i="0">Hardware</h2>
+  <p data-i="28">The body and legs are 3D printed. Each leg has a hip servo that swings it forward and back, and a knee servo that lifts it.</p>
 
   <dl class="facts">
-    <div><dt>Controller</dt><dd>Arduino Uno with a Sensor Shield v5.0</dd></div>
-    <div><dt>Actuators</dt><dd>8 TowerPro MG90S micro servos, 2 per leg</dd></div>
-    <div><dt>Structure</dt><dd>3D-printed body and legs</dd></div>
-    <div><dt>Weight</dt><dd>363 g, ready to walk</dd></div>
-    <div><dt>Sensors</dt><dd>HC-SR04 ultrasonic distance sensor, MPU6050 gyroscope and accelerometer</dd></div>
+    <div><dt data-i="29">Controller</dt><dd data-i="30">Arduino Uno with a Sensor Shield v5.0</dd></div>
+    <div><dt data-i="31">Actuators</dt><dd data-i="32">8 TowerPro MG90S micro servos, 2 per leg</dd></div>
+    <div><dt data-i="33">Structure</dt><dd data-i="34">3D-printed body and legs</dd></div>
+    <div><dt data-i="35">Weight</dt><dd data-i="36">363 g, ready to walk</dd></div>
+    <div><dt data-i="37">Sensors</dt><dd data-i="38">HC-SR04 ultrasonic distance sensor, MPU6050 gyroscope and accelerometer</dd></div>
   </dl>
 
-  <h3>Parts</h3>
+  <h3 data-i="39">Parts</h3>
   <div class="tblwrap"><table class="tbl">
-    <thead><tr><th>Part</th><th>Qty</th><th>Job</th></tr></thead>
+    <thead><tr><th data-i="40">Part</th><th data-i="41">Qty</th><th data-i="42">Job</th></tr></thead>
     <tbody>
-      <tr><td>Arduino Uno</td><td class="n">1</td><td>Runs the gait and generates the servo signals</td></tr>
-      <tr><td>Sensor Shield v5.0</td><td class="n">1</td><td>Breaks out signal, power and ground pins for each servo</td></tr>
-      <tr><td>TowerPro MG90S servo</td><td class="n">8</td><td>4 hips and 4 knees</td></tr>
-      <tr><td>External battery</td><td class="n">1</td><td>7.4 V. Powers the servos and the Arduino</td></tr>
-      <tr><td>5 V voltage regulator module</td><td class="n">1</td><td>Turns the battery voltage into 5 V for the servos and, through its USB port, for the Arduino. Its own capacitors smooth the supply</td></tr>
-      <tr><td>Rocker switch</td><td class="n">1</td><td>Cuts the power from the battery</td></tr>
-      <tr><td>HC-SR04 ultrasonic sensor</td><td class="n">1</td><td>Sits at the front end of the body and measures the distance ahead. The robot turns away below 10 cm</td></tr>
-      <tr><td>MPU6050 module</td><td class="n">1</td><td>Gyroscope and accelerometer, mounted upright on the body and wired to the Arduino's I²C pins. The sketches do not read it</td></tr>
-      <tr><td>3D-printed body and legs</td><td class="n">1 set</td><td>Frame and four two-joint legs</td></tr>
+      <tr><td>Arduino Uno</td><td class="n">1</td><td data-i="43">Runs the gait and generates the servo signals</td></tr>
+      <tr><td>Sensor Shield v5.0</td><td class="n">1</td><td data-i="44">Breaks out signal, power and ground pins for each servo</td></tr>
+      <tr><td>TowerPro MG90S servo</td><td class="n">8</td><td data-i="45">4 hips and 4 knees</td></tr>
+      <tr><td data-i="46">External battery</td><td class="n">1</td><td data-i="47">7.4 V. Powers the servos and the Arduino</td></tr>
+      <tr><td data-i="48">5 V voltage regulator module</td><td class="n">1</td><td data-i="49">Turns the battery voltage into 5 V for the servos and, through its USB port, for the Arduino. Its own capacitors smooth the supply</td></tr>
+      <tr><td data-i="50">Rocker switch</td><td class="n">1</td><td data-i="51">Cuts the power from the battery</td></tr>
+      <tr><td data-i="52">HC-SR04 ultrasonic sensor</td><td class="n">1</td><td data-i="53">Sits at the front end of the body and measures the distance ahead. The robot turns away below 10 cm</td></tr>
+      <tr><td data-i="54">MPU6050 module</td><td class="n">1</td><td data-i="55">Gyroscope and accelerometer, mounted upright on the body and wired to the Arduino's I²C pins. The sketches do not read it</td></tr>
+      <tr><td data-i="34">3D-printed body and legs</td><td class="n" data-i="56">1 set</td><td data-i="57">Frame and four two-joint legs</td></tr>
     </tbody>
   </table></div>
 
-  <h3>Power and signal</h3>
-  <p>Eight servos draw far more current than the Arduino's own 5 V pin can supply. So the battery feeds a 5 V regulator through a switch, and the regulator powers two things: the servo rail on the shield, and the Arduino through the regulator's USB port. The Arduino only sends the control signals. When all servos start at once the supply dips, which is why the sketches start them one by one.</p>
+  <h3 data-i="58">Power and signal</h3>
+  <p data-i="59">Eight servos draw far more current than the Arduino's own 5 V pin can supply. So the battery feeds a 5 V regulator through a switch, and the regulator powers two things: the servo rail on the shield, and the Arduino through the regulator's USB port. The Arduino only sends the control signals. When all servos start at once the supply dips, which is why the sketches start them one by one.</p>
   <div class="flow">
-    <div class="lane"><b>Servos</b><ol><li>Battery</li><li>Rocker switch</li><li>5 V regulator</li><li>Servo rail on the shield</li><li>8 servos</li></ol></div>
-    <div class="lane"><b>Arduino</b><ol><li>5 V regulator</li><li>USB port</li><li>Arduino Uno</li></ol></div>
-    <div class="lane"><b>Signal</b><ol><li>Arduino Uno</li><li>Sensor Shield v5.0</li><li>8 servo signal pins</li></ol></div>
+    <div class="lane"><b>Servos</b><ol><li data-i="60">Battery</li><li data-i="50">Rocker switch</li><li data-i="61">5 V regulator</li><li data-i="62">Servo rail on the shield</li><li data-i="63">8 servos</li></ol></div>
+    <div class="lane"><b>Arduino</b><ol><li data-i="61">5 V regulator</li><li data-i="64">USB port</li><li>Arduino Uno</li></ol></div>
+    <div class="lane"><b data-i="69">Signal</b><ol><li>Arduino Uno</li><li>Sensor Shield v5.0</li><li data-i="65">8 servo signal pins</li></ol></div>
   </div>
 
-  <h3>Sensor wiring</h3>
-  <p>Both sensors share the Arduino's 5 V and ground. Only the signal pins are listed.</p>
+  <h3 data-i="66">Sensor wiring</h3>
+  <p data-i="67">Both sensors share the Arduino's 5 V and ground. Only the signal pins are listed.</p>
   <div class="tblwrap"><table class="tbl">
-    <thead><tr><th>Sensor</th><th>Signal</th><th>Arduino pin</th></tr></thead>
+    <thead><tr><th data-i="68">Sensor</th><th data-i="69">Signal</th><th data-i="70">Arduino pin</th></tr></thead>
     <tbody>
       <tr><td>HC-SR04</td><td>TRIG</td><td class="n">A3</td></tr>
       <tr><td>HC-SR04</td><td>ECHO</td><td class="n">A2</td></tr>
@@ -395,91 +401,91 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
       <tr><td>MPU6050</td><td>SCL</td><td class="n">A5</td></tr>
     </tbody>
   </table></div>
-  <p>A4 and A5 are the Uno's I²C pins, so the distance sensor uses A3 and A2 instead. An I²C scanner sketch finds the MPU6050 at address 0x68.</p>
+  <p data-i="71">A4 and A5 are the Uno's I²C pins, so the distance sensor uses A3 and A2 instead. An I²C scanner sketch finds the MPU6050 at address 0x68.</p>
 
-  <h3>Servo map</h3>
-  <p>The scale shows each neutral angle on the servo's 0 to 180 degree range. These are the angles of the current robot (sketch v3). When the robot was rebuilt, R1 moved from pin 4 to pin 2 and R1 and L2 were calibrated again.</p>
+  <h3 data-i="72">Servo map</h3>
+  <p data-i="73">The scale shows each neutral angle on the servo's 0 to 180 degree range. These are the angles of the current robot (sketch v3). When the robot was rebuilt, R1 moved from pin 4 to pin 2 and R1 and L2 were calibrated again.</p>
   <div class="tblwrap"><table class="tbl" id="servoMap">
-    <thead><tr><th>Servo</th><th>Pin</th><th>Joint</th><th>Neutral angle</th></tr></thead>
+    <thead><tr><th data-i="74">Servo</th><th data-i="75">Pin</th><th data-i="76">Joint</th><th data-i="77">Neutral angle</th></tr></thead>
     <tbody>
-      <tr data-deg="80"><td>R1</td><td class="n">2</td><td>Hip</td><td class="n">80°</td></tr>
-      <tr data-deg="110"><td>R2</td><td class="n">6</td><td>Hip</td><td class="n">110°</td></tr>
-      <tr data-deg="170"><td>R3</td><td class="n">5</td><td>Knee</td><td class="n">170°</td></tr>
-      <tr data-deg="30"><td>R4</td><td class="n">7</td><td>Knee</td><td class="n">30°</td></tr>
-      <tr data-deg="110"><td>L1</td><td class="n">8</td><td>Hip</td><td class="n">110°</td></tr>
-      <tr data-deg="42"><td>L2</td><td class="n">10</td><td>Hip</td><td class="n">42°</td></tr>
-      <tr data-deg="70"><td>L3</td><td class="n">9</td><td>Knee</td><td class="n">70°</td></tr>
-      <tr data-deg="145"><td>L4</td><td class="n">11</td><td>Knee</td><td class="n">145°</td></tr>
+      <tr data-deg="80"><td>R1</td><td class="n">2</td><td data-i="78">Hip</td><td class="n">80°</td></tr>
+      <tr data-deg="110"><td>R2</td><td class="n">6</td><td data-i="78">Hip</td><td class="n">110°</td></tr>
+      <tr data-deg="170"><td>R3</td><td class="n">5</td><td data-i="79">Knee</td><td class="n">170°</td></tr>
+      <tr data-deg="30"><td>R4</td><td class="n">7</td><td data-i="79">Knee</td><td class="n">30°</td></tr>
+      <tr data-deg="110"><td>L1</td><td class="n">8</td><td data-i="78">Hip</td><td class="n">110°</td></tr>
+      <tr data-deg="42"><td>L2</td><td class="n">10</td><td data-i="78">Hip</td><td class="n">42°</td></tr>
+      <tr data-deg="70"><td>L3</td><td class="n">9</td><td data-i="79">Knee</td><td class="n">70°</td></tr>
+      <tr data-deg="145"><td>L4</td><td class="n">11</td><td data-i="79">Knee</td><td class="n">145°</td></tr>
     </tbody>
   </table></div>
 
   <div id="photosBlock" hidden>
-    <h3>Photos</h3>
+    <h3 data-i="80">Photos</h3>
     <div class="gallery" id="gallery"></div>
   </div>
 </section>
 
 <section class="sec" id="software">
-  <h2>Software</h2>
+  <h2 data-i="1">Software</h2>
 
-  <h3 style="margin-top:.6em">Calibration</h3>
-  <p>Servo horns never sit at exactly the same angle, so 90° is a different pose on every leg. We calibrated each servo by hand with a small calibration sketch:</p>
+  <h3 style="margin-top:.6em" data-i="81">Calibration</h3>
+  <p data-i="82">Servo horns never sit at exactly the same angle, so 90° is a different pose on every leg. We calibrated each servo by hand with a small calibration sketch:</p>
   <ol class="seq">
-    <li>Power the servos from the battery and pick one servo on the serial monitor.</li>
-    <li>Nudge it up or down until the leg stands neutral: hip pointing straight out, knee at its resting height.</li>
-    <li>Write that angle into the neutral table shown in the servo map. The sketch prints the finished arrays, ready to paste.</li>
-    <li>Describe every movement as an offset from the neutral angle, never as an absolute angle.</li>
+    <li data-i="83">Power the servos from the battery and pick one servo on the serial monitor.</li>
+    <li data-i="84">Nudge it up or down until the leg stands neutral: hip pointing straight out, knee at its resting height.</li>
+    <li data-i="85">Write that angle into the neutral table shown in the servo map. The sketch prints the finished arrays, ready to paste.</li>
+    <li data-i="86">Describe every movement as an offset from the neutral angle, never as an absolute angle.</li>
   </ol>
 
-  <h3>Trot gait</h3>
-  <p>The legs move as two diagonal pairs, <code>R1 + L2</code> and <code>R2 + L1</code>. While one pair steps, the other stays on the ground and pushes the body forward. In gait v1 the hips swing 20° and the knees lift 45°. Every move is split into 20 small sub-steps so the servos glide instead of jumping.</p>
-  <p>In gait v1, one full step is six moves:</p>
+  <h3 data-i="87">Trot gait</h3>
+  <p data-i="88">The legs move as two diagonal pairs, <code>R1 + L2</code> and <code>R2 + L1</code>. While one pair steps, the other stays on the ground and pushes the body forward. In gait v1 the hips swing 20° and the knees lift 45°. Every move is split into 20 small sub-steps so the servos glide instead of jumping.</p>
+  <p data-i="89">In gait v1, one full step is six moves:</p>
   <ol class="seq">
-    <li>Lift the knees of R3 and L4.</li>
-    <li>Swing R1 and L2 forward, and R2 and L1 back.</li>
-    <li>Lower the knees of R3 and L4.</li>
-    <li>Lift the knees of R4 and L3.</li>
-    <li>Swing R2 and L1 forward, and R1 and L2 back.</li>
-    <li>Lower the knees of R4 and L3.</li>
+    <li data-i="90">Lift the knees of R3 and L4.</li>
+    <li data-i="91">Swing R1 and L2 forward, and R2 and L1 back.</li>
+    <li data-i="92">Lower the knees of R3 and L4.</li>
+    <li data-i="93">Lift the knees of R4 and L3.</li>
+    <li data-i="94">Swing R2 and L1 forward, and R1 and L2 back.</li>
+    <li data-i="95">Lower the knees of R4 and L3.</li>
   </ol>
-  <p>The v1 test routine does five steps forward, rests in the neutral pose, then does five steps backward.</p>
+  <p data-i="96">The v1 test routine does five steps forward, rests in the neutral pose, then does five steps backward.</p>
 
-  <h3>Obstacle avoidance (v3)</h3>
-  <p>An HC-SR04 ultrasonic sensor at the front end of the body looks ahead. It sends a 10 µs pulse, and the length of the echo in microseconds divided by 58 is the distance in centimetres. The robot checks it after every half cycle of the gait:</p>
+  <h3 data-i="97">Obstacle avoidance (v3)</h3>
+  <p data-i="98">An HC-SR04 ultrasonic sensor at the front end of the body looks ahead. It sends a 10 µs pulse, and the length of the echo in microseconds divided by 58 is the distance in centimetres. The robot checks it after every half cycle of the gait:</p>
   <ol class="seq">
-    <li>Two readings in a row below 10 cm count as an obstacle, so one noisy reading does not stop the robot.</li>
-    <li>It backs up for 2 cycles: the same gait with every hip swing reversed.</li>
-    <li>It turns left on the spot for 6 cycles, about 90°. The legs on the left side swing backward and the legs on the right side swing forward.</li>
-    <li>It walks on in the new direction.</li>
+    <li data-i="99">Two readings in a row below 10 cm count as an obstacle, so one noisy reading does not stop the robot.</li>
+    <li data-i="100">It backs up for 2 cycles: the same gait with every hip swing reversed.</li>
+    <li data-i="101">It turns left on the spot for 6 cycles, about 90°. The legs on the left side swing backward and the legs on the right side swing forward.</li>
+    <li data-i="102">It walks on in the new direction.</li>
   </ol>
-  <p>Small differences between the legs made the robot veer to the left. Two keys on the serial monitor, <code>z</code> and <code>x</code>, move one degree of hip swing from one side to the other, and the value that walks straight goes into the <code>trim</code> variable at the top of the sketch. The same serial monitor starts and stops the robot (<code>g</code>, <code>s</code>), prints the distance (<code>d</code>) and tests the left turn (<code>l</code>).</p>
+  <p data-i="103">Small differences between the legs made the robot veer to the left. Two keys on the serial monitor, <code>z</code> and <code>x</code>, move one degree of hip swing from one side to the other, and the value that walks straight goes into the <code>trim</code> variable at the top of the sketch. The same serial monitor starts and stops the robot (<code>g</code>, <code>s</code>), prints the distance (<code>d</code>) and tests the left turn (<code>l</code>).</p>
 
-  <h3>Three versions of the sketch</h3>
-  <p>Gait v2 keeps the structure of v1 and takes its numbers from the simulation (see below). Gait v3 keeps the structure of v2, walks toward the distance sensor and adds obstacle avoidance:</p>
+  <h3 data-i="104">Three versions of the sketch</h3>
+  <p data-i="105">Gait v2 keeps the structure of v1 and takes its numbers from the simulation (see below). Gait v3 keeps the structure of v2, walks toward the distance sensor and adds obstacle avoidance:</p>
   <div class="tblwrap"><table class="tbl">
-    <thead><tr><th></th><th>v1 manual</th><th>v2 learned</th><th>v3 obstacle</th></tr></thead>
+    <thead><tr><th></th><th data-i="20">v1 manual</th><th data-i="21">v2 learned</th><th data-i="22">v3 obstacle</th></tr></thead>
     <tbody>
-      <tr><th scope="row">Robot</th><td>First robot</td><td>First robot</td><td>Rebuilt robot with sensors, 363 g</td></tr>
-      <tr><th scope="row">Walks toward</th><td>R1 and L1, the old front</td><td>R1 and L1, the old front</td><td>The distance sensor. R2 and L2 are the front legs</td></tr>
-      <tr><th scope="row">Hip swing</th><td>20°, both sides</td><td>Right 17°, left 25°</td><td>21°, both sides, plus a trim key</td></tr>
-      <tr><th scope="row">Knee lift</th><td>45°</td><td>45°</td><td>45°, one value per knee</td></tr>
-      <tr><th scope="row">Sub-steps per move</th><td>20</td><td>22</td><td>22</td></tr>
-      <tr><th scope="row">Delay per sub-step</th><td>12 ms</td><td>8 ms</td><td>8 ms</td></tr>
-      <tr><th scope="row">Moves per cycle</th><td>6: lift, swing, lower for each pair</td><td>4: lift and swing together, then lower, for each pair</td><td>4, as in v2</td></tr>
-      <tr><th scope="row">Behaviour</th><td>5 steps forward, rest, 5 steps backward</td><td>Forward only, until powered off</td><td>Forward until an obstacle is closer than 10 cm, then back up, turn left and walk on</td></tr>
-      <tr><th scope="row">Serial commands</th><td>None</td><td>None</td><td>g, s, d, l, z, x</td></tr>
+      <tr><th scope="row" data-i="106">Robot</th><td data-i="107">First robot</td><td data-i="107">First robot</td><td data-i="108">Rebuilt robot with sensors, 363 g</td></tr>
+      <tr><th scope="row" data-i="109">Walks toward</th><td data-i="110">R1 and L1, the old front</td><td data-i="110">R1 and L1, the old front</td><td data-i="111">The distance sensor. R2 and L2 are the front legs</td></tr>
+      <tr><th scope="row" data-i="112">Hip swing</th><td data-i="113">20°, both sides</td><td data-i="114">Right 17°, left 25°</td><td data-i="115">21°, both sides, plus a trim key</td></tr>
+      <tr><th scope="row" data-i="116">Knee lift</th><td>45°</td><td>45°</td><td data-i="117">45°, one value per knee</td></tr>
+      <tr><th scope="row" data-i="118">Sub-steps per move</th><td>20</td><td>22</td><td>22</td></tr>
+      <tr><th scope="row" data-i="119">Delay per sub-step</th><td>12 ms</td><td>8 ms</td><td>8 ms</td></tr>
+      <tr><th scope="row" data-i="120">Moves per cycle</th><td data-i="121">6: lift, swing, lower for each pair</td><td data-i="122">4: lift and swing together, then lower, for each pair</td><td data-i="123">4, as in v2</td></tr>
+      <tr><th scope="row" data-i="124">Behaviour</th><td data-i="125">5 steps forward, rest, 5 steps backward</td><td data-i="126">Forward only, until powered off</td><td data-i="127">Forward until an obstacle is closer than 10 cm, then back up, turn left and walk on</td></tr>
+      <tr><th scope="row" data-i="128">Serial commands</th><td data-i="129">None</td><td data-i="129">None</td><td>g, s, d, l, z, x</td></tr>
     </tbody>
   </table></div>
-  <p>The hips swing by different amounts on the two sides in v2 because that is what the search found. In v3 both sides use 21°, because in our tests the uneven pair made the robot veer when it walked toward the other end. The remaining drift is trimmed with the <code>z</code> and <code>x</code> keys.</p>
+  <p data-i="130">The hips swing by different amounts on the two sides in v2 because that is what the search found. In v3 both sides use 21°, because in our tests the uneven pair made the robot veer when it walked toward the other end. The remaining drift is trimmed with the <code>z</code> and <code>x</code> keys.</p>
 
   <div class="tabs" role="tablist" aria-label="Arduino sketch version">
-    <button type="button" role="tab" id="tab-v1" aria-selected="false" aria-controls="panel-v1" tabindex="-1">v1 manual</button>
-    <button type="button" role="tab" id="tab-v2" aria-selected="false" aria-controls="panel-v2" tabindex="-1">v2 learned</button>
-    <button type="button" role="tab" id="tab-v3" aria-selected="true" aria-controls="panel-v3">v3 obstacle</button>
+    <button type="button" role="tab" id="tab-v1" aria-selected="false" aria-controls="panel-v1" tabindex="-1" data-i="20">v1 manual</button>
+    <button type="button" role="tab" id="tab-v2" aria-selected="false" aria-controls="panel-v2" tabindex="-1" data-i="21">v2 learned</button>
+    <button type="button" role="tab" id="tab-v3" aria-selected="true" aria-controls="panel-v3" data-i="22">v3 obstacle</button>
   </div>
   <div class="tabnote">
     <span id="tabStatus"></span>
-    <a id="tabLink" href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/trot_gait_v3_obstacle/trot_gait_v3_obstacle.ino" target="_blank" rel="noopener">Open on GitHub</a>
+    <a id="tabLink" href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/trot_gait_v3_obstacle/trot_gait_v3_obstacle.ino" target="_blank" rel="noopener" data-i="131">Open on GitHub</a>
   </div>
   <div class="code">
     <button class="copy" type="button" id="copyBtn">Copy</button>
@@ -657,7 +663,7 @@ Servo servos[N];
 <span class="c">//</span>
 <span class="c">// Serial monitor (115200 baud, newline):</span>
 <span class="c">//   g walk   s stop   d print distance   l left-turn test   z / x steer more right / left</span>
-<span class="k">#include</span> &lt;<span class="k">Servo</span>.h&gt;
+<span class="k">#include</span> &lt;<span class="k" data-i="74">Servo</span>.h&gt;
 
 <span class="k">enum</span> { R1, R2, R3, R4, L1, L2, L3, L4, N };
 
@@ -682,7 +688,7 @@ Servo servos[N];
 <span class="k">const</span> <span class="k">int</span> BACK_CYCLES    = <span class="n">2</span>;   <span class="c">// how far to back off before turning</span>
 <span class="k">const</span> <span class="k">int</span> TURN_CYCLES_90 = <span class="n">6</span>;   <span class="c">// gait cycles for a ~90 degree left turn: tune with the 'l' key</span>
 
-<span class="k">Servo</span> servos[N];
+<span class="k" data-i="74">Servo</span> servos[N];
 <span class="k">int</span> cur[N], target[N];
 <span class="k">bool</span> walking = <span class="k">true</span>;
 <span class="k">int</span> sideDirR = <span class="n">1</span>, sideDirL = <span class="n">1</span>;  <span class="c">// -1 = this side's hips swing the other way (turning)</span>
@@ -801,215 +807,215 @@ Servo servos[N];
     </div>
   </div>
 
-  <h3>Other sketches</h3>
+  <h3 data-i="132">Other sketches</h3>
   <ul class="files">
-    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/servo_calibration/servo_calibration.ino" target="_blank" rel="noopener">firmware/servo_calibration</a><span>Moves one servo at a time and prints the neutral, hip-swing and knee-lift arrays.</span></li>
-    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/pushup_v3/pushup_v3.ino" target="_blank" rel="noopener">firmware/pushup_v3</a><span>Stands the robot up from a crouch and does push-ups (see Push-ups).</span></li>
-    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/i2c_scanner/i2c_scanner.ino" target="_blank" rel="noopener">firmware/i2c_scanner</a><span>Lists the I²C devices on A4 and A5. It finds the MPU6050 at 0x68.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/servo_calibration/servo_calibration.ino" target="_blank" rel="noopener">firmware/servo_calibration</a><span data-i="133">Moves one servo at a time and prints the neutral, hip-swing and knee-lift arrays.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/pushup_v3/pushup_v3.ino" target="_blank" rel="noopener">firmware/pushup_v3</a><span data-i="134">Stands the robot up from a crouch and does push-ups (see Push-ups).</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/i2c_scanner/i2c_scanner.ino" target="_blank" rel="noopener">firmware/i2c_scanner</a><span data-i="135">Lists the I²C devices on A4 and A5. It finds the MPU6050 at 0x68.</span></li>
   </ul>
 </section>
 
 <section class="sec" id="videos" data-needs-media hidden>
-  <h2>Videos</h2>
-  <p>The rebuilt robot, running sketch v3.</p>
+  <h2 data-i="2">Videos</h2>
+  <p data-i="136">The rebuilt robot, running sketch v3.</p>
   <div class="vgrid">
-    <figure class="vslot" data-video="standUp" hidden><div class="video"></div><figcaption class="cap">Standing up from a crouch.</figcaption></figure>
-    <figure class="vslot" data-video="straight" hidden><div class="video"></div><figcaption class="cap">Walking straight toward the distance sensor.</figcaption></figure>
-    <figure class="vslot" data-video="avoid" hidden><div class="video"></div><figcaption class="cap">Backing away from an obstacle, turning left and walking on.</figcaption></figure>
+    <figure class="vslot" data-video="standUp" hidden><div class="video"></div><figcaption class="cap" data-i="137">Standing up from a crouch.</figcaption></figure>
+    <figure class="vslot" data-video="straight" hidden><div class="video"></div><figcaption class="cap" data-i="138">Walking straight toward the distance sensor.</figcaption></figure>
+    <figure class="vslot" data-video="avoid" hidden><div class="video"></div><figcaption class="cap" data-i="139">Backing away from an obstacle, turning left and walking on.</figcaption></figure>
   </div>
 </section>
 
 <section class="sec" id="pushup" data-needs-media hidden>
-  <h2>Push-ups</h2>
-  <p>The robot can also stand up from a crouch and do push-ups. A push-up uses all four knees at once: folding them lowers the body, straightening them pushes it back up. The hips stay at their neutral angles the whole time.</p>
+  <h2 data-i="3">Push-ups</h2>
+  <p data-i="140">The robot can also stand up from a crouch and do push-ups. A push-up uses all four knees at once: folding them lowers the body, straightening them pushes it back up. The hips stay at their neutral angles the whole time.</p>
   <ol class="seq">
-    <li>The sketch starts with every knee folded, so the body rests on the floor.</li>
-    <li>It stands up slowly, then waits for a command.</li>
-    <li><code>p</code> starts and stops the push-ups. <code>+</code> and <code>−</code> change the depth in steps of 5°, from 5° to 45°. <code>f</code> and <code>v</code> change the speed.</li>
+    <li data-i="141">The sketch starts with every knee folded, so the body rests on the floor.</li>
+    <li data-i="142">It stands up slowly, then waits for a command.</li>
+    <li data-i="143"><code>p</code> starts and stops the push-ups. <code>+</code> and <code>−</code> change the depth in steps of 5°, from 5° to 45°. <code>f</code> and <code>v</code> change the speed.</li>
   </ol>
-  <figure class="vslot" data-video="pushup" hidden><div class="video"></div><figcaption class="cap">Push-ups on the real robot.</figcaption></figure>
+  <figure class="vslot" data-video="pushup" hidden><div class="video"></div><figcaption class="cap" data-i="144">Push-ups on the real robot.</figcaption></figure>
   <p><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/pushup_v3/pushup_v3.ino" target="_blank" rel="noopener">firmware/pushup_v3/pushup_v3.ino</a></p>
 </section>
 
 <section class="sec" id="simulation">
-  <h2>Simulation</h2>
-  <p>We built a physics model of the robot, let a search algorithm find a walking gait in it, and wrote that gait into the Arduino sketch v2. Everything labelled "simulation" on this page comes from the model, and the real robot's angles are compared with it in Results.</p>
+  <h2 data-i="4">Simulation</h2>
+  <p data-i="145">We built a physics model of the robot, let a search algorithm find a walking gait in it, and wrote that gait into the Arduino sketch v2. Everything labelled "simulation" on this page comes from the model, and the real robot's angles are compared with it in Results.</p>
 
   <div class="pipe" role="group" aria-label="From simulation to the real robot">
-    <div><small>01</small><strong>URDF model</strong><span>Body, legs and servo limits</span></div>
-    <div><small>02</small><strong>PyBullet</strong><span>Physics simulation, 4 ms steps</span></div>
-    <div><small>03</small><strong>Search</strong><span>25 generations of 20 gaits</span></div>
-    <div><small>04</small><strong>Sketch v2</strong><span>Learned angles written into the Arduino code</span></div>
-    <div><small>05</small><strong>Real robot</strong><span>Sketch v3 runs the angles, tuned on the robot</span></div>
+    <div><small>01</small><strong data-i="146">URDF model</strong><span data-i="147">Body, legs and servo limits</span></div>
+    <div><small>02</small><strong>PyBullet</strong><span data-i="148">Physics simulation, 4 ms steps</span></div>
+    <div><small>03</small><strong data-i="149">Search</strong><span data-i="150">25 generations of 20 gaits</span></div>
+    <div><small>04</small><strong>Sketch v2</strong><span data-i="151">Learned angles written into the Arduino code</span></div>
+    <div><small>05</small><strong data-i="152">Real robot</strong><span data-i="153">Sketch v3 runs the angles, tuned on the robot</span></div>
   </div>
 
-  <h3>Robot model</h3>
-  <p>The robot is described in a URDF file: a body, four hips and four legs, joined by eight revolute joints. Each joint is limited like an MG90S servo: 0.2 N·m of torque, 8 rad/s and a range of ±1 rad. The model weighs 342 g in total. The finished robot, with its sensors, weighs 363 g.</p>
-  <p><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v1.urdf" target="_blank" rel="noopener">crawling-panther_v1.urdf</a> is Rodi's first model. <a href="https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v2.urdf" target="_blank" rel="noopener">crawling-panther_v2.urdf</a> is the corrected one, with the right weight, the servo limits and a fix for the root mass (see Challenges).</p>
-  <p>The physics engine is PyBullet. Floor friction and motor strength are estimates, so the simulation shows what is plausible, not exactly what the real robot does.</p>
+  <h3 data-i="154">Robot model</h3>
+  <p data-i="155">The robot is described in a URDF file: a body, four hips and four legs, joined by eight revolute joints. Each joint is limited like an MG90S servo: 0.2 N·m of torque, 8 rad/s and a range of ±1 rad. The model weighs 342 g in total. The finished robot, with its sensors, weighs 363 g.</p>
+  <p data-i="248"><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v1.urdf" target="_blank" rel="noopener">crawling-panther_v1.urdf</a> is Rodi's first model. <a href="https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v2.urdf" target="_blank" rel="noopener">crawling-panther_v2.urdf</a> is the corrected one, with the right weight, the servo limits and a fix for the root mass (see Challenges).</p>
+  <p data-i="156">The physics engine is PyBullet. Floor friction and motor strength are estimates, so the simulation shows what is plausible, not exactly what the real robot does.</p>
 
   <div class="vgrid">
-    <figure class="vslot" data-video="sim" hidden><div class="video"></div><figcaption class="cap">The first recording: the learned gait v2 in PyBullet (old code).</figcaption></figure>
-    <figure class="vslot" data-video="simV3" hidden><div class="video"></div><figcaption class="cap">New recording: gait v3 (21° hips, 45° knees) walking straight, rendered with <code>record_video.py</code>.</figcaption></figure>
-    <figure class="vslot" data-video="simV3Avoid" hidden><div class="video"></div><figcaption class="cap">New recording: the robot reads 10 cm to a wall, backs up for 2 cycles, turns left about 90° and walks on.</figcaption></figure>
+    <figure class="vslot" data-video="sim" hidden><div class="video"></div><figcaption class="cap" data-i="157">The first recording: the learned gait v2 in PyBullet (old code).</figcaption></figure>
+    <figure class="vslot" data-video="simV3" hidden><div class="video"></div><figcaption class="cap" data-i="158">New recording: gait v3 (21° hips, 45° knees) walking straight, rendered with <code>record_video.py</code>.</figcaption></figure>
+    <figure class="vslot" data-video="simV3Avoid" hidden><div class="video"></div><figcaption class="cap" data-i="159">New recording: the robot reads 10 cm to a wall, backs up for 2 cycles, turns left about 90° and walks on.</figcaption></figure>
   </div>
 
-  <h3>How the gait was learned</h3>
-  <p>We used an evolutionary search. It needs no extra libraries and runs in a few minutes.</p>
+  <h3 data-i="160">How the gait was learned</h3>
+  <p data-i="161">We used an evolutionary search. It needs no extra libraries and runs in a few minutes.</p>
   <ol class="seq">
-    <li>A candidate gait is six numbers: right and left hip swing, right and left knee lift, speed, and a heading-correction gain.</li>
-    <li>Every candidate walks 40 cycles in PyBullet.</li>
-    <li>It receives a score (below).</li>
-    <li>The five best candidates of a generation are averaged. The next 20 candidates are random variations around that average, and the variation shrinks a little each generation.</li>
-    <li>This repeats for 25 generations of 20 candidates, which is 500 walks.</li>
+    <li data-i="162">A candidate gait is six numbers: right and left hip swing, right and left knee lift, speed, and a heading-correction gain.</li>
+    <li data-i="163">Every candidate walks 40 cycles in PyBullet.</li>
+    <li data-i="164">It receives a score (below).</li>
+    <li data-i="165">The five best candidates of a generation are averaged. The next 20 candidates are random variations around that average, and the variation shrinks a little each generation.</li>
+    <li data-i="166">This repeats for 25 generations of 20 candidates, which is 500 walks.</li>
   </ol>
-  <div class="formula">score = forward distance (cm) − sideways drift (cm) − 0.3 × heading change (°) − 60 if the body tilts more than 35°</div>
-  <p>The search ranges were chosen to suit the real robot: hip swing 5° to 25°, knee lift 20° to 45°, 15 to 60 sub-steps per move, gain 0 to 1.5. Bigger swings make the legs collide, and the MG90S knee is limited.</p>
+  <div class="formula" data-i="167">score = forward distance (cm) − sideways drift (cm) − 0.3 × heading change (°) − 60 if the body tilts more than 35°</div>
+  <p data-i="168">The search ranges were chosen to suit the real robot: hip swing 5° to 25°, knee lift 20° to 45°, 15 to 60 sub-steps per move, gain 0 to 1.5. Bigger swings make the legs collide, and the MG90S knee is limited.</p>
 
-  <h3>What it learned</h3>
-  <p>The search ends with six numbers. The table shows each one next to the number that went into sketch v2. They differ slightly for two reasons. The search uses decimals, but an Arduino servo only moves in whole degrees, so the values are rounded. And the sketch waits 8 ms between sub-steps while the simulation steps every 4 ms, so on the real robot the gait runs at about half the simulated speed.</p>
+  <h3 data-i="169">What it learned</h3>
+  <p data-i="170">The search ends with six numbers. The table shows each one next to the number that went into sketch v2. They differ slightly for two reasons. The search uses decimals, but an Arduino servo only moves in whole degrees, so the values are rounded. And the sketch waits 8 ms between sub-steps while the simulation steps every 4 ms, so on the real robot the gait runs at about half the simulated speed.</p>
   <div class="tblwrap"><table class="tbl">
-    <thead><tr><th>Parameter</th><th>What it controls</th><th>Simulation's answer</th><th>Number in sketch v2</th></tr></thead>
+    <thead><tr><th data-i="171">Parameter</th><th data-i="172">What it controls</th><th data-i="173">Simulation's answer</th><th data-i="174">Number in sketch v2</th></tr></thead>
     <tbody>
-      <tr><td>Right hip swing</td><td>How far the right hips swing the legs forward and back</td><td class="num">17.4°</td><td class="num">17°</td></tr>
-      <tr><td>Left hip swing</td><td>The same for the left hips</td><td class="num">24.8°</td><td class="num">25°</td></tr>
-      <tr><td>Knee lift</td><td>How high the knees raise a foot (both sides)</td><td class="num">45°</td><td class="num">45°</td></tr>
-      <tr><td>Speed</td><td>How many small steps one leg movement is split into. More steps is slower</td><td class="num">22.3 steps</td><td class="num">22 steps, 8 ms each</td></tr>
-      <tr><td>Heading-correction gain</td><td>How strongly the heading error steers the robot back on course</td><td class="num">0.64</td><td>Not used on the robot. A hand-set trim key corrects the drift instead</td></tr>
+      <tr><td data-i="175">Right hip swing</td><td data-i="176">How far the right hips swing the legs forward and back</td><td class="num">17.4°</td><td class="num">17°</td></tr>
+      <tr><td data-i="177">Left hip swing</td><td data-i="178">The same for the left hips</td><td class="num">24.8°</td><td class="num">25°</td></tr>
+      <tr><td data-i="116">Knee lift</td><td data-i="179">How high the knees raise a foot (both sides)</td><td class="num">45°</td><td class="num">45°</td></tr>
+      <tr><td data-i="180">Speed</td><td data-i="181">How many small steps one leg movement is split into. More steps is slower</td><td class="num" data-i="182">22.3 steps</td><td class="num" data-i="183">22 steps, 8 ms each</td></tr>
+      <tr><td data-i="184">Heading-correction gain</td><td data-i="185">How strongly the heading error steers the robot back on course</td><td class="num">0.64</td><td data-i="186">Not used on the robot. A hand-set trim key corrects the drift instead</td></tr>
     </tbody>
   </table></div>
-  <p>Two values sit at the edge of the allowed range: the knee lift (45°) and the left hip (24.8° of 25°). A wider range might score higher, but it would ask more from the real servos.</p>
+  <p data-i="187">Two values sit at the edge of the allowed range: the knee lift (45°) and the left hip (24.8° of 25°). A wider range might score higher, but it would ask more from the real servos.</p>
 
   <div class="chart" id="chart">
     <svg id="curve" viewBox="0 0 720 320" role="img" tabindex="0" aria-label="Line chart of the best score in each generation. It rises from 32.5 in generation 1 to 167.5 in generation 25. Use the left and right arrow keys to move between generations." aria-describedby="curveRead"></svg>
     <p class="chart-read" id="curveRead" aria-live="polite"></p>
     <details class="data">
-      <summary>Show the data as a table</summary>
+      <summary data-i="188">Show the data as a table</summary>
       <div class="tblwrap"><table class="tbl" id="curveTable">
-        <thead><tr><th>Generation</th><th>Score</th><th>Forward (cm)</th><th>Sideways (cm)</th><th>Heading change (°)</th><th>Max tilt (°)</th><th>Hips R / L (°)</th></tr></thead>
+        <thead><tr><th data-i="189">Generation</th><th data-i="190">Score</th><th data-i="191">Forward (cm)</th><th data-i="192">Sideways (cm)</th><th data-i="193">Heading change (°)</th><th data-i="194">Max tilt (°)</th><th data-i="195">Hips R / L (°)</th></tr></thead>
         <tbody></tbody>
       </table></div>
     </details>
   </div>
-  <p class="cap">Learning curve in simulation: the best score in each generation. It climbed from 32.5 to 167.5. The best single candidate scored 170.4 in generation 24.</p>
+  <p class="cap" data-i="196">Learning curve in simulation: the best score in each generation. It climbed from 32.5 to 167.5. The best single candidate scored 170.4 in generation 24.</p>
 
-  <h3>Heading correction</h3>
-  <p>A walking robot drifts off its line. In the simulation the heading comes straight from the physics engine, so the search could learn a correction: when the heading error grows, the stride on one side gets longer and on the other side shorter, in proportion to the error. The strength of the correction is the learned gain.</p>
-  <p>The real robot does not do this. The MPU6050 is mounted but the sketches do not read it, and the drift is trimmed by hand with the <code>z</code> and <code>x</code> keys. A gyroscope loop is one of the ideas under Future work.</p>
+  <h3 data-i="197">Heading correction</h3>
+  <p data-i="198">A walking robot drifts off its line. In the simulation the heading comes straight from the physics engine, so the search could learn a correction: when the heading error grows, the stride on one side gets longer and on the other side shorter, in proportion to the error. The strength of the correction is the learned gain.</p>
+  <p data-i="199">The real robot does not do this. The MPU6050 is mounted but the sketches do not read it, and the drift is trimmed by hand with the <code>z</code> and <code>x</code> keys. A gyroscope loop is one of the ideas under Future work.</p>
 
-  <h3>Files</h3>
+  <h3 data-i="200">Files</h3>
   <ul class="files">
-    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/learn_gait.py" target="_blank" rel="noopener">simulation/learn_gait.py</a><span>Runs the evolutionary search and writes the best gait.</span></li>
-    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/best_gait_v2.json" target="_blank" rel="noopener">simulation/best_gait_v2.json</a><span>The best gait found and its simulated result.</span></li>
-    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/walk_demo.py" target="_blank" rel="noopener">simulation/walk_demo.py</a><span>An earlier, hand-tuned gait with heading correction in PyBullet.</span></li>
-    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/record_video.py" target="_blank" rel="noopener">simulation/record_video.py</a><span>Renders the v3 walk and the obstacle scene as mp4 videos.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/learn_gait.py" target="_blank" rel="noopener">simulation/learn_gait.py</a><span data-i="201">Runs the evolutionary search and writes the best gait.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/best_gait_v2.json" target="_blank" rel="noopener">simulation/best_gait_v2.json</a><span data-i="202">The best gait found and its simulated result.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/walk_demo.py" target="_blank" rel="noopener">simulation/walk_demo.py</a><span data-i="203">An earlier, hand-tuned gait with heading correction in PyBullet.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/record_video.py" target="_blank" rel="noopener">simulation/record_video.py</a><span data-i="204">Renders the v3 walk and the obstacle scene as mp4 videos.</span></li>
   </ul>
 </section>
 
 <section class="sec" id="results">
-  <h2>Results</h2>
-  <p>The search found its angles in simulation. The sketch that runs on the robot uses angles we set and tuned on the real robot. The table puts them side by side.</p>
+  <h2 data-i="5">Results</h2>
+  <p data-i="205">The search found its angles in simulation. The sketch that runs on the robot uses angles we set and tuned on the real robot. The table puts them side by side.</p>
   <div class="tblwrap"><table class="tbl">
-    <thead><tr><th></th><th>Learned in simulation</th><th>Real robot (v3)</th></tr></thead>
+    <thead><tr><th></th><th data-i="206">Learned in simulation</th><th data-i="207">Real robot (v3)</th></tr></thead>
     <tbody>
-      <tr><th scope="row">Right hip swing</th><td class="num">17.4°</td><td class="num">21°</td></tr>
-      <tr><th scope="row">Left hip swing</th><td class="num">24.8°</td><td class="num">21°</td></tr>
-      <tr><th scope="row">Knee lift</th><td class="num">45°</td><td class="num">45°</td></tr>
-      <tr><th scope="row">Sub-steps per move</th><td class="num">22.3</td><td class="num">22</td></tr>
-      <tr><th scope="row">Delay per sub-step</th><td class="num">4 ms (one physics step)</td><td class="num">8 ms</td></tr>
-      <tr><th scope="row">Heading correction</th><td>Learned gain 0.64</td><td>None. A trim key shifts the swing between the two sides</td></tr>
+      <tr><th scope="row" data-i="175">Right hip swing</th><td class="num">17.4°</td><td class="num">21°</td></tr>
+      <tr><th scope="row" data-i="177">Left hip swing</th><td class="num">24.8°</td><td class="num">21°</td></tr>
+      <tr><th scope="row" data-i="116">Knee lift</th><td class="num">45°</td><td class="num">45°</td></tr>
+      <tr><th scope="row" data-i="118">Sub-steps per move</th><td class="num">22.3</td><td class="num">22</td></tr>
+      <tr><th scope="row" data-i="119">Delay per sub-step</th><td class="num" data-i="208">4 ms (one physics step)</td><td class="num">8 ms</td></tr>
+      <tr><th scope="row" data-i="197">Heading correction</th><td data-i="209">Learned gain 0.64</td><td data-i="210">None. A trim key shifts the swing between the two sides</td></tr>
     </tbody>
   </table></div>
-  <p>The knee lift and the number of sub-steps came out almost the same. The hips did not: the search preferred 17° on the right and 25° on the left, while the robot walks with 21° on both sides. In our tests the uneven pair made the real robot veer, so the real robot walks with equal hips and a trim key instead.</p>
-  <p>What the simulation predicted for its own gait in 40 cycles: <strong>175 cm</strong> forward, <strong>−0.3 cm</strong> sideways, a heading change of <strong>14.5°</strong> and a maximum tilt of <strong>5.8°</strong>. We did not measure distance or drift on the real robot, so this page compares angles only.</p>
+  <p data-i="211">The knee lift and the number of sub-steps came out almost the same. The hips did not: the search preferred 17° on the right and 25° on the left, while the robot walks with 21° on both sides. In our tests the uneven pair made the real robot veer, so the real robot walks with equal hips and a trim key instead.</p>
+  <p data-i="212">What the simulation predicted for its own gait in 40 cycles: <strong>175 cm</strong> forward, <strong>−0.3 cm</strong> sideways, a heading change of <strong>14.5°</strong> and a maximum tilt of <strong>5.8°</strong>. We did not measure distance or drift on the real robot, so this page compares angles only.</p>
 </section>
 
 <section class="sec" id="challenges">
-  <h2>Challenges</h2>
-  <p>What went wrong, and what we know so far.</p>
+  <h2 data-i="6">Challenges</h2>
+  <p data-i="213">What went wrong, and what we know so far.</p>
 
-  <h3 style="margin-top:1em">On the robot</h3>
+  <h3 style="margin-top:1em" data-i="214">On the robot</h3>
   <div class="issues">
     <div class="issue">
-      <h3>Regulator protection</h3>
-      <p>The voltage regulator went into protection and blinked when all 8 servos started at once. We now start the servos one at a time in code and added a power switch. The regulator module has its own capacitors that smooth the supply.</p>
-      <div class="state fixed">Fixed</div>
+      <h3 data-i="215">Regulator protection</h3>
+      <p data-i="216">The voltage regulator went into protection and blinked when all 8 servos started at once. We now start the servos one at a time in code and added a power switch. The regulator module has its own capacitors that smooth the supply.</p>
+      <div class="state fixed" data-i="217">Fixed</div>
     </div>
     <div class="issue">
-      <h3>A leg that did not touch the ground</h3>
-      <p>The robot veered to the left because one leg did not reach the floor. Moving the knee's neutral angle was not enough, since R3 was already at 170° of its 180° range. We adjusted the leg and calibrated every angle again, and the trim key covers what is left.</p>
-      <div class="state fixed">Fixed</div>
+      <h3 data-i="218">A leg that did not touch the ground</h3>
+      <p data-i="219">The robot veered to the left because one leg did not reach the floor. Moving the knee's neutral angle was not enough, since R3 was already at 170° of its 180° range. We adjusted the leg and calibrated every angle again, and the trim key covers what is left.</p>
+      <div class="state fixed" data-i="217">Fixed</div>
     </div>
     <div class="issue">
-      <h3>MPU6050 not found</h3>
-      <p>The gyroscope returned only zeros and the I²C scanner found nothing. SDA was connected to ground, and SDA and SCL were swapped. After rewiring them to A4 and A5 the scanner found the MPU6050 at 0x68.</p>
-      <div class="state fixed">Fixed</div>
+      <h3 data-i="220">MPU6050 not found</h3>
+      <p data-i="221">The gyroscope returned only zeros and the I²C scanner found nothing. SDA was connected to ground, and SDA and SCL were swapped. After rewiring them to A4 and A5 the scanner found the MPU6050 at 0x68.</p>
+      <div class="state fixed" data-i="217">Fixed</div>
     </div>
     <div class="issue">
-      <h3>Obstacle not detected</h3>
-      <p>The robot walked straight into obstacles because it only reacted below 3 cm, and an HC-SR04 is unreliable that close. The limit is now 10 cm, and two readings in a row must agree.</p>
-      <div class="state fixed">Fixed</div>
+      <h3 data-i="222">Obstacle not detected</h3>
+      <p data-i="223">The robot walked straight into obstacles because it only reacted below 3 cm, and an HC-SR04 is unreliable that close. The limit is now 10 cm, and two readings in a row must agree.</p>
+      <div class="state fixed" data-i="217">Fixed</div>
     </div>
     <div class="issue">
-      <h3>Limited torque</h3>
-      <p>The MG90S has little torque for a 363 g robot, so the gait needs careful tuning of angles and timing. Small changes decide whether a step lifts the body or stalls.</p>
-      <div class="state managed">Managed by tuning</div>
+      <h3 data-i="224">Limited torque</h3>
+      <p data-i="225">The MG90S has little torque for a 363 g robot, so the gait needs careful tuning of angles and timing. Small changes decide whether a step lifts the body or stalls.</p>
+      <div class="state managed" data-i="226">Managed by tuning</div>
     </div>
   </div>
 
-  <h3>In the simulation</h3>
+  <h3 data-i="227">In the simulation</h3>
   <div class="issues">
     <div class="issue">
-      <h3>A heavy root link</h3>
-      <p>PyBullet gave the first (root) link of the URDF a default mass of 1 kg. On top of the robot's 342 g, the model looked about four times too heavy, and its servos could not lift the legs. We added a tiny root mass (0.1 g) to the URDF, which fixed it. Lesson: add up the masses the simulator really uses and compare them with the scale.</p>
-      <div class="state fixed">Fixed</div>
+      <h3 data-i="228">A heavy root link</h3>
+      <p data-i="229">PyBullet gave the first (root) link of the URDF a default mass of 1 kg. On top of the robot's 342 g, the model looked about four times too heavy, and its servos could not lift the legs. We added a tiny root mass (0.1 g) to the URDF, which fixed it. Lesson: add up the masses the simulator really uses and compare them with the scale.</p>
+      <div class="state fixed" data-i="217">Fixed</div>
     </div>
     <div class="issue">
-      <h3>A gait that looked good for 15 cycles</h3>
-      <p>Our first learning runs scored every candidate on 15 cycles. The winner looked good for 15 cycles, then started to turn, because its small heading error kept adding up. A short test rewarded gaits that only look good briefly. We made the test 40 cycles long and turned the heading-correction gain into a learned parameter.</p>
-      <div class="state fixed">Fixed in simulation</div>
+      <h3 data-i="230">A gait that looked good for 15 cycles</h3>
+      <p data-i="231">Our first learning runs scored every candidate on 15 cycles. The winner looked good for 15 cycles, then started to turn, because its small heading error kept adding up. A short test rewarded gaits that only look good briefly. We made the test 40 cycles long and turned the heading-correction gain into a learned parameter.</p>
+      <div class="state fixed" data-i="232">Fixed in simulation</div>
     </div>
     <div class="issue">
-      <h3>Different servo directions</h3>
-      <p>In the simulation, each joint turns in the direction set by the URDF. On the real robot, the direction depends on how each servo horn was mounted. The two sets of signs differ, so a gait from the simulation can move a real leg the wrong way. We added a command that moves each servo on its own, so every direction can be checked one by one.</p>
-      <div class="state managed">Managed by testing</div>
+      <h3 data-i="233">Different servo directions</h3>
+      <p data-i="234">In the simulation, each joint turns in the direction set by the URDF. On the real robot, the direction depends on how each servo horn was mounted. The two sets of signs differ, so a gait from the simulation can move a real leg the wrong way. We added a command that moves each servo on its own, so every direction can be checked one by one.</p>
+      <div class="state managed" data-i="235">Managed by testing</div>
     </div>
   </div>
 </section>
 
 <section class="sec" id="future">
-  <h2>Future work</h2>
-  <p>Ideas for later. None of them is part of the robot yet.</p>
+  <h2 data-i="236">Future work</h2>
+  <p data-i="237">Ideas for later. None of them is part of the robot yet.</p>
   <div class="cards">
     <article class="card">
-      <h3>Heading hold with the gyroscope</h3>
-      <p>The MPU6050 is already mounted upright on the body. Reading its rotation rate would let the robot correct its own heading while it walks, the way the simulation does with its learned gain.</p>
+      <h3 data-i="238">Heading hold with the gyroscope</h3>
+      <p data-i="239">The MPU6050 is already mounted upright on the body. Reading its rotation rate would let the robot correct its own heading while it walks, the way the simulation does with its learned gain.</p>
     </article>
     <article class="card">
-      <h3>Straighter walking, tested in simulation first</h3>
-      <p>Put the real robot's quirks into the model, such as a leg that does not quite reach the floor, and let the search find angles that compensate. Then compare the result with the trim we set by hand.</p>
+      <h3 data-i="240">Straighter walking, tested in simulation first</h3>
+      <p data-i="241">Put the real robot's quirks into the model, such as a leg that does not quite reach the floor, and let the search find angles that compensate. Then compare the result with the trim we set by hand.</p>
     </article>
     <article class="card">
-      <h3>Measuring the real robot</h3>
-      <p>Walk a fixed number of cycles on a marked floor and measure the distance, the drift and the heading change, so the real robot can be compared with the simulation number by number.</p>
+      <h3 data-i="242">Measuring the real robot</h3>
+      <p data-i="243">Walk a fixed number of cycles on a marked floor and measure the distance, the drift and the heading change, so the real robot can be compared with the simulation number by number.</p>
     </article>
   </div>
 </section>
 
 <section class="sec" id="team">
-  <h2>Team</h2>
+  <h2 data-i="8">Team</h2>
   <div class="people">
     <div class="person">
       <h3>Rodi Ercan</h3>
-      <p>3D printing and mechanical assembly. Servo calibration and Arduino code, together with Boran. Simulation work.</p>
+      <p data-i="244">3D printing and mechanical assembly. Servo calibration and Arduino code, together with Boran. Simulation work.</p>
     </div>
     <div class="person">
       <h3>Boran Akgün</h3>
-      <p>Servo calibration and Arduino code, together with Rodi. Simulation work.</p>
+      <p data-i="245">Servo calibration and Arduino code, together with Rodi. Simulation work.</p>
     </div>
   </div>
   <a class="repo" href="https://github.com/spiderbot-project/crawling-panther" target="_blank" rel="noopener">github.com/spiderbot-project/crawling-panther</a>
-  <footer>crawling-panther, a student robotics project by Rodi Ercan and Boran Akgün.</footer>
+  <footer data-i="246">crawling-panther, a student robotics project by Rodi Ercan and Boran Akgün.</footer>
 </section>
 
 </main>
@@ -1041,6 +1047,10 @@ var CONFIG = {
   ]
 };
 /* ========================================================================== */
+
+/* ---- language ---- */
+var LANG = "en", langHooks = [];
+function tx(en, tr) { return LANG === "tr" ? tr : en; }
 
 /* Learning curve data: simulation/learning_curve.csv (best result of each generation) */
 var CURVE = [{"g":1,"score":32.5,"fwd":44.2,"side":5.7,"turn":19.9,"tilt":4.5,"hr":16,"hl":20,"kr":39,"kl":36,"steps":28},{"g":2,"score":24.8,"fwd":33.6,"side":-2.3,"turn":21.6,"tilt":4.5,"hr":18,"hl":17,"kr":41,"kl":42,"steps":46},{"g":3,"score":75.2,"fwd":79.6,"side":-0.8,"turn":11.6,"tilt":7.4,"hr":17,"hl":17,"kr":45,"kl":45,"steps":43},{"g":4,"score":116.9,"fwd":128.4,"side":-9.7,"turn":6.0,"tilt":5.8,"hr":18,"hl":25,"kr":44,"kl":43,"steps":25},{"g":5,"score":97.2,"fwd":103.6,"side":-1.4,"turn":16.8,"tilt":6.4,"hr":15,"hl":20,"kr":42,"kl":44,"steps":34},{"g":6,"score":115.9,"fwd":120.4,"side":-0.3,"turn":13.9,"tilt":6.3,"hr":15,"hl":21,"kr":45,"kl":45,"steps":33},{"g":7,"score":119.2,"fwd":128.0,"side":2.9,"turn":19.7,"tilt":6.6,"hr":15,"hl":23,"kr":44,"kl":45,"steps":32},{"g":8,"score":121.9,"fwd":126.5,"side":-0.4,"turn":14.0,"tilt":7.2,"hr":17,"hl":25,"kr":45,"kl":45,"steps":36},{"g":9,"score":138.1,"fwd":143.3,"side":1.0,"turn":13.8,"tilt":5.9,"hr":15,"hl":20,"kr":45,"kl":45,"steps":24},{"g":10,"score":143.3,"fwd":149.9,"side":2.2,"turn":15.0,"tilt":6.3,"hr":16,"hl":22,"kr":45,"kl":45,"steps":28},{"g":11,"score":138.8,"fwd":149.1,"side":-7.2,"turn":10.5,"tilt":6.3,"hr":18,"hl":23,"kr":45,"kl":45,"steps":30},{"g":12,"score":141.7,"fwd":159.9,"side":-14.6,"turn":12.1,"tilt":5.4,"hr":18,"hl":23,"kr":45,"kl":45,"steps":27},{"g":13,"score":146.6,"fwd":158.5,"side":-8.0,"turn":13.3,"tilt":6.2,"hr":18,"hl":23,"kr":45,"kl":45,"steps":28},{"g":14,"score":150.5,"fwd":156.2,"side":2.6,"turn":10.6,"tilt":6.2,"hr":16,"hl":24,"kr":45,"kl":45,"steps":25},{"g":15,"score":148.9,"fwd":155.5,"side":-0.8,"turn":19.2,"tilt":5.4,"hr":17,"hl":25,"kr":44,"kl":44,"steps":26},{"g":16,"score":162.1,"fwd":170.3,"side":-3.4,"turn":15.8,"tilt":5.3,"hr":18,"hl":25,"kr":44,"kl":45,"steps":23},{"g":17,"score":162.1,"fwd":168.0,"side":-1.6,"turn":14.3,"tilt":5.9,"hr":16,"hl":25,"kr":45,"kl":45,"steps":24},{"g":18,"score":161.8,"fwd":167.4,"side":-2.4,"turn":11.0,"tilt":6.0,"hr":17,"hl":24,"kr":45,"kl":45,"steps":23},{"g":19,"score":162.5,"fwd":173.6,"side":7.1,"turn":13.1,"tilt":5.8,"hr":18,"hl":25,"kr":45,"kl":45,"steps":23},{"g":20,"score":165.6,"fwd":170.7,"side":0.6,"turn":15.3,"tilt":5.3,"hr":17,"hl":25,"kr":44,"kl":45,"steps":23},{"g":21,"score":169.5,"fwd":174.4,"side":-0.1,"turn":15.8,"tilt":5.5,"hr":18,"hl":25,"kr":45,"kl":45,"steps":23},{"g":22,"score":161.3,"fwd":167.5,"side":-2.1,"turn":13.9,"tilt":5.9,"hr":17,"hl":25,"kr":44,"kl":45,"steps":25},{"g":23,"score":166.3,"fwd":171.5,"side":-0.6,"turn":15.3,"tilt":6.2,"hr":18,"hl":24,"kr":45,"kl":45,"steps":22},{"g":24,"score":170.4,"fwd":175.1,"side":-0.3,"turn":14.5,"tilt":5.8,"hr":17,"hl":25,"kr":45,"kl":45,"steps":22},{"g":25,"score":167.5,"fwd":174.1,"side":-2.3,"turn":14.0,"tilt":5.7,"hr":18,"hl":25,"kr":44,"kl":44,"steps":23}];
@@ -1115,19 +1125,24 @@ $$("#servoMap tbody tr").forEach(function (tr) {
   var base = "https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/";
   var info = [
     { s: "Gait v1, tuned by hand, on the first robot. The <code>sign</code> array compensates for how each servo is mounted, since the left side is mirrored.",
+      t: "Yürüyüş v1, elle ayarlı, ilk robotta. <code>sign</code> dizisi, sol taraf ayna olduğu için her servonun nasıl takıldığını telafi eder.",
       u: base + "trot_gait_v1_manual/trot_gait_v1_manual.ino" },
     { s: "Gait v2, learned in simulation, on the first robot. Same structure as v1, with the numbers from <code>best_gait_v2.json</code>.",
+      t: "Yürüyüş v2, simülasyonda öğrenilmiş, ilk robotta. v1 ile aynı yapı, sayılar <code>best_gait_v2.json</code> dosyasından.",
       u: base + "trot_gait_v2_learned/trot_gait_v2_learned.ino" },
     { s: "Gait v3, the current sketch: walks toward the distance sensor, backs away from obstacles, turns left and walks on.",
+      t: "Yürüyüş v3, güncel sketch: mesafe sensörüne doğru yürür, engelden geri çekilir, sola döner ve yürümeye devam eder.",
       u: base + "trot_gait_v3_obstacle/trot_gait_v3_obstacle.ino" }
   ];
+  var shown = 2;
   function select(n) {
     tabs.forEach(function (t, i) {
       t.setAttribute("aria-selected", i === n ? "true" : "false");
       t.tabIndex = i === n ? 0 : -1;
       panels[i].hidden = i !== n;
     });
-    $("#tabStatus").innerHTML = info[n].s;
+    shown = n;
+    $("#tabStatus").innerHTML = tx(info[n].s, info[n].t);
     $("#tabLink").href = info[n].u;
   }
   tabs.forEach(function (t, i) {
@@ -1139,11 +1154,12 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     });
   });
   select(2);
+  langHooks.push(function () { select(shown); btn.textContent = tx("Copy", "Kopyala"); });
   var btn = $("#copyBtn");
   btn.addEventListener("click", function () {
     var pre = $("[role=tabpanel]:not([hidden]) pre");
     var text = pre.innerText;
-    var done = function () { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 1500); };
+    var done = function () { btn.textContent = tx("Copied", "Kopyalandı"); setTimeout(function () { btn.textContent = tx("Copy", "Kopyala"); }, 1500); };
     if (navigator.clipboard) { navigator.clipboard.writeText(text).then(done); }
     else {
       var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
@@ -1190,6 +1206,14 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     v3: "Gait v3 on the rebuilt robot: hips swing 21° on both sides, knees lift 45°, 22 sub-steps. It walks toward the distance sensor. Closer than 10 cm, it backs up 2 cycles, turns left for 6 cycles (about 90°) and walks on.",
     man: "Manual mode, on the rebuilt robot. Each slider moves one servo from its neutral angle, the same way the sketch does. Try lifting one knee and swinging its hip to see how a step works."
   };
+  var NOTES_TR = {
+    v1: "Yürüyüş v1, elle ayarlı, ilk robotta: kalçalar 20° sallanır, dizler 45° kalkar, hareket başına 20 ara adım. R1 ve L1'e doğru yürür.",
+    v2: "Yürüyüş v2, simülasyonda öğrenilmiş, ilk robotta: sağ kalçalar 17°, sol kalçalar 25° sallanır, dizler 45° kalkar, hareket başına 22 ara adım; kaldırma ve sallama aynı anda olur.",
+    v3: "Yeniden yapılan robotta yürüyüş v3: kalçalar iki tarafta da 21° sallanır, dizler 45° kalkar, 22 ara adım. Mesafe sensörüne doğru yürür. 10 cm'den yakınsa 2 döngü geri gider, 6 döngü sola döner (yaklaşık 90°) ve yürümeye devam eder.",
+    man: "Manuel mod, yeniden yapılan robotta. Her kaydırıcı bir servoyu nötr açısından hareket ettirir, sketch'in yaptığı gibi. Bir dizi kaldırıp kalçasını sallayarak bir adımın nasıl işlediğini gör."
+  };
+  var lab = function (x) { return Array.isArray(x) ? (LANG === "tr" ? x[1] : x[0]) : x; };
+  var pt = function (on) { return LANG === "tr" ? (on ? "Duraklat" : "Oynat") : (on ? "Pause" : "Play"); };
   var kindOf = function (m) { return (m === "v1" || m === "v2") ? "old" : "now"; };
 
   function build(mode) {
@@ -1206,25 +1230,26 @@ $$("#servoMap tbody tr").forEach(function (tr) {
       var hip = function (i, d, dir) { T[i] = N[i] + SIGN[i] * V1.hip * d * dir; };
       [1, -1].forEach(function (dir) {
         var fw = dir > 0 ? "forward" : "back", bw = dir > 0 ? "back" : "forward";
+        var fwT = dir > 0 ? "ileri" : "geri", bwT = dir > 0 ? "geri" : "ileri";
         for (var k = 1; k <= V1.steps; k++) {
           var m = { dir: dir, step: k };
-          add("Lift knees R3 and L4", function () { knee(R3, 1); knee(L4, 1); }, m);
-          add("Swing R1 and L2 " + fw + ", R2 and L1 " + bw, function () { hip(R1, 1, dir); hip(L2, 1, dir); hip(R2, -1, dir); hip(L1, -1, dir); }, m);
-          add("Lower knees R3 and L4", function () { knee(R3, 0); knee(L4, 0); }, m);
-          add("Lift knees R4 and L3", function () { knee(R4, 1); knee(L3, 1); }, m);
-          add("Swing R2 and L1 " + fw + ", R1 and L2 " + bw, function () { hip(R2, 1, dir); hip(L1, 1, dir); hip(R1, -1, dir); hip(L2, -1, dir); }, m);
-          add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, m);
+          add(["Lift knees R3 and L4", "R3 ve L4 dizlerini kaldır"], function () { knee(R3, 1); knee(L4, 1); }, m);
+          add(["Swing R1 and L2 " + fw + ", R2 and L1 " + bw, "R1 ve L2 " + fwT + ", R2 ve L1 " + bwT + " sallanır"], function () { hip(R1, 1, dir); hip(L2, 1, dir); hip(R2, -1, dir); hip(L1, -1, dir); }, m);
+          add(["Lower knees R3 and L4", "R3 ve L4 dizlerini indir"], function () { knee(R3, 0); knee(L4, 0); }, m);
+          add(["Lift knees R4 and L3", "R4 ve L3 dizlerini kaldır"], function () { knee(R4, 1); knee(L3, 1); }, m);
+          add(["Swing R2 and L1 " + fw + ", R1 and L2 " + bw, "R2 ve L1 " + fwT + ", R1 ve L2 " + bwT + " sallanır"], function () { hip(R2, 1, dir); hip(L1, 1, dir); hip(R1, -1, dir); hip(L2, -1, dir); }, m);
+          add(["Lower knees R4 and L3", "R4 ve L3 dizlerini indir"], function () { knee(R4, 0); knee(L3, 0); }, m);
         }
-        add("Back to the neutral pose", function () { for (var i = 0; i < 8; i++) T[i] = N[i]; }, { dir: dir, rest: true }, 800);
+        add(["Back to the neutral pose", "Nötr pozisyona dön"], function () { for (var i = 0; i < 8; i++) T[i] = N[i]; }, { dir: dir, rest: true }, 800);
       });
     } else if (mode === "v2") {
       var hip2 = function (i, d) { T[i] = N[i] + SIGN[i] * ((i === R1 || i === R2) ? V2.hipR : V2.hipL) * d; };
-      add("Lift knees R3 and L4 while R1 and L2 swing forward and R2 and L1 swing back",
+      add(["Lift knees R3 and L4 while R1 and L2 swing forward and R2 and L1 swing back", "R3 ve L4 dizlerini kaldırırken R1 ve L2 ileri, R2 ve L1 geri sallanır"],
         function () { knee(R3, 1); knee(L4, 1); hip2(R1, 1); hip2(L2, 1); hip2(R2, -1); hip2(L1, -1); }, {});
-      add("Lower knees R3 and L4", function () { knee(R3, 0); knee(L4, 0); }, {});
-      add("Lift knees R4 and L3 while R2 and L1 swing forward and R1 and L2 swing back",
+      add(["Lower knees R3 and L4", "R3 ve L4 dizlerini indir"], function () { knee(R3, 0); knee(L4, 0); }, {});
+      add(["Lift knees R4 and L3 while R2 and L1 swing forward and R1 and L2 swing back", "R4 ve L3 dizlerini kaldırırken R2 ve L1 ileri, R1 ve L2 geri sallanır"],
         function () { knee(R4, 1); knee(L3, 1); hip2(R2, 1); hip2(L1, 1); hip2(R1, -1); hip2(L2, -1); }, {});
-      add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, {});
+      add(["Lower knees R4 and L3", "R4 ve L3 dizlerini indir"], function () { knee(R4, 0); knee(L3, 0); }, {});
     } else {
       /* v3, exactly like the sketch: target = neutral + sign * swing * d * FORWARD * side * walkDir, FORWARD = -1 */
       var walkDir = 1, sideR = 1, sideL = 1;
@@ -1235,16 +1260,21 @@ $$("#servoMap tbody tr").forEach(function (tr) {
       var cyc = function (phase, k, total, dist) {
         var m = { phase: phase, k: k, total: total, dist: dist };
         var a, b;
-        if (phase === "turn") { a = "Turning left: R servos swing backward, L servos forward"; b = a; }
-        else if (phase === "back") { a = "Backing up: R1 and L2 swing away from the sensor, R2 and L1 toward it"; b = "Backing up: R2 and L1 swing away from the sensor, R1 and L2 toward it"; }
-        else { a = "R1 and L2 swing toward the sensor, R2 and L1 swing back"; b = "R2 and L1 swing toward the sensor, R1 and L2 swing back"; }
-        add("Lift knees R3 and L4. " + a, function () { knee(R3, 1); knee(L4, 1); hip3(R1, 1); hip3(L2, 1); hip3(R2, -1); hip3(L1, -1); }, m);
-        add("Lower knees R3 and L4", function () { knee(R3, 0); knee(L4, 0); }, m);
-        add("Lift knees R4 and L3. " + b, function () { knee(R4, 1); knee(L3, 1); hip3(R2, 1); hip3(L1, 1); hip3(R1, -1); hip3(L2, -1); }, m);
-        add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, m);
+        if (phase === "turn") { a = ["Turning left: R servos swing backward, L servos forward", "Sola dönüş: R servoları geri, L servoları ileri sallanır"]; b = a; }
+        else if (phase === "back") {
+          a = ["Backing up: R1 and L2 swing away from the sensor, R2 and L1 toward it", "Geri gidiş: R1 ve L2 sensörden uzağa, R2 ve L1 sensöre doğru sallanır"];
+          b = ["Backing up: R2 and L1 swing away from the sensor, R1 and L2 toward it", "Geri gidiş: R2 ve L1 sensörden uzağa, R1 ve L2 sensöre doğru sallanır"];
+        } else {
+          a = ["R1 and L2 swing toward the sensor, R2 and L1 swing back", "R1 ve L2 sensöre doğru, R2 ve L1 geriye sallanır"];
+          b = ["R2 and L1 swing toward the sensor, R1 and L2 swing back", "R2 ve L1 sensöre doğru, R1 ve L2 geriye sallanır"];
+        }
+        add(["Lift knees R3 and L4. " + a[0], "R3 ve L4 dizlerini kaldır. " + a[1]], function () { knee(R3, 1); knee(L4, 1); hip3(R1, 1); hip3(L2, 1); hip3(R2, -1); hip3(L1, -1); }, m);
+        add(["Lower knees R3 and L4", "R3 ve L4 dizlerini indir"], function () { knee(R3, 0); knee(L4, 0); }, m);
+        add(["Lift knees R4 and L3. " + b[0], "R4 ve L3 dizlerini kaldır. " + b[1]], function () { knee(R4, 1); knee(L3, 1); hip3(R2, 1); hip3(L1, 1); hip3(R1, -1); hip3(L2, -1); }, m);
+        add(["Lower knees R4 and L3", "R4 ve L3 dizlerini indir"], function () { knee(R4, 0); knee(L3, 0); }, m);
       };
       for (var c = 1; c <= V3.walk; c++) cyc("walk", c, V3.walk, V3.dist[c - 1]);
-      add("Two readings in a row are below 10 cm, so the robot reacts", function () {}, { phase: "obstacle", dist: 8 }, 1300);
+      add(["Two readings in a row are below 10 cm, so the robot reacts", "Üst üste iki ölçüm 10 cm'nin altında, robot tepki veriyor"], function () {}, { phase: "obstacle", dist: 8 }, 1300);
       walkDir = -1;
       for (c = 1; c <= V3.back; c++) cyc("back", c, V3.back, V3.back_d[c - 1]);
       walkDir = 1; sideR = -1; sideL = 1;
@@ -1268,15 +1298,18 @@ $$("#servoMap tbody tr").forEach(function (tr) {
   ];
   var NEW_LEGS = OLD_LEGS.map(function (L) { return { h: L.h, k: L.k, x: 2 * CX - L.x, y: 2 * CY - L.y, s: -L.s, g: L.g }; });
 
+  var SVGTR = { "front": "ön", "battery": "batarya", "front (sensor)": "ön (sensör)" }, svgTexts = [];
   function txt(svg, x, y, txt, o) {
     var t = mk("text", { x: x, y: y, "text-anchor": (o && o.a) || "middle", "font-size": (o && o.size) || 10, "font-weight": 600, fill: (o && o.fill) || PAPER, "font-family": "inherit" }, svg);
-    t.textContent = txt; return t;
+    t.textContent = txt;
+    if (SVGTR[txt]) svgTexts.push({ el: t, en: txt, tr: SVGTR[txt] });
+    return t;
   }
   function rect(g, x, y, w, h, r, fill, sw) { return mk("rect", { x: x, y: y, width: w, height: h, rx: r, fill: fill, stroke: INK, "stroke-width": sw || 1.5 }, g); }
 
   var view = $("#gView");
   var top = mk("svg", { viewBox: "0 0 460 300", role: "img", "aria-label": "Top view of the robot model with its four legs in their current gait pose" }, view);
-  var side = mk("svg", { viewBox: "0 0 460 300", role: "img", "aria-label": "Side view of the robot model with its legs in their current gait pose" }, view);
+  var side = mk("svg", { viewBox: "0 0 520 320", role: "img", "aria-label": "Side view of the robot model with its legs in their current gait pose" }, view);
   side.style.display = "none";
   for (var gx0 = -3; gx0 <= 3; gx0++) mk("line", { x1: CX + gx0 * 60, x2: CX + gx0 * 60, y1: 20, y2: 290, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, top);
   for (var gy0 = -2; gy0 <= 2; gy0++) mk("line", { x1: 20, x2: 440, y1: CY + gy0 * 60, y2: CY + gy0 * 60, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, top);
@@ -1294,10 +1327,11 @@ $$("#servoMap tbody tr").forEach(function (tr) {
 
   /* ----- top view: the rebuilt robot (sensor at the front end, battery lengthwise, Arduino beside it) ----- */
   rect(topNew, CX - BW / 2, CY - BL / 2, BW, BL, 10, "#5E9B7A", 2);
-  rect(topNew, CX - 0.0475 * K, CY - 0.045 * K, 0.035 * K, 0.088 * K, 4, "#3D3BF3");
-  txt(topNew, CX - 0.03 * K, CY - 0.001 * K, "battery", { size: 9 }).setAttribute("transform", "rotate(-90 " + (CX - 0.03 * K) + " " + (CY - 0.001 * K) + ")");
-  rect(topNew, CX + 0.004 * K, CY - 0.045 * K, 0.053 * K, 0.075 * K, 3, "#2F5FA8");
-  txt(topNew, CX + 0.0305 * K, CY - 0.004 * K, "Arduino", { size: 10 });
+  /* from the front end backwards: sensor, battery lying across the body, Arduino behind it */
+  rect(topNew, CX - 0.0425 * K, CY - BL / 2 + 12, 0.085 * K, 0.036 * K, 4, "#3D3BF3");
+  txt(topNew, CX, CY - BL / 2 + 12 + 0.036 * K / 2 + 4, "battery");
+  rect(topNew, CX - 0.0343 * K, CY - BL / 2 + 12 + 0.036 * K + 10, 0.0686 * K, 0.0534 * K, 3, "#2F5FA8");
+  txt(topNew, CX, CY - BL / 2 + 12 + 0.036 * K + 10 + 0.0534 * K / 2 + 4, "Arduino");
   /* ultrasonic sensor: a board with two round transducers, sticking out of the front end */
   rect(topNew, CX - 0.024 * K, CY - BL / 2 - 7, 0.048 * K, 12, 2, "#1E2A3A", 1.5);
   mk("circle", { cx: CX - 0.0125 * K, cy: CY - BL / 2 - 1, r: 5, fill: "#C9CED6", stroke: INK, "stroke-width": 1.2 }, topNew);
@@ -1323,50 +1357,83 @@ $$("#servoMap tbody tr").forEach(function (tr) {
   }
   var topLegs = { old: makeTopLegs(topOld, OLD_LEGS), now: makeTopLegs(topNew, NEW_LEGS) };
 
-  /* ----- side view: ground, body, the two legs on the near side (full colour) and the two on the far side (pale) ----- */
-  var GY = 250, K2 = 1500, BX = 196, HIPY = 176, LEN2 = 0.068 * K2, FORE = 0.0365 * K2, LIFTH = 24;
-  mk("line", { x1: 20, x2: 440, y1: GY, y2: GY, stroke: INK, "stroke-width": 2 }, side);
-  for (var tx = 30; tx < 440; tx += 40) mk("line", { x1: tx, x2: tx - 8, y1: GY, y2: GY + 8, stroke: "#C3C9D1", "stroke-width": 1.2 }, side);
+  /* ----- side view: oblique projection of the 3D robot (x = toward the front, y = across, far side up and to the right, z = up) ----- */
+  var K3 = 1250, OX = 255, OY = 238, AX = 0.38, AY = 0.24;
+  function PR(x, y, z) { return [OX + K3 * (x + AX * y), OY - K3 * (z + AY * y)]; }
+  function pts(a) { return a.map(function (q) { return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" "); }
+  function shade(hex, f) {
+    var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    function c(v) { return Math.max(0, Math.min(255, Math.round(f < 1 ? v * f : v + (255 - v) * (f - 1)))); }
+    return "rgb(" + c(r) + "," + c(g) + "," + c(b) + ")";
+  }
+  function poly(g, a, fill, sw) { return mk("polygon", { points: pts(a), fill: fill, stroke: INK, "stroke-width": sw || 1.3, "stroke-linejoin": "round" }, g); }
+  /* a box: y0 is the near face, y1 the far face. Visible: top, front end (right) and near side */
+  function box(g, x0, x1, y0, y1, z0, z1, fill, sw) {
+    poly(g, [PR(x0, y0, z1), PR(x1, y0, z1), PR(x1, y1, z1), PR(x0, y1, z1)], shade(fill, 1.22), sw);
+    poly(g, [PR(x1, y0, z0), PR(x1, y1, z0), PR(x1, y1, z1), PR(x1, y0, z1)], shade(fill, .7), sw);
+    poly(g, [PR(x0, y0, z0), PR(x1, y0, z0), PR(x1, y0, z1), PR(x0, y0, z1)], fill, sw);
+  }
+  function faceLabel(g, x0, x1, y, z0, z1, text, size) {      /* a label on the near face of a box */
+    var a = PR(x0, y, z0), b = PR(x1, y, z1);
+    return txt(g, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + 3, text, { size: size || 9 });
+  }
+  /* ground plane with a grid and a soft shadow under the body */
+  var gnd = mk("g", {}, side);
+  poly(gnd, [PR(-.13, -.14, 0), PR(.13, -.14, 0), PR(.13, .14, 0), PR(-.13, .14, 0)], "#E1E4E9", 1.2).setAttribute("stroke", "#C3C9D1");
+  for (var gi = -2; gi <= 2; gi++) {
+    var l1 = PR(gi * .05, -.14, 0), l2 = PR(gi * .05, .14, 0);
+    mk("line", { x1: l1[0], y1: l1[1], x2: l2[0], y2: l2[1], stroke: "#C3C9D1", "stroke-width": 1, opacity: .8 }, gnd);
+  }
+  for (var gj = -2; gj <= 2; gj++) {
+    var m1 = PR(-.13, gj * .05, 0), m2 = PR(.13, gj * .05, 0);
+    mk("line", { x1: m1[0], y1: m1[1], x2: m2[0], y2: m2[1], stroke: "#C3C9D1", "stroke-width": 1, opacity: .8 }, gnd);
+  }
+  poly(gnd, [PR(-.062, -.066, 0), PR(.062, -.066, 0), PR(.062, .066, 0), PR(-.062, .066, 0)], "rgba(18,22,28,.13)", 0).setAttribute("stroke", "none");
   var sideOld = mk("g", {}, side), sideNew = mk("g", {}, side);
   var sideLegs = { old: [], now: [] };
+  var HZ = 0.05, EDGE = 0.0631, OUT = 0.014;
 
   function sideRobot(g, kind) {
     /* far legs first (behind the body), then the body and its parts, then the near legs */
     var defs = kind === "old"
-      ? [{ h: R1, k: R3, fore: 1, near: true, g: "a" }, { h: R2, k: R4, fore: -1, near: true, g: "b" },
-         { h: L1, k: L3, fore: 1, near: false, g: "b" }, { h: L2, k: L4, fore: -1, near: false, g: "a" }]
-      : [{ h: L2, k: L4, fore: 1, near: true, g: "a" }, { h: L1, k: L3, fore: -1, near: true, g: "b" },
-         { h: R2, k: R4, fore: 1, near: false, g: "b" }, { h: R1, k: R3, fore: -1, near: false, g: "a" }];
+      ? [{ h: R2, k: R4, hf: -.0365, near: true, g: "b" }, { h: R1, k: R3, hf: .0365, near: true, g: "a" },
+         { h: L2, k: L4, hf: -.0365, near: false, g: "a" }, { h: L1, k: L3, hf: .0365, near: false, g: "b" }]
+      : [{ h: L1, k: L3, hf: -.0365, near: true, g: "b" }, { h: L2, k: L4, hf: .0365, near: true, g: "a" },
+         { h: R1, k: R3, hf: -.0365, near: false, g: "a" }, { h: R2, k: R4, hf: .0365, near: false, g: "b" }];
     function legs(near) {
       defs.filter(function (D) { return D.near === near; }).forEach(function (D) {
-        var L = { h: D.h, k: D.k, hx: BX + D.fore * FORE + (near ? 0 : 16), hy: HIPY - (near ? 0 : 9), near: near };
-        L.line = mk("line", { x1: L.hx, y1: L.hy, "stroke-width": near ? 9 : 7, "stroke-linecap": "round", stroke: D.g === "a" ? C_LEG_A : C_LEG_B, opacity: near ? 1 : .4 }, g);
-        L.foot = mk("circle", { r: near ? 7 : 5.5, "stroke-width": 3, opacity: near ? 1 : .55 }, g);
-        L.shadow = mk("circle", { r: 9, fill: "none", stroke: SOFT, "stroke-width": 1.5, "stroke-dasharray": "3 3", opacity: 0 }, g);
-        rect(g, L.hx - 8, L.hy - 8, 16, 14, 3, "#2A9D8F", 1.2).setAttribute("opacity", near ? 1 : .45);
-        L.label = txt(g, L.hx, L.hy + (near ? 30 : -14), NAMES[D.h], { size: 10, fill: near ? INK : SOFT });
+        var out = near ? -1 : 1, yh = out * (EDGE + OUT);
+        var hp = PR(D.hf, yh, HZ);
+        var L = { h: D.h, k: D.k, hf: D.hf, yh: yh, out: out, near: near };
+        L.line = mk("line", { x1: hp[0], y1: hp[1], "stroke-width": near ? 8 : 6.5, "stroke-linecap": "round", stroke: D.g === "a" ? C_LEG_A : C_LEG_B, opacity: near ? 1 : .85 }, g);
+        L.shadow = mk("circle", { r: 8, fill: "none", stroke: SOFT, "stroke-width": 1.5, "stroke-dasharray": "3 3", opacity: 0 }, g);
+        L.foot = mk("circle", { r: near ? 6.5 : 5.5, "stroke-width": 3 }, g);
+        box(g, D.hf - .007, D.hf + .007, out < 0 ? -(EDGE + OUT) : EDGE - .001, out < 0 ? -(EDGE - .001) : EDGE + OUT, HZ - .008, HZ + .008, "#2A9D8F", 1.1);
+        L.label = txt(g, 0, 0, NAMES[D.h], { size: 10, fill: near ? INK : SOFT });
+        L.label.style.display = near ? "" : "none";
         sideLegs[kind].push(L);
       });
     }
     legs(false);
-    var BWID = 0.116 * K2, BY = HIPY - 32;
-    rect(g, BX - BWID / 2, BY, BWID, 32, 6, "#5E9B7A", 2);
+    box(g, -.058, .058, -EDGE, EDGE, .042, .07, "#5E9B7A", 1.8);
     if (kind === "old") {
-      rect(g, BX + 0.004 * K2, BY - 26, 0.052 * K2, 26, 3, "#2F5FA8"); txt(g, BX + 0.004 * K2 + 0.026 * K2, BY - 8, "Arduino");
-      rect(g, BX - 0.052 * K2, BY - 24, 0.04 * K2, 24, 4, "#3D3BF3"); txt(g, BX - 0.052 * K2 + 0.02 * K2, BY - 8, "battery", { size: 9 });
-      mk("path", { d: "M" + (BX + 100) + " " + (BY + 16) + " h26 l-8 -8 m8 8 l-8 8", fill: "none", stroke: SOFT, "stroke-width": 2 }, g);
-      txt(g, BX + 134, BY + 20, "front", { size: 13, fill: SOFT, a: "start" });
+      box(g, -.052, -.012, -.04, .04, .07, .094, "#3D3BF3");  faceLabel(g, -.052, -.012, -.04, .07, .094, "battery");
+      box(g, .004, .056, -.055, .055, .07, .088, "#2F5FA8");  faceLabel(g, .004, .056, -.055, .07, .088, "Arduino");
     } else {
-      rect(g, BX - 0.052 * K2, BY - 28, 0.069 * K2, 28, 3, "#2F5FA8").setAttribute("opacity", .55);
-      rect(g, BX - 0.058 * K2, BY - 22, 0.085 * K2, 22, 4, "#3D3BF3"); txt(g, BX - 0.0155 * K2, BY - 7, "battery", { size: 9 });
-      /* sensor at the front (right) end */
-      rect(g, BX + BWID / 2 - 2, BY - 2, 12, 26, 2, "#1E2A3A", 1.5);
-      mk("circle", { cx: BX + BWID / 2 + 11, cy: BY + 5, r: 4.5, fill: "#C9CED6", stroke: INK, "stroke-width": 1.2 }, g);
-      mk("circle", { cx: BX + BWID / 2 + 11, cy: BY + 18, r: 4.5, fill: "#C9CED6", stroke: INK, "stroke-width": 1.2 }, g);
-      mk("path", { d: "M" + (BX + 100) + " " + (BY + 16) + " h26 l-8 -8 m8 8 l-8 8", fill: "none", stroke: SOFT, "stroke-width": 2 }, g);
-      txt(g, BX + 134, BY + 20, "front (sensor)", { size: 13, fill: SOFT, a: "start" });
+      box(g, -.054, -.0006, -.0343, .0343, .07, .083, "#2F5FA8");  faceLabel(g, -.054, -.0006, -.0343, .07, .083, "Arduino");
+      box(g, .012, .047, -.0425, .0425, .07, .097, "#3D3BF3");  faceLabel(g, .012, .047, -.0425, .07, .097, "battery");
+      /* ultrasonic sensor on the front end, with two round transducers */
+      box(g, .058, .07, -.024, .024, .046, .066, "#1E2A3A", 1.4);
+      [-.0125, .0125].forEach(function (yy) {
+        var c = PR(.07, yy, .056);
+        mk("circle", { cx: c[0], cy: c[1], r: 4.2, fill: "#C9CED6", stroke: INK, "stroke-width": 1.1 }, g);
+      });
     }
     legs(true);
+    /* front arrow on the ground */
+    var a0 = PR(.07, -.105, 0), a1 = PR(.115, -.105, 0);
+    mk("path", { d: "M" + a0[0] + " " + a0[1] + " L" + a1[0] + " " + a1[1] + " m-8 -6 l8 6 l-8 6", fill: "none", stroke: SOFT, "stroke-width": 2 }, g);
+    txt(g, a1[0] + 8, a1[1] + 4, kind === "old" ? "front" : "front (sensor)", { size: 13, fill: SOFT, a: "start" });
   }
   sideRobot(sideOld, "old"); sideRobot(sideNew, "now");
 
@@ -1410,11 +1477,13 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     });
     sideLegs[kind].forEach(function (L) {
       var lift = liftOf(L.k), th = toward(L.h) * Math.PI / 180;
-      var fx = L.hx + LEN2 * Math.sin(th), fy = (L.near ? GY : GY - 9) - LIFTH * lift;
-      L.line.setAttribute("x2", fx); L.line.setAttribute("y2", fy);
-      L.foot.setAttribute("cx", fx); L.foot.setAttribute("cy", fy);
+      var ff = L.hf + 0.068 * Math.sin(th), fl = L.yh + L.out * 0.05 * Math.cos(th), fz = 0.006 + 0.018 * lift;
+      var q = PR(ff, fl, fz), gp = PR(ff, fl, 0.006);
+      L.line.setAttribute("x2", q[0]); L.line.setAttribute("y2", q[1]);
+      L.foot.setAttribute("cx", q[0]); L.foot.setAttribute("cy", q[1]);
       footStyle(L.foot, lift);
-      L.shadow.setAttribute("cx", fx); L.shadow.setAttribute("cy", GY - (L.near ? 0 : 9)); L.shadow.setAttribute("opacity", L.near && lift > 0.05 ? 1 : 0);
+      L.shadow.setAttribute("cx", gp[0]); L.shadow.setAttribute("cy", gp[1]); L.shadow.setAttribute("opacity", lift > 0.05 ? 1 : 0);
+      L.label.setAttribute("x", q[0]); L.label.setAttribute("y", q[1] + 20);
     });
     var m = idx >= 0 ? moves[idx] : null;
     for (var i = 0; i < 8; i++) {
@@ -1426,20 +1495,20 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     dText.textContent = (mode === "v3" && m && m.meta.dist !== undefined) ? m.meta.dist + " cm" : "";
   }
   function label() {
-    if (mode === "man") { head.textContent = "Manual"; mv.textContent = "Drag a slider to move one servo. Hips: plus swings the leg toward the sensor. Knees: plus lifts the foot."; return; }
+    if (mode === "man") { head.textContent = tx("Manual", "Manuel"); mv.textContent = tx("Drag a slider to move one servo. Hips: plus swings the leg toward the sensor. Knees: plus lifts the foot.", "Bir servoyu oynatmak için kaydırıcıyı sürükle. Kalçalar: artı bacağı sensöre doğru sallar. Dizler: artı ayağı kaldırır."); return; }
     var m = idx >= 0 ? moves[idx] : null;
-    var names = { v1: "Gait v1", v2: "Gait v2", v3: "Gait v3" };
-    if (!m) { head.textContent = names[mode]; mv.textContent = playing ? "" : "Press Play or Step to start."; return; }
-    if (mode === "v2") head.textContent = "Forward, cycle " + cycles;
+    var names = { v1: tx("Gait v1", "Yürüyüş v1"), v2: tx("Gait v2", "Yürüyüş v2"), v3: tx("Gait v3", "Yürüyüş v3") };
+    if (!m) { head.textContent = names[mode]; mv.textContent = playing ? "" : tx("Press Play or Step to start.", "Başlatmak için Oynat veya Adım'a bas."); return; }
+    if (mode === "v2") head.textContent = tx("Forward, cycle ", "İleri, döngü ") + cycles;
     else if (mode === "v3") {
       var p = m.meta;
-      head.textContent = p.phase === "walk" ? "Walking, cycle " + p.k + " of " + p.total
-        : p.phase === "obstacle" ? "Obstacle"
-        : p.phase === "back" ? "Backing up, cycle " + p.k + " of " + p.total
-        : "Turning left, cycle " + p.k + " of " + p.total;
+      head.textContent = p.phase === "walk" ? tx("Walking, cycle " + p.k + " of " + p.total, "Yürüyor, döngü " + p.k + " / " + p.total)
+        : p.phase === "obstacle" ? tx("Obstacle", "Engel")
+        : p.phase === "back" ? tx("Backing up, cycle " + p.k + " of " + p.total, "Geri gidiyor, döngü " + p.k + " / " + p.total)
+        : tx("Turning left, cycle " + p.k + " of " + p.total, "Sola dönüyor, döngü " + p.k + " / " + p.total);
     }
-    else head.textContent = m.meta.rest ? "Rest" : (m.meta.dir > 0 ? "Forward" : "Backward") + ", step " + m.meta.step + " of " + V1.steps;
-    mv.textContent = m.label + (mode === "v3" && m.meta.dist !== undefined ? ". Distance: " + m.meta.dist + " cm" : "");
+    else head.textContent = m.meta.rest ? tx("Rest", "Dinlenme") : (m.meta.dir > 0 ? tx("Forward", "İleri") : tx("Backward", "Geri")) + tx(", step " + m.meta.step + " of " + V1.steps, ", adım " + m.meta.step + " / " + V1.steps);
+    mv.textContent = lab(m.label) + (mode === "v3" && m.meta.dist !== undefined ? tx(". Distance: ", ". Mesafe: ") + m.meta.dist + " cm" : "");
   }
   function begin(i) {
     if (mode === "v2" && i === 0) cycles++;
@@ -1459,12 +1528,12 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     manual.hidden = m !== "man";
     playBtn.disabled = stepBtn.disabled = (m === "man");
     if (m === "man") {
-      moves = []; playing = false; playBtn.textContent = "Play";
+      moves = []; playing = false; playBtn.textContent = pt(false);
       resetManual();
-      note.textContent = NOTES.man;
+      note.textContent = tx(NOTES.man, NOTES_TR.man);
     } else {
-      moves = build(m); note.textContent = NOTES[m];
-      if (prev === "man") { playing = !reduce; playBtn.textContent = playing ? "Pause" : "Play"; }
+      moves = build(m); note.textContent = tx(NOTES[m], NOTES_TR[m]);
+      if (prev === "man") { playing = !reduce; playBtn.textContent = pt(playing); }
     }
     label(); draw();
   }
@@ -1487,7 +1556,7 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     lab.appendChild(inp); lab.appendChild(out); manual.appendChild(lab);
     sliders.push({ input: inp, out: out });
   });
-  var rb = document.createElement("button"); rb.type = "button"; rb.className = "btn"; rb.textContent = "Reset pose";
+  var rb = document.createElement("button"); rb.type = "button"; rb.className = "btn"; rb.textContent = tx("Reset pose", "Pozu sıfırla");
   rb.addEventListener("click", resetManual); manual.appendChild(rb);
 
   function frame(ts) {
@@ -1508,14 +1577,14 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     requestAnimationFrame(frame);
   }
 
-  playBtn.textContent = playing ? "Pause" : "Play";
+  playBtn.textContent = pt(playing);
   playBtn.addEventListener("click", function () {
-    playing = !playing; playBtn.textContent = playing ? "Pause" : "Play";
+    playing = !playing; playBtn.textContent = pt(playing);
     if (playing) { stepping = false; if (!moving && idx < 0) gap = 200; }
     if (idx < 0) label();
   });
   stepBtn.addEventListener("click", function () {
-    if (playing) { playing = false; playBtn.textContent = "Play"; }
+    if (playing) { playing = false; playBtn.textContent = pt(false); }
     if (moving) { stepping = true; return; }
     stepping = true; begin((idx + 1) % moves.length);
   });
@@ -1523,6 +1592,14 @@ $$("#servoMap tbody tr").forEach(function (tr) {
   bTop.addEventListener("click", function () { viewSide = false; showView(); });
   bSide.addEventListener("click", function () { viewSide = true; showView(); });
 
+  langHooks.push(function () {
+    rb.textContent = tx("Reset pose", "Pozu sıfırla");
+    playBtn.textContent = pt(playing);
+    note.textContent = tx(NOTES[mode], NOTES_TR[mode]);
+    svgTexts.forEach(function (t) { t.el.textContent = tx(t.en, t.tr); });
+    for (var q = 0; q < 8; q++) { var kn = (q === 2 || q === 3 || q === 6 || q === 7); rows[q].children[2].textContent = kn ? tx("knee", "diz") : tx("hip", "kalça"); }
+    label();
+  });
   showView(); setMode("v3");
   requestAnimationFrame(frame);
 })();
@@ -1549,8 +1626,8 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     mk("line", { x1: gx(g), x2: gx(g), y1: gy(0), y2: gy(0) + 5, stroke: SOFT, "stroke-width": 1 }, svg);
     mk("text", { x: gx(g), y: gy(0) + 20, "text-anchor": "middle", "font-size": 12, fill: SOFT, "font-family": "inherit" }, svg).textContent = g;
   });
-  mk("text", { x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle", "font-size": 13, fill: SOFT, "font-family": "inherit" }, svg).textContent = "Generation";
-  mk("text", { x: L, y: 20, "font-size": 13, fill: SOFT, "font-family": "inherit" }, svg).textContent = "Best score in the generation (simulation)";
+  var xLab = mk("text", { x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle", "font-size": 13, fill: SOFT, "font-family": "inherit" }, svg);
+  var yLab = mk("text", { x: L, y: 20, "font-size": 13, fill: SOFT, "font-family": "inherit" }, svg);
 
   /* line */
   var d = CURVE.map(function (p, i) { return (i ? "L" : "M") + gx(p.g).toFixed(1) + " " + gy(p.score).toFixed(1); }).join(" ");
@@ -1565,9 +1642,9 @@ $$("#servoMap tbody tr").forEach(function (tr) {
 
   /* a few direct labels: the start and the best generation */
   var first = CURVE[0];
-  mk("text", { x: gx(first.g) + 2, y: gy(first.score) + 30, "font-size": 13, "font-weight": 600, fill: INK, "font-family": "inherit" }, svg).textContent = "Start " + fmt(first.score);
+  var startLab = mk("text", { x: gx(first.g) + 2, y: gy(first.score) + 30, "font-size": 13, "font-weight": 600, fill: INK, "font-family": "inherit" }, svg);
   var bp = CURVE[best];
-  mk("text", { x: gx(bp.g) - 8, y: gy(bp.score) - 16, "text-anchor": "end", "font-size": 13, "font-weight": 600, fill: INK, "font-family": "inherit" }, svg).textContent = "Best " + fmt(bp.score) + " (generation " + bp.g + ")";
+  var bestLab = mk("text", { x: gx(bp.g) - 8, y: gy(bp.score) - 16, "text-anchor": "end", "font-size": 13, "font-weight": 600, fill: INK, "font-family": "inherit" }, svg);
 
   var active = best;
   function show(i) {
@@ -1575,8 +1652,11 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     var p = CURVE[active];
     cross.setAttribute("x1", gx(p.g)); cross.setAttribute("x2", gx(p.g)); cross.setAttribute("opacity", active === best ? 0 : 1);
     ring.setAttribute("cx", gx(p.g)); ring.setAttribute("cy", gy(p.score));
-    read.innerHTML = "<b>Generation " + p.g + ":</b> score <b>" + fmt(p.score) + "</b>. Forward <b>" + fmt(p.fwd) + " cm</b>, sideways <b>" + fmt(p.side) +
-      " cm</b>, heading change <b>" + fmt(p.turn) + "°</b>, hips <b>" + p.hr + "°</b> right and <b>" + p.hl + "°</b> left.";
+    read.innerHTML = tx(
+      "<b>Generation " + p.g + ":</b> score <b>" + fmt(p.score) + "</b>. Forward <b>" + fmt(p.fwd) + " cm</b>, sideways <b>" + fmt(p.side) +
+      " cm</b>, heading change <b>" + fmt(p.turn) + "°</b>, hips <b>" + p.hr + "°</b> right and <b>" + p.hl + "°</b> left.",
+      "<b>Nesil " + p.g + ":</b> puan <b>" + fmt(p.score) + "</b>. İleri <b>" + fmt(p.fwd) + " cm</b>, yana <b>" + fmt(p.side) +
+      " cm</b>, yön değişimi <b>" + fmt(p.turn) + "°</b>, kalçalar sağda <b>" + p.hr + "°</b> ve solda <b>" + p.hl + "°</b>.");
   }
   function at(ev) {
     var r = svg.getBoundingClientRect();
@@ -1593,6 +1673,13 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     else if (ev.key === "End") { show(n - 1); ev.preventDefault(); }
   });
   svg.addEventListener("blur", function () { show(best); });
+  langHooks.push(function () {
+    xLab.textContent = tx("Generation", "Nesil");
+    yLab.textContent = tx("Best score in the generation (simulation)", "Nesildeki en iyi puan (simülasyon)");
+    startLab.textContent = tx("Start ", "Başlangıç ") + fmt(first.score);
+    bestLab.textContent = tx("Best " + fmt(bp.score) + " (generation " + bp.g + ")", "En iyi " + fmt(bp.score) + " (nesil " + bp.g + ")");
+    show(active);
+  });
   show(best);
 
   /* table view */
@@ -1603,6 +1690,33 @@ $$("#servoMap tbody tr").forEach(function (tr) {
       fmt(p.side) + "</td><td class='num'>" + fmt(p.turn) + "</td><td class='num'>" + fmt(p.tilt) + "</td><td class='num'>" + p.hr + " / " + p.hl + "</td>";
     tb.appendChild(tr);
   });
+})();
+
+/* ---- Turkish / English ---- */
+(function () {
+  var TR = ["Donanım", "Yazılım", "Videolar", "Şınav", "Simülasyon", "Sonuçlar", "Zorluklar", "Gelecek", "Takım", "Sekiz hobi servosu ve bir Arduino Uno ile yürüyen, 363 g'lık dört bacaklı robot. Önündeki mesafeyi ölçer, engelden geri çekilir, sola döner ve yürümeye devam eder. Aşağıdaki çizim, sketch'lerle aynı yürüyüşü aynı açılarla oynatır.", "<span>Yürüyüş v3 gerçek robotta çalışıyor: mesafe sensörüne doğru yürür, engellerden kaçar ve şınav çeker.</span>", "<span>Yürüyüş v1 (elle ayarlı) ve v2 (simülasyonda öğrenilmiş) önceki sürümlerdir. Her biri kendi dönemindeki robot çizimini korur.</span>", "toplam ağırlık", "MG90S, bacak başına iki", "simülasyonda denenen yürüyüş", "40 döngüde simülasyon", "aday", "Robot modeli (canlı)", "Üst", "Yan", "v1 elle", "v2 öğrenilmiş", "v3 engel", "Manuel", "Adım", "<i class=\"dotf\"></i>yerde", "<i class=\"ring\"></i>diz kalkık", "İlk yürüme testi (yürüyüş v1, ilk robot): beş adım ileri, beş adım geri.", "Gövde ve bacaklar 3D yazıcıdan basıldı. Her bacakta onu ileri geri sallayan bir kalça servosu ve kaldıran bir diz servosu var.", "Kontrol kartı", "Sensor Shield v5.0 takılı Arduino Uno", "Eyleyiciler", "8 adet TowerPro MG90S mikro servo, bacak başına 2", "Yapı", "3D baskı gövde ve bacaklar", "Ağırlık", "363 g, yürümeye hazır", "Sensörler", "HC-SR04 ultrasonik mesafe sensörü, MPU6050 jiroskop ve ivmeölçer", "Parçalar", "Parça", "Adet", "Görevi", "Yürüyüşü çalıştırır ve servo sinyallerini üretir", "Her servo için sinyal, güç ve toprak uçlarını dışarı çıkarır", "4 kalça ve 4 diz", "Harici batarya", "7,4 V. Servoları ve Arduino'yu besler", "5 V gerilim regülatör modülü", "Batarya gerilimini servolar için, USB portu üzerinden de Arduino için 5 V'a çevirir. Üzerindeki kondansatörler beslemeyi yumuşatır", "Açma kapama anahtarı", "Bataryadan gelen gücü keser", "HC-SR04 ultrasonik sensör", "Gövdenin ön ucunda durur ve önündeki mesafeyi ölçer. Robot 10 cm'nin altında yön değiştirir", "MPU6050 modülü", "Jiroskop ve ivmeölçer, gövdeye dik monte edilmiş ve Arduino'nun I²C pinlerine bağlı. Sketch'ler onu okumuyor", "1 takım", "İskelet ve iki eklemli dört bacak", "Güç ve sinyal", "Sekiz servo, Arduino'nun kendi 5 V pininin verebileceğinden çok daha fazla akım çeker. Bu yüzden batarya bir anahtar üzerinden 5 V regülatörü besler, regülatör de iki şeyi besler: shield üzerindeki servo hattını ve regülatörün USB portu üzerinden Arduino'yu. Arduino yalnızca kontrol sinyallerini gönderir. Tüm servolar aynı anda başlarsa besleme düşer, sketch'ler servoları bu yüzden tek tek başlatır.", "Batarya", "5 V regülatör", "Shield üzerindeki servo hattı", "8 servo", "USB portu", "8 servo sinyal pini", "Sensör bağlantıları", "İki sensör de Arduino'nun 5 V ve toprağını paylaşır. Sadece sinyal pinleri listelendi.", "Sensör", "Sinyal", "Arduino pini", "A4 ve A5 Uno'nun I²C pinleridir, bu yüzden mesafe sensörü onun yerine A3 ve A2'yi kullanır. Bir I²C tarayıcı sketch'i MPU6050'yi 0x68 adresinde bulur.", "Servo haritası", "Ölçek, her nötr açıyı servonun 0–180 derecelik aralığında gösterir. Bunlar şu anki robotun (sketch v3) açılarıdır. Robot yeniden yapılırken R1 4. pinden 2. pine taşındı ve R1 ile L2 yeniden kalibre edildi.", "Servo", "Pin", "Eklem", "Nötr açı", "Kalça", "Diz", "Fotoğraflar", "Kalibrasyon", "Servo kolları hiçbir zaman tam aynı açıda oturmaz, bu yüzden 90° her bacakta farklı bir duruştur. Her servoyu küçük bir kalibrasyon sketch'iyle elle kalibre ettik:", "Servoları bataryadan besle ve seri monitörden bir servo seç.", "Bacak nötr duruncaya kadar yukarı veya aşağı oynat: kalça dümdüz dışarı baksın, diz dinlenme yüksekliğinde olsun.", "O açıyı servo haritasındaki nötr tabloya yaz. Sketch bitmiş dizileri yapıştırmaya hazır şekilde yazdırır.", "Her hareketi nötr açıdan bir fark olarak tanımla, asla mutlak açı olarak değil.", "Tırıs yürüyüşü", "Bacaklar iki çapraz çift olarak hareket eder: <code>R1 + L2</code> ve <code>R2 + L1</code>. Bir çift adım atarken diğeri yerde kalıp gövdeyi ileri iter. Yürüyüş v1'de kalçalar 20° sallanır, dizler 45° kalkar. Servolar sıçramak yerine kaysın diye her hareket 20 küçük ara adıma bölünür.", "Yürüyüş v1'de bir tam adım altı harekettir:", "R3 ve L4 dizlerini kaldır.", "R1 ve L2'yi ileri, R2 ve L1'i geri salla.", "R3 ve L4 dizlerini indir.", "R4 ve L3 dizlerini kaldır.", "R2 ve L1'i ileri, R1 ve L2'yi geri salla.", "R4 ve L3 dizlerini indir.", "v1 test rutini beş adım ileri gider, nötr pozda dinlenir, sonra beş adım geri gider.", "Engelden kaçma (v3)", "Gövdenin ön ucundaki HC-SR04 ultrasonik sensör ileriye bakar. 10 µs'lik bir darbe gönderir; yankının mikrosaniye cinsinden süresinin 58'e bölümü santimetre cinsinden mesafedir. Robot bunu yürüyüşün her yarım döngüsünden sonra kontrol eder:", "Üst üste iki ölçüm 10 cm'nin altındaysa engel sayılır, böylece tek bir hatalı ölçüm robotu durdurmaz.", "2 döngü geri gider: aynı yürüyüş, her kalça salınımı ters çevrilmiş.", "Olduğu yerde 6 döngü sola döner, yaklaşık 90°. Sol taraftaki bacaklar geri, sağ taraftaki bacaklar ileri sallanır.", "Yeni yönde yürümeye devam eder.", "Bacaklar arasındaki küçük farklar robotun sola sapmasına yol açtı. Seri monitördeki iki tuş, <code>z</code> ve <code>x</code>, bir derece kalça salınımını bir taraftan diğerine kaydırır; düz yürüten değer sketch'in başındaki <code>trim</code> değişkenine yazılır. Aynı seri monitör robotu başlatır ve durdurur (<code>g</code>, <code>s</code>), mesafeyi yazdırır (<code>d</code>) ve sola dönüşü dener (<code>l</code>).", "Sketch'in üç sürümü", "Yürüyüş v2, v1'in yapısını korur ve sayılarını simülasyondan alır (aşağıya bak). Yürüyüş v3, v2'nin yapısını korur, mesafe sensörüne doğru yürür ve engelden kaçmayı ekler:", "Robot", "İlk robot", "Sensörlü yeniden yapılmış robot, 363 g", "Yürüdüğü yön", "R1 ve L1, eski ön", "Mesafe sensörü. R2 ve L2 ön bacaklar", "Kalça salınımı", "20°, iki taraf", "Sağ 17°, sol 25°", "21°, iki taraf, ayrıca bir trim tuşu", "Diz kaldırma", "45°, diz başına bir değer", "Hareket başına ara adım", "Ara adım başına bekleme", "Döngü başına hareket", "6: her çift için kaldır, salla, indir", "4: her çift için kaldırma ve sallama birlikte, sonra indirme", "4, v2'deki gibi", "Davranış", "5 adım ileri, dinlen, 5 adım geri", "Yalnızca ileri, güç kesilene kadar", "Engel 10 cm'den yakın olana kadar ileri, sonra geri çekil, sola dön ve yürümeye devam et", "Seri komutlar", "Yok", "v2'de kalçalar iki tarafta farklı miktarlarda sallanır, çünkü arama bunu buldu. v3'te iki taraf da 21° kullanır; çünkü testlerimizde eşitsiz çift, robot diğer uca doğru yürürken sapmasına yol açtı. Kalan sapma <code>z</code> ve <code>x</code> tuşlarıyla ayarlanır.", "GitHub'da aç", "Diğer sketch'ler", "Servoları tek tek hareket ettirir ve nötr, kalça salınımı ve diz kaldırma dizilerini yazdırır.", "Robotu çömelmiş halden kaldırır ve şınav çektirir (Şınav bölümüne bak).", "A4 ve A5 üzerindeki I²C cihazlarını listeler. MPU6050'yi 0x68'de bulur.", "Yeniden yapılan robot, sketch v3 çalışırken.", "Çömelmiş halden ayağa kalkış.", "Mesafe sensörüne doğru düz yürüyüş.", "Engelden geri çekilip sola dönüyor ve yürümeye devam ediyor.", "Robot ayrıca çömelmiş halden kalkıp şınav çekebilir. Şınav dört dizi birden kullanır: dizleri kapatmak gövdeyi indirir, açmak yukarı iter. Kalçalar boyunca nötr açılarında kalır.", "Sketch bütün dizler kapalı başlar, böylece gövde yerde durur.", "Yavaşça ayağa kalkar, sonra komut bekler.", "<code>p</code> şınavı başlatır ve durdurur. <code>+</code> ve <code>−</code> derinliği 5° adımlarla 5°'den 45°'ye kadar değiştirir. <code>f</code> ve <code>v</code> hızı değiştirir.", "Gerçek robotta şınav.", "Robotun fizik modelini kurduk, bir arama algoritmasının onda yürüyüş bulmasını sağladık ve bu yürüyüşü Arduino sketch v2'ye yazdık. Bu sayfada \"simülasyon\" diye etiketlenen her şey modelden gelir; gerçek robotun açıları Sonuçlar bölümünde onunla karşılaştırılır.", "URDF modeli", "Gövde, bacaklar ve servo sınırları", "Fizik simülasyonu, 4 ms adımlar", "Arama", "20 yürüyüşlük 25 nesil", "Öğrenilen açılar Arduino koduna yazıldı", "Gerçek robot", "Sketch v3 açıları çalıştırır, robot üzerinde ayarlandı", "Robot modeli", "Robot bir URDF dosyasıyla tanımlanır: bir gövde, dört kalça ve dört bacak, sekiz döner eklemle birleşir. Her eklem MG90S servo gibi sınırlandırılmıştır: 0,2 N·m tork, 8 rad/s ve ±1 rad aralık. Modelin toplam ağırlığı 342 g. Sensörleriyle bitmiş robot 363 g.", "Fizik motoru PyBullet'tir. Zemin sürtünmesi ve motor gücü tahmindir, bu yüzden simülasyon makul olanı gösterir, gerçek robotun yaptığını birebir değil.", "İlk kayıt: öğrenilmiş yürüyüş v2, PyBullet'te (eski kod).", "Yeni kayıt: yürüyüş v3 (21° kalça, 45° diz) düz yürüyor, <code>record_video.py</code> ile çizildi.", "Yeni kayıt: robot duvara 10 cm ölçüyor, 2 döngü geri gidiyor, yaklaşık 90° sola dönüyor ve yürümeye devam ediyor.", "Yürüyüş nasıl öğrenildi", "Evrimsel bir arama kullandık. Ek kütüphane gerektirmez ve birkaç dakikada çalışır.", "Aday bir yürüyüş altı sayıdır: sağ ve sol kalça salınımı, sağ ve sol diz kaldırma, hız ve bir yön düzeltme kazancı.", "Her aday PyBullet'te 40 döngü yürür.", "Bir puan alır (aşağıda).", "Bir neslin en iyi beş adayının ortalaması alınır. Sonraki 20 aday bu ortalama etrafındaki rastgele değişimlerdir ve değişim her nesilde biraz küçülür.", "Bu, 20 adaylı 25 nesil boyunca tekrarlanır; yani 500 yürüyüş.", "puan = ileri mesafe (cm) − yana kayma (cm) − 0,3 × yön değişimi (°) − gövde 35°'den fazla yatarsa 60", "Arama aralıkları gerçek robota uygun seçildi: kalça salınımı 5°–25°, diz kaldırma 20°–45°, hareket başına 15–60 ara adım, kazanç 0–1,5. Daha büyük salınımlar bacakları çarpıştırır ve MG90S diz sınırlıdır.", "Ne öğrendi", "Arama altı sayıyla biter. Tablo her birini sketch v2'ye giren sayının yanında gösterir. İki nedenle biraz farklıdırlar. Arama ondalık kullanır ama Arduino servosu yalnızca tam derece hareket eder, bu yüzden değerler yuvarlanır. Ayrıca sketch ara adımlar arasında 8 ms bekler, simülasyon ise her 4 ms'de bir adım atar; bu yüzden gerçek robotta yürüyüş simülasyonun yaklaşık yarı hızında çalışır.", "Parametre", "Neyi kontrol eder", "Simülasyonun cevabı", "Sketch v2'deki sayı", "Sağ kalça salınımı", "Sağ kalçaların bacakları ileri geri ne kadar salladığı", "Sol kalça salınımı", "Sol kalçalar için aynısı", "Dizlerin ayağı ne kadar yükselttiği (iki taraf)", "Hız", "Bir bacak hareketinin kaç küçük adıma bölündüğü. Daha çok adım daha yavaştır", "22,3 adım", "22 adım, her biri 8 ms", "Yön düzeltme kazancı", "Yön hatasının robotu rotasına ne kadar güçlü geri döndürdüğü", "Robotta kullanılmıyor. Sapmayı elle ayarlanan bir trim tuşu düzeltiyor", "İki değer izin verilen aralığın kenarında: diz kaldırma (45°) ve sol kalça (25°'nin 24,8°'si). Daha geniş bir aralık daha yüksek puan alabilir ama gerçek servolardan daha fazlasını ister.", "Veriyi tablo olarak göster", "Nesil", "Puan", "İleri (cm)", "Yana (cm)", "Yön değişimi (°)", "En fazla yatma (°)", "Kalçalar S / S (°)", "Simülasyonda öğrenme eğrisi: her nesildeki en iyi puan. 32,5'ten 167,5'e yükseldi. En iyi tek aday 24. nesilde 170,4 puan aldı.", "Yön düzeltme", "Yürüyen bir robot çizgisinden sapar. Simülasyonda yön doğrudan fizik motorundan gelir, bu yüzden arama bir düzeltme öğrenebildi: yön hatası büyüdükçe bir taraftaki adım uzar, diğer taraftaki kısalır, hata ile orantılı olarak. Düzeltmenin gücü öğrenilen kazançtır.", "Gerçek robot bunu yapmaz. MPU6050 takılı ama sketch'ler onu okumaz; sapma <code>z</code> ve <code>x</code> tuşlarıyla elle ayarlanır. Jiroskop döngüsü Gelecek çalışmalar altındaki fikirlerden biridir.", "Dosyalar", "Evrimsel aramayı çalıştırır ve en iyi yürüyüşü yazar.", "Bulunan en iyi yürüyüş ve simülasyon sonucu.", "PyBullet'te yön düzeltmeli, elle ayarlanmış daha eski bir yürüyüş.", "v3 yürüyüşünü ve engel sahnesini mp4 video olarak çizer.", "Arama açılarını simülasyonda buldu. Robotta çalışan sketch ise gerçek robot üzerinde belirleyip ayarladığımız açıları kullanır. Tablo ikisini yan yana koyar.", "Simülasyonda öğrenilen", "Gerçek robot (v3)", "4 ms (bir fizik adımı)", "Öğrenilen kazanç 0,64", "Yok. Bir trim tuşu salınımı iki taraf arasında kaydırır", "Diz kaldırma ve ara adım sayısı neredeyse aynı çıktı. Kalçalar çıkmadı: arama sağda 17°, solda 25° tercih etti, robot ise iki tarafta da 21° ile yürür. Testlerimizde eşitsiz çift gerçek robotu saptırdı, bu yüzden gerçek robot eşit kalçalar ve bir trim tuşuyla yürür.", "Simülasyonun kendi yürüyüşü için 40 döngüde tahmini: <strong>175 cm</strong> ileri, <strong>−0,3 cm</strong> yana, <strong>14,5°</strong> yön değişimi ve en fazla <strong>5,8°</strong> yatma. Gerçek robotta mesafe veya sapma ölçmedik, bu yüzden bu sayfa yalnızca açıları karşılaştırır.", "Neler ters gitti ve şimdiye kadar ne öğrendik.", "Robotta", "Regülatör koruması", "8 servo aynı anda başlayınca gerilim regülatörü korumaya girdi ve yanıp söndü. Artık servoları kodda tek tek başlatıyoruz ve bir güç anahtarı ekledik. Regülatör modülünün beslemeyi yumuşatan kendi kondansatörleri var.", "Çözüldü", "Yere değmeyen bir bacak", "Robot, bir bacağı zemine ulaşmadığı için sola saptı. Dizin nötr açısını oynatmak yetmedi, çünkü R3 zaten 180° aralığının 170°'sindeydi. Bacağı ayarladık ve her açıyı yeniden kalibre ettik; geriye kalanı trim tuşu karşılıyor.", "MPU6050 bulunamadı", "Jiroskop yalnızca sıfır döndürdü ve I²C tarayıcı hiçbir şey bulamadı. SDA toprağa bağlıydı, SDA ve SCL ters bağlanmıştı. Onları A4 ve A5'e yeniden bağlayınca tarayıcı MPU6050'yi 0x68'de buldu.", "Engel algılanmadı", "Robot engellere dümdüz yürüdü, çünkü yalnızca 3 cm'nin altında tepki veriyordu ve HC-SR04 o kadar yakında güvenilir değil. Sınır artık 10 cm ve üst üste iki ölçüm uyuşmalı.", "Sınırlı tork", "MG90S, 363 g'lık bir robot için az tork verir, bu yüzden yürüyüş açıların ve zamanlamanın dikkatli ayarını ister. Küçük değişiklikler bir adımın gövdeyi kaldırıp kaldırmayacağını belirler.", "Ayarla yönetiliyor", "Simülasyonda", "Ağır bir kök bağlantı", "PyBullet, URDF'nin ilk (kök) bağlantısına varsayılan olarak 1 kg kütle verdi. Robotun 342 g'ının üstüne eklenince model yaklaşık dört kat fazla ağır göründü ve servoları bacakları kaldıramadı. URDF'ye küçük bir kök kütlesi (0,1 g) ekledik ve sorun çözüldü. Ders: simülatörün gerçekten kullandığı kütleleri topla ve tartıyla karşılaştır.", "15 döngü boyunca iyi görünen bir yürüyüş", "İlk öğrenme koşularımız her adayı 15 döngü üzerinden puanladı. Kazanan 15 döngü iyi görünüp sonra dönmeye başladı, çünkü küçük yön hatası birikip durdu. Kısa test, yalnızca kısa süre iyi görünen yürüyüşleri ödüllendirdi. Testi 40 döngüye uzattık ve yön düzeltme kazancını öğrenilen bir parametreye çevirdik.", "Simülasyonda çözüldü", "Farklı servo yönleri", "Simülasyonda her eklem URDF'nin belirlediği yönde döner. Gerçek robotta yön, her servo kolunun nasıl takıldığına bağlıdır. İki işaret takımı farklıdır, bu yüzden simülasyondan gelen bir yürüyüş gerçek bir bacağı yanlış yöne oynatabilir. Her servoyu tek başına hareket ettiren bir komut ekledik, böylece her yön tek tek kontrol edilebilir.", "Testle yönetiliyor", "Gelecek çalışmalar", "Sonrası için fikirler. Hiçbiri henüz robotun parçası değil.", "Jiroskopla yön tutma", "MPU6050 zaten gövdeye dik monte edilmiş durumda. Dönüş hızını okumak, robotun yürürken kendi yönünü düzeltmesini sağlar, tıpkı simülasyonun öğrenilen kazançla yaptığı gibi.", "Daha düz yürüyüş, önce simülasyonda denenerek", "Gerçek robotun tuhaflıklarını modele koy, örneğin zemine tam ulaşmayan bir bacak gibi, ve aramanın bunu telafi eden açıları bulmasını sağla. Sonra sonucu elle ayarladığımız trim ile karşılaştır.", "Gerçek robotu ölçmek", "İşaretli bir zeminde sabit sayıda döngü yürü ve mesafeyi, sapmayı ve yön değişimini ölç; böylece gerçek robot simülasyonla sayı sayı karşılaştırılabilir.", "3D baskı ve mekanik montaj. Servo kalibrasyonu ve Arduino kodu, Boran ile birlikte. Simülasyon çalışması.", "Servo kalibrasyonu ve Arduino kodu, Rodi ile birlikte. Simülasyon çalışması.", "crawling-panther, Rodi Ercan ve Boran Akgün'ün öğrenci robotik projesi.", "servo", "<a href=\"https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v1.urdf\" target=\"_blank\" rel=\"noopener\">crawling-panther_v1.urdf</a> Rodi'nin ilk modelidir. <a href=\"https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v2.urdf\" target=\"_blank\" rel=\"noopener\">crawling-panther_v2.urdf</a> düzeltilmiş olandır: doğru ağırlık, servo sınırları ve kök kütlesi düzeltmesiyle (bkz. Zorluklar)."];
+  var els = $$("[data-i]");
+  els.forEach(function (el) { el._en = el.innerHTML; });
+  var metaDesc = $("meta[name=description]"), enTitle = document.title, enDesc = metaDesc ? metaDesc.content : "";
+  var trTitle = "crawling-panther: dört bacaklı bir robot";
+  var trDesc = "crawling-panther, Arduino Uno beyinli, sekiz servolu, 363 g'lık dört bacaklı bir robot. PyBullet simülasyonunda bulunan açılarla tırıs yürür, önündeki mesafeyi ölçer, engelden geri çekilir ve şınav çeker.";
+  var bEn = $("#langEn"), bTr = $("#langTr");
+  function setLang(l, save) {
+    LANG = l;
+    els.forEach(function (el) { el.innerHTML = l === "tr" ? TR[+el.getAttribute("data-i")] : el._en; });
+    document.documentElement.lang = l;
+    document.title = l === "tr" ? trTitle : enTitle;
+    if (metaDesc) metaDesc.content = l === "tr" ? trDesc : enDesc;
+    bEn.setAttribute("aria-pressed", l === "en" ? "true" : "false"); bTr.setAttribute("aria-pressed", l === "tr" ? "true" : "false");
+    langHooks.forEach(function (f) { f(); });
+    if (save) { try { localStorage.setItem("lang", l); } catch (e) {} }
+  }
+  bEn.addEventListener("click", function () { setLang("en", true); });
+  bTr.addEventListener("click", function () { setLang("tr", true); });
+  var start = "en";
+  try { start = localStorage.getItem("lang") || ""; } catch (e) {}
+  if (start !== "en" && start !== "tr") start = /^tr/i.test(navigator.language || "") ? "tr" : "en";
+  if (start === "tr") setLang("tr", false);
 })();
 </script>
 </body>
