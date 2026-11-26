@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>crawling-panther: a quadruped robot</title>
-<meta name="description" content="crawling-panther is a 342 g, eight-servo quadruped robot with an Arduino Uno brain. A hand-tuned trot gait runs on the robot; a second gait was learned in a PyBullet simulation and is waiting for its real-robot test.">
+<meta name="description" content="crawling-panther is a 363 g, eight-servo quadruped robot with an Arduino Uno brain. It trots with angles found in a PyBullet simulation, measures the distance ahead, backs away from obstacles and does push-ups.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#12161C">
@@ -121,7 +121,18 @@ h3{font-weight:700;font-size:1.15rem;line-height:1.25;margin:2.2em 0 .5em}
 .pipe strong{display:block;font-size:1rem}
 .pipe span{display:block;margin-top:4px;font-size:.88rem;color:var(--soft)}
 .blueprint{position:absolute;right:0;top:20px;width:340px;max-width:34%;opacity:.5;z-index:-1;pointer-events:none}
-.simvid{margin-top:20px}
+.vslot{margin:28px 0 0}
+.vslot[hidden]{display:none}
+.vslot .video{margin-top:0}
+.vslot .cap{margin-top:8px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 24px}
+.vgrid .vslot{margin-top:20px}
+.sec[hidden],.rail li[hidden]{display:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin-top:22px;border:1px solid var(--ink);background:var(--paper)}
+.card{padding:20px 20px 22px;border-left:1px solid var(--rule)}
+.card:first-child{border-left:0}
+.card h3{margin:0 0 .5em;font-size:1.1rem}
+.card p{margin:0;color:var(--soft)}
 @media (max-width:1100px){.blueprint{display:none}}
 @media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.stats li:nth-child(3){border-left:0}.stats li:nth-child(n+3){border-top:1px solid var(--rule)}.pipe{flex-direction:column}.pipe>div{border-left:0;border-top:1px solid var(--rule)}.pipe>div:first-child{border-top:0}.pipe>div+div::before{left:50%;top:-7px;margin:0 0 0 -6px;transform:rotate(135deg)}}
 
@@ -147,6 +158,8 @@ h3{font-weight:700;font-size:1.15rem;line-height:1.25;margin:2.2em 0 .5em}
 .lane li{position:relative;border:1px solid var(--ink);padding:5px 11px;font-size:.95rem}
 .lane li+li::before{content:"";position:absolute;left:-23px;top:50%;width:22px;height:1px;background:var(--ink)}
 .gallery{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.gallery figure{margin:0}
+.gallery figure[hidden]{display:none}
 figure{margin:0}
 .imgbox{aspect-ratio:4/3;background:var(--panel);border:1px dashed var(--rule);display:grid;place-items:center;text-align:center;padding:12px;color:var(--soft);font-size:.9rem;overflow:hidden}
 .imgbox img{width:100%;height:100%;object-fit:cover;display:block}
@@ -229,6 +242,8 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
   .hero{padding-top:44px}
 }
 @media (max-width:760px){
+  .seg{flex-wrap:wrap}
+  .seg .btn{padding:6px 12px}
   .gait-body{grid-template-columns:1fr}
   .gait-view{border-right:0;border-bottom:1px solid var(--rule)}
   .facts{grid-template-columns:1fr}
@@ -251,10 +266,12 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     <ul>
       <li><a href="#hardware">Hardware</a></li>
       <li><a href="#software">Software</a></li>
+      <li data-needs="videos"><a href="#videos">Videos</a></li>
+      <li data-needs="pushup"><a href="#pushup">Push-ups</a></li>
       <li><a href="#simulation">Simulation</a></li>
       <li><a href="#results">Results</a></li>
       <li><a href="#challenges">Challenges</a></li>
-      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#future">Future</a></li>
       <li><a href="#team">Team</a></li>
       <li class="ext"><a href="https://github.com/spiderbot-project/crawling-panther" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
@@ -272,26 +289,31 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     <text x="170" y="282" text-anchor="middle" font-size="11" fill="#47505C" stroke="none" font-family="monospace">0.1262 m</text>
   </svg>
   <h1 aria-label="crawling-panther"><span>crawling-</span><span>panther</span></h1>
-  <p class="lead">A 342 g quadruped that walks on eight hobby servos and an Arduino Uno. The diagram below runs the same gait as the sketch, with the same angles.</p>
+  <p class="lead">A 363 g quadruped that walks on eight hobby servos and an Arduino Uno. It measures the distance ahead, backs away from obstacles, turns left and walks on. The diagram below runs the same gaits as the sketches, with the same angles.</p>
   <ul class="statusrow">
-    <li class="ok"><span>Gait v1, tuned by hand, walks on the real robot.</span></li>
-    <li class="wait"><span>Gait v2 was learned in simulation. It has not been tested on the real robot yet.</span></li>
+    <li class="ok"><span>Gait v3 runs on the real robot: it walks toward its distance sensor, avoids obstacles and does push-ups.</span></li>
+    <li class="ok"><span>Gaits v1 (by hand) and v2 (learned in simulation) are the earlier versions. Each keeps the robot drawing of its time.</span></li>
   </ul>
 
   <ul class="stats" aria-label="Key numbers">
-    <li><b>342<i>g</i></b><span>total weight</span></li>
+    <li><b>363<i>g</i></b><span>total weight</span></li>
     <li><b>8<i>servos</i></b><span>MG90S, two per leg</span></li>
     <li><b>500<i>candidates</i></b><span>gaits tried in simulation</span></li>
-    <li><b>174<i>cm</i></b><span>simulated in 40 cycles</span></li>
+    <li><b>175<i>cm</i></b><span>simulated in 40 cycles</span></li>
   </ul>
 
   <div class="gait" id="gait">
     <div class="gait-bar">
-      <span class="gait-title">Robot model, top view (live)</span>
+      <span class="gait-title">Robot model (live)</span>
       <div class="bar-right">
+        <div class="seg" role="group" aria-label="View">
+          <button class="btn" type="button" id="gTop" aria-pressed="true">Top</button>
+          <button class="btn" type="button" id="gSide" aria-pressed="false">Side</button>
+        </div>
         <div class="seg" role="group" aria-label="Gait version">
-          <button class="btn" type="button" id="gV1" aria-pressed="true">v1 manual</button>
+          <button class="btn" type="button" id="gV1" aria-pressed="false">v1 manual</button>
           <button class="btn" type="button" id="gV2" aria-pressed="false">v2 learned</button>
+          <button class="btn" type="button" id="gV3" aria-pressed="true">v3 obstacle</button>
           <button class="btn" type="button" id="gMan" aria-pressed="false">Manual</button>
         </div>
         <div class="btns">
@@ -320,8 +342,10 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     </div>
   </div>
 
-  <div class="video" id="video"><div class="ph">The walking test video goes here. Set <code>video</code> in the CONFIG block at the end of this file.</div></div>
-  <p class="cap">First successful walking test: five steps forward, five steps back.</p>
+  <figure class="vslot" data-video="walkV1" hidden>
+    <div class="video"></div>
+    <figcaption class="cap">The first walking test (gait v1, the first robot): five steps forward, five steps back.</figcaption>
+  </figure>
 </section>
 
 <section class="sec" id="hardware">
@@ -332,7 +356,8 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     <div><dt>Controller</dt><dd>Arduino Uno with a Sensor Shield v5.0</dd></div>
     <div><dt>Actuators</dt><dd>8 TowerPro MG90S micro servos, 2 per leg</dd></div>
     <div><dt>Structure</dt><dd>3D-printed body and legs</dd></div>
-    <div><dt>Weight</dt><dd>342 g, ready to walk</dd></div>
+    <div><dt>Weight</dt><dd>363 g, ready to walk</dd></div>
+    <div><dt>Sensors</dt><dd>HC-SR04 ultrasonic distance sensor, MPU6050 gyroscope and accelerometer</dd></div>
   </dl>
 
   <h3>Parts</h3>
@@ -345,7 +370,8 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
       <tr><td>External battery</td><td class="n">1</td><td>7.4 V. Powers the servos and the Arduino</td></tr>
       <tr><td>5 V voltage regulator module</td><td class="n">1</td><td>Turns the battery voltage into 5 V for the servos and, through its USB port, for the Arduino. Its own capacitors smooth the supply</td></tr>
       <tr><td>Rocker switch</td><td class="n">1</td><td>Cuts the power from the battery</td></tr>
-      <tr><td>MPU6050 module</td><td class="n">1</td><td>Gyroscope and accelerometer, mounted on the body. Sketch v2 does not read it yet</td></tr>
+      <tr><td>HC-SR04 ultrasonic sensor</td><td class="n">1</td><td>Sits at the front end of the body and measures the distance ahead. The robot turns away below 10 cm</td></tr>
+      <tr><td>MPU6050 module</td><td class="n">1</td><td>Gyroscope and accelerometer, mounted upright on the body and wired to the Arduino's I²C pins. The sketches do not read it</td></tr>
       <tr><td>3D-printed body and legs</td><td class="n">1 set</td><td>Frame and four two-joint legs</td></tr>
     </tbody>
   </table></div>
@@ -358,35 +384,50 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
     <div class="lane"><b>Signal</b><ol><li>Arduino Uno</li><li>Sensor Shield v5.0</li><li>8 servo signal pins</li></ol></div>
   </div>
 
+  <h3>Sensor wiring</h3>
+  <p>Both sensors share the Arduino's 5 V and ground. Only the signal pins are listed.</p>
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th>Sensor</th><th>Signal</th><th>Arduino pin</th></tr></thead>
+    <tbody>
+      <tr><td>HC-SR04</td><td>TRIG</td><td class="n">A3</td></tr>
+      <tr><td>HC-SR04</td><td>ECHO</td><td class="n">A2</td></tr>
+      <tr><td>MPU6050</td><td>SDA</td><td class="n">A4</td></tr>
+      <tr><td>MPU6050</td><td>SCL</td><td class="n">A5</td></tr>
+    </tbody>
+  </table></div>
+  <p>A4 and A5 are the Uno's I²C pins, so the distance sensor uses A3 and A2 instead. An I²C scanner sketch finds the MPU6050 at address 0x68.</p>
+
   <h3>Servo map</h3>
-  <p>The scale shows each neutral angle on the servo's 0 to 180 degree range.</p>
+  <p>The scale shows each neutral angle on the servo's 0 to 180 degree range. These are the angles of the current robot (sketch v3). When the robot was rebuilt, R1 moved from pin 4 to pin 2 and R1 and L2 were calibrated again.</p>
   <div class="tblwrap"><table class="tbl" id="servoMap">
     <thead><tr><th>Servo</th><th>Pin</th><th>Joint</th><th>Neutral angle</th></tr></thead>
     <tbody>
-      <tr data-deg="85"><td>R1</td><td class="n">4</td><td>Hip</td><td class="n">85°</td></tr>
+      <tr data-deg="80"><td>R1</td><td class="n">2</td><td>Hip</td><td class="n">80°</td></tr>
       <tr data-deg="110"><td>R2</td><td class="n">6</td><td>Hip</td><td class="n">110°</td></tr>
       <tr data-deg="170"><td>R3</td><td class="n">5</td><td>Knee</td><td class="n">170°</td></tr>
       <tr data-deg="30"><td>R4</td><td class="n">7</td><td>Knee</td><td class="n">30°</td></tr>
       <tr data-deg="110"><td>L1</td><td class="n">8</td><td>Hip</td><td class="n">110°</td></tr>
-      <tr data-deg="40"><td>L2</td><td class="n">10</td><td>Hip</td><td class="n">40°</td></tr>
+      <tr data-deg="42"><td>L2</td><td class="n">10</td><td>Hip</td><td class="n">42°</td></tr>
       <tr data-deg="70"><td>L3</td><td class="n">9</td><td>Knee</td><td class="n">70°</td></tr>
       <tr data-deg="145"><td>L4</td><td class="n">11</td><td>Knee</td><td class="n">145°</td></tr>
     </tbody>
   </table></div>
 
-  <h3>Photos</h3>
-  <div class="gallery" id="gallery"></div>
+  <div id="photosBlock" hidden>
+    <h3>Photos</h3>
+    <div class="gallery" id="gallery"></div>
+  </div>
 </section>
 
 <section class="sec" id="software">
   <h2>Software</h2>
 
   <h3 style="margin-top:.6em">Calibration</h3>
-  <p>Servo horns never sit at exactly the same angle, so 90° is a different pose on every leg. We calibrated each servo by hand:</p>
+  <p>Servo horns never sit at exactly the same angle, so 90° is a different pose on every leg. We calibrated each servo by hand with a small calibration sketch:</p>
   <ol class="seq">
-    <li>Power the servos from the battery and send each one a test angle.</li>
-    <li>Adjust until the leg stands neutral: hip pointing straight out, knee at its resting height.</li>
-    <li>Write that angle into the neutral table shown in the servo map.</li>
+    <li>Power the servos from the battery and pick one servo on the serial monitor.</li>
+    <li>Nudge it up or down until the leg stands neutral: hip pointing straight out, knee at its resting height.</li>
+    <li>Write that angle into the neutral table shown in the servo map. The sketch prints the finished arrays, ready to paste.</li>
     <li>Describe every movement as an offset from the neutral angle, never as an absolute angle.</li>
   </ol>
 
@@ -403,33 +444,46 @@ footer{margin-top:80px;padding-top:18px;border-top:1px solid var(--rule);font-si
   </ol>
   <p>The v1 test routine does five steps forward, rests in the neutral pose, then does five steps backward.</p>
 
-  <h3>Two versions of the sketch</h3>
-  <p>Gait v2 keeps the structure of v1. Its numbers come from the simulation (see below), and a few things change:</p>
+  <h3>Obstacle avoidance (v3)</h3>
+  <p>An HC-SR04 ultrasonic sensor at the front end of the body looks ahead. It sends a 10 µs pulse, and the length of the echo in microseconds divided by 58 is the distance in centimetres. The robot checks it after every half cycle of the gait:</p>
+  <ol class="seq">
+    <li>Two readings in a row below 10 cm count as an obstacle, so one noisy reading does not stop the robot.</li>
+    <li>It backs up for 2 cycles: the same gait with every hip swing reversed.</li>
+    <li>It turns left on the spot for 6 cycles, about 90°. The legs on the left side swing backward and the legs on the right side swing forward.</li>
+    <li>It walks on in the new direction.</li>
+  </ol>
+  <p>Small differences between the legs made the robot veer to the left. Two keys on the serial monitor, <code>z</code> and <code>x</code>, move one degree of hip swing from one side to the other, and the value that walks straight goes into the <code>trim</code> variable at the top of the sketch. The same serial monitor starts and stops the robot (<code>g</code>, <code>s</code>), prints the distance (<code>d</code>) and tests the left turn (<code>l</code>).</p>
+
+  <h3>Three versions of the sketch</h3>
+  <p>Gait v2 keeps the structure of v1 and takes its numbers from the simulation (see below). Gait v3 keeps the structure of v2, walks toward the distance sensor and adds obstacle avoidance:</p>
   <div class="tblwrap"><table class="tbl">
-    <thead><tr><th></th><th>v1 manual</th><th>v2 learned</th></tr></thead>
+    <thead><tr><th></th><th>v1 manual</th><th>v2 learned</th><th>v3 obstacle</th></tr></thead>
     <tbody>
-      <tr><th scope="row">Status</th><td>Runs on the real robot</td><td class="pend">Not tested on the real robot yet</td></tr>
-      <tr><th scope="row">Hip swing</th><td>20°, both sides</td><td>Right 17°, left 25°</td></tr>
-      <tr><th scope="row">Knee lift</th><td>45°</td><td>45°</td></tr>
-      <tr><th scope="row">Sub-steps per move</th><td>20</td><td>22</td></tr>
-      <tr><th scope="row">Delay per sub-step</th><td>12 ms</td><td>8 ms (the simulation uses about 4 ms)</td></tr>
-      <tr><th scope="row">Moves per cycle</th><td>6: lift, swing, lower for each pair</td><td>4: lift and swing together, then lower, for each pair</td></tr>
-      <tr><th scope="row">Direction</th><td>5 steps forward, rest, 5 steps backward</td><td>Forward only, until powered off</td></tr>
+      <tr><th scope="row">Robot</th><td>First robot</td><td>First robot</td><td>Rebuilt robot with sensors, 363 g</td></tr>
+      <tr><th scope="row">Walks toward</th><td>R1 and L1, the old front</td><td>R1 and L1, the old front</td><td>The distance sensor. R2 and L2 are the front legs</td></tr>
+      <tr><th scope="row">Hip swing</th><td>20°, both sides</td><td>Right 17°, left 25°</td><td>21°, both sides, plus a trim key</td></tr>
+      <tr><th scope="row">Knee lift</th><td>45°</td><td>45°</td><td>45°, one value per knee</td></tr>
+      <tr><th scope="row">Sub-steps per move</th><td>20</td><td>22</td><td>22</td></tr>
+      <tr><th scope="row">Delay per sub-step</th><td>12 ms</td><td>8 ms</td><td>8 ms</td></tr>
+      <tr><th scope="row">Moves per cycle</th><td>6: lift, swing, lower for each pair</td><td>4: lift and swing together, then lower, for each pair</td><td>4, as in v2</td></tr>
+      <tr><th scope="row">Behaviour</th><td>5 steps forward, rest, 5 steps backward</td><td>Forward only, until powered off</td><td>Forward until an obstacle is closer than 10 cm, then back up, turn left and walk on</td></tr>
+      <tr><th scope="row">Serial commands</th><td>None</td><td>None</td><td>g, s, d, l, z, x</td></tr>
     </tbody>
   </table></div>
-  <p>The hips swing by different amounts on the two sides because that is what the search found. We think the weight of the battery is part of the reason, but we have not confirmed it.</p>
+  <p>The hips swing by different amounts on the two sides in v2 because that is what the search found. In v3 both sides use 21°, because in our tests the uneven pair made the robot veer when it walked toward the other end. The remaining drift is trimmed with the <code>z</code> and <code>x</code> keys.</p>
 
   <div class="tabs" role="tablist" aria-label="Arduino sketch version">
-    <button type="button" role="tab" id="tab-v1" aria-selected="true" aria-controls="panel-v1">v1 manual</button>
+    <button type="button" role="tab" id="tab-v1" aria-selected="false" aria-controls="panel-v1" tabindex="-1">v1 manual</button>
     <button type="button" role="tab" id="tab-v2" aria-selected="false" aria-controls="panel-v2" tabindex="-1">v2 learned</button>
+    <button type="button" role="tab" id="tab-v3" aria-selected="true" aria-controls="panel-v3">v3 obstacle</button>
   </div>
   <div class="tabnote">
-    <span id="tabStatus">Runs on the real robot. The <code>sign</code> array compensates for how each servo is mounted, since the left side is mirrored.</span>
-    <a id="tabLink" href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/trot_gait_v1_manual/trot_gait_v1_manual.ino" target="_blank" rel="noopener">Open on GitHub</a>
+    <span id="tabStatus"></span>
+    <a id="tabLink" href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/trot_gait_v3_obstacle/trot_gait_v3_obstacle.ino" target="_blank" rel="noopener">Open on GitHub</a>
   </div>
   <div class="code">
     <button class="copy" type="button" id="copyBtn">Copy</button>
-    <div role="tabpanel" id="panel-v1" aria-labelledby="tab-v1">
+    <div role="tabpanel" id="panel-v1" aria-labelledby="tab-v1" hidden>
 <pre id="code-v1"><span class="k">#include</span> &lt;Servo.h&gt;
 
 <span class="k">enum</span> { R1, R2, R3, R4, L1, L2, L3, L4, N };
@@ -595,28 +649,210 @@ Servo servos[N];
   gaitCycle();    <span class="c">// walks forward until powered off</span>
 }</pre>
     </div>
+    <div role="tabpanel" id="panel-v3" aria-labelledby="tab-v3">
+<pre id="code-v3"><span class="c">// crawling-panther: trot gait v3</span>
+<span class="c">//   * walks the learned gait toward the sensor end (old rear legs R2/L2 are the front)</span>
+<span class="c">//   * HC-SR04 on A3 (trig) and A2 (echo): when something is closer than OBSTACLE_CM the robot</span>
+<span class="c">//     backs up BACK_CYCLES cycles, turns left about 90 degrees and walks on</span>
+<span class="c">//</span>
+<span class="c">// Serial monitor (115200 baud, newline):</span>
+<span class="c">//   g walk   s stop   d print distance   l left-turn test   z / x steer more right / left</span>
+<span class="k">#include</span> &lt;<span class="k">Servo</span>.h&gt;
+
+<span class="k">enum</span> { R1, R2, R3, R4, L1, L2, L3, L4, N };
+
+<span class="k">const</span> <span class="k">int</span> pins[N]    = {<span class="n">2</span>,   <span class="n">6</span>,   <span class="n">5</span>,   <span class="n">7</span>,  <span class="n">8</span>,   <span class="n">10</span>, <span class="n">9</span>,  <span class="n">11</span>};
+<span class="k">const</span> <span class="k">int</span> neutral[N] = {<span class="n">80</span>, <span class="n">110</span>, <span class="n">170</span>, <span class="n">30</span>, <span class="n">110</span>, <span class="n">42</span>, <span class="n">70</span>, <span class="n">145</span>};   <span class="c">// calibrated angles</span>
+<span class="k">const</span> <span class="k">int</span> sign[N]    = {<span class="n">1</span>,   <span class="n">1</span>,  -<span class="n">1</span>,   <span class="n">1</span>, -<span class="n">1</span>,  -<span class="n">1</span>,  <span class="n">1</span>,  -<span class="n">1</span>};   <span class="c">// mounting direction</span>
+
+<span class="k">const</span> <span class="k">int</span> HIP_SWING_R  = <span class="n">21</span>;    <span class="c">// degrees</span>
+<span class="k">const</span> <span class="k">int</span> HIP_SWING_L  = <span class="n">21</span>;
+<span class="c">//                                R1 R2 R3  R4  L1 L2 L3  L4      (only the knees R3, R4, L3, L4 are used)</span>
+<span class="k">const</span> <span class="k">int</span> kneeLift[N]         = {<span class="n">0</span>, <span class="n">0</span>, <span class="n">45</span>, <span class="n">45</span>, <span class="n">0</span>, <span class="n">0</span>, <span class="n">45</span>, <span class="n">45</span>};
+<span class="k">int</span> trim = <span class="n">0</span>;                   <span class="c">// drift trim: robot veers left -&gt; press z. Copy the final value here.</span>
+
+<span class="k">const</span> <span class="k">int</span> INTERP_STEPS = <span class="n">22</span>;    <span class="c">// sub-steps per movement</span>
+<span class="k">const</span> <span class="k">int</span> STEP_DELAY   = <span class="n">8</span>;     <span class="c">// ms between sub-steps</span>
+<span class="k">const</span> <span class="k">int</span> FORWARD      = -<span class="n">1</span>;    <span class="c">// old rear legs (R2, L2) are the front</span>
+
+<span class="k">const</span> <span class="k">uint8_t</span> TRIG_PIN = A3;    <span class="c">// if you never get a reading, swap these two</span>
+<span class="k">const</span> <span class="k">uint8_t</span> ECHO_PIN = A2;
+<span class="k">const</span> <span class="k">int</span> OBSTACLE_CM    = <span class="n">10</span>;  <span class="c">// turn when closer than this (an HC-SR04 cannot read below ~2 cm)</span>
+<span class="k">const</span> <span class="k">int</span> NO_ECHO        = <span class="n">999</span>; <span class="c">// nothing heard</span>
+<span class="k">const</span> <span class="k">int</span> BACK_CYCLES    = <span class="n">2</span>;   <span class="c">// how far to back off before turning</span>
+<span class="k">const</span> <span class="k">int</span> TURN_CYCLES_90 = <span class="n">6</span>;   <span class="c">// gait cycles for a ~90 degree left turn: tune with the 'l' key</span>
+
+<span class="k">Servo</span> servos[N];
+<span class="k">int</span> cur[N], target[N];
+<span class="k">bool</span> walking = <span class="k">true</span>;
+<span class="k">int</span> sideDirR = <span class="n">1</span>, sideDirL = <span class="n">1</span>;  <span class="c">// -1 = this side's hips swing the other way (turning)</span>
+<span class="k">int</span> walkDir = <span class="n">1</span>;                 <span class="c">// -1 while backing up</span>
+
+<span class="c">// Move all servos smoothly from cur[] to target[]</span>
+<span class="k">void</span> apply() {
+  <span class="k">int</span> start[N];
+  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) start[i] = cur[i];
+  <span class="k">for</span> (<span class="k">int</span> s = <span class="n">1</span>; s &lt;= INTERP_STEPS; s++) {
+    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) {
+      cur[i] = start[i] + (<span class="k">long</span>)(target[i] - start[i]) * s / INTERP_STEPS;
+      servos[i].write(cur[i]);
+    }
+    delay(STEP_DELAY);
+  }
+}
+
+<span class="c">// d = +1 swings the leg toward the sensor, d = -1 the other way</span>
+<span class="k">void</span> hip(<span class="k">int</span> i, <span class="k">int</span> d) {
+  <span class="k">bool</span> right = (i == R1 || i == R2);
+  <span class="k">int</span> swing = right ? HIP_SWING_R + trim : HIP_SWING_L - trim;
+  <span class="k">if</span> (swing &lt; <span class="n">0</span>) swing = <span class="n">0</span>;
+  <span class="k">int</span> side = right ? sideDirR : sideDirL;
+  target[i] = neutral[i] + sign[i] * swing * d * FORWARD * side * walkDir;
+}
+
+<span class="k">void</span> knee(<span class="k">int</span> i, <span class="k">bool</span> lifted) {
+  target[i] = neutral[i] + (lifted ? sign[i] * kneeLift[i] : <span class="n">0</span>);
+}
+
+<span class="k">void</span> halfCycleA() {
+  knee(R3, <span class="k">true</span>); knee(L4, <span class="k">true</span>);
+  hip(R1, +<span class="n">1</span>); hip(L2, +<span class="n">1</span>); hip(R2, -<span class="n">1</span>); hip(L1, -<span class="n">1</span>);
+  apply();
+  knee(R3, <span class="k">false</span>); knee(L4, <span class="k">false</span>); apply();
+}
+
+<span class="k">void</span> halfCycleB() {
+  knee(R4, <span class="k">true</span>); knee(L3, <span class="k">true</span>);
+  hip(R2, +<span class="n">1</span>); hip(L1, +<span class="n">1</span>); hip(R1, -<span class="n">1</span>); hip(L2, -<span class="n">1</span>);
+  apply();
+  knee(R4, <span class="k">false</span>); knee(L3, <span class="k">false</span>); apply();
+}
+
+<span class="c">// ---------- distance ----------</span>
+<span class="k">int</span> readOnce() {
+  digitalWrite(TRIG_PIN, LOW);  delayMicroseconds(<span class="n">2</span>);
+  digitalWrite(TRIG_PIN, HIGH); delayMicroseconds(<span class="n">10</span>);
+  digitalWrite(TRIG_PIN, LOW);
+  <span class="k">unsigned</span> <span class="k">long</span> t = pulseIn(ECHO_PIN, HIGH, <span class="n">25000UL</span>);   <span class="c">// 25 ms is about 4 m</span>
+  delay(<span class="n">10</span>);                                            <span class="c">// let the echo die out</span>
+  <span class="k">if</span> (t == <span class="n">0</span>) <span class="k">return</span> NO_ECHO;
+  <span class="k">return</span> (<span class="k">int</span>)(t / <span class="n">58</span>);                                 <span class="c">// microseconds to cm</span>
+}
+
+<span class="k">bool</span> blocked() {                                        <span class="c">// two close readings in a row</span>
+  <span class="k">return</span> readOnce() &lt; OBSTACLE_CM &amp;&amp; readOnce() &lt; OBSTACLE_CM;
+}
+
+<span class="c">// ---------- avoiding ----------</span>
+<span class="k">void</span> backUp(<span class="k">int</span> cycles) {
+  walkDir = -<span class="n">1</span>;
+  <span class="k">for</span> (<span class="k">int</span> c = <span class="n">0</span>; c &lt; cycles; c++) { halfCycleA(); halfCycleB(); }
+  walkDir = <span class="n">1</span>;
+}
+
+<span class="c">// The robot's front is now the old rear, so its LEFT side carries the R servos:</span>
+<span class="c">// turning left = R servos swing backward, L servos swing forward.</span>
+<span class="k">void</span> turnLeft(<span class="k">int</span> cycles) {
+  sideDirR = -<span class="n">1</span>; sideDirL = <span class="n">1</span>;
+  <span class="k">for</span> (<span class="k">int</span> c = <span class="n">0</span>; c &lt; cycles; c++) { halfCycleA(); halfCycleB(); }
+  sideDirR = sideDirL = <span class="n">1</span>;
+}
+
+<span class="k">void</span> avoidObstacle() {
+  Serial.println(F("Obstacle: backing up, turning left"));
+  backUp(BACK_CYCLES);
+  turnLeft(TURN_CYCLES_90);
+}
+
+<span class="k">void</span> setup() {
+  Serial.begin(<span class="n">115200</span>);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; N; i++) {
+    cur[i] = target[i] = neutral[i];
+    servos[i].write(cur[i]);
+    servos[i].attach(pins[i]);
+    delay(<span class="n">500</span>);                 <span class="c">// start servos one by one (protects the regulator)</span>
+  }
+  Serial.println(F("g walk  s stop  d distance  l left turn  z / x steer"));
+  delay(<span class="n">2000</span>);                  <span class="c">// wait 2 s before walking</span>
+}
+
+<span class="k">void</span> handleSerial() {
+  <span class="k">while</span> (Serial.available()) {
+    <span class="k">char</span> c = Serial.read();
+    <span class="k">if</span> (c == 'g') walking = <span class="k">true</span>;
+    <span class="k">else</span> <span class="k">if</span> (c == 's') walking = <span class="k">false</span>;
+    <span class="k">else</span> <span class="k">if</span> (c == 'd') { Serial.print(F("distance: ")); Serial.println(readOnce()); }
+    <span class="k">else</span> <span class="k">if</span> (c == 'l') turnLeft(TURN_CYCLES_90);
+    <span class="k">else</span> <span class="k">if</span> (c == 'z') { trim = min(trim + <span class="n">1</span>, <span class="n">20</span>);  Serial.print(F("trim ")); Serial.println(trim); }
+    <span class="k">else</span> <span class="k">if</span> (c == 'x') { trim = max(trim - <span class="n">1</span>, -<span class="n">20</span>); Serial.print(F("trim ")); Serial.println(trim); }
+  }
+}
+
+<span class="k">void</span> loop() {
+  handleSerial();
+  <span class="k">if</span> (!walking) <span class="k">return</span>;
+  halfCycleA();
+  <span class="k">if</span> (blocked()) { avoidObstacle(); <span class="k">return</span>; }
+  halfCycleB();
+  <span class="k">if</span> (blocked()) { avoidObstacle(); <span class="k">return</span>; }
+}</pre>
+    </div>
+  </div>
+
+  <h3>Other sketches</h3>
+  <ul class="files">
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/servo_calibration/servo_calibration.ino" target="_blank" rel="noopener">firmware/servo_calibration</a><span>Moves one servo at a time and prints the neutral, hip-swing and knee-lift arrays.</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/pushup_v3/pushup_v3.ino" target="_blank" rel="noopener">firmware/pushup_v3</a><span>Stands the robot up from a crouch and does push-ups (see Push-ups).</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/i2c_scanner/i2c_scanner.ino" target="_blank" rel="noopener">firmware/i2c_scanner</a><span>Lists the I²C devices on A4 and A5. It finds the MPU6050 at 0x68.</span></li>
+  </ul>
+</section>
+
+<section class="sec" id="videos" data-needs-media hidden>
+  <h2>Videos</h2>
+  <p>The rebuilt robot, running sketch v3.</p>
+  <div class="vgrid">
+    <figure class="vslot" data-video="standUp" hidden><div class="video"></div><figcaption class="cap">Standing up from a crouch.</figcaption></figure>
+    <figure class="vslot" data-video="straight" hidden><div class="video"></div><figcaption class="cap">Walking straight toward the distance sensor.</figcaption></figure>
+    <figure class="vslot" data-video="avoid" hidden><div class="video"></div><figcaption class="cap">Backing away from an obstacle, turning left and walking on.</figcaption></figure>
   </div>
 </section>
 
+<section class="sec" id="pushup" data-needs-media hidden>
+  <h2>Push-ups</h2>
+  <p>The robot can also stand up from a crouch and do push-ups. A push-up uses all four knees at once: folding them lowers the body, straightening them pushes it back up. The hips stay at their neutral angles the whole time.</p>
+  <ol class="seq">
+    <li>The sketch starts with every knee folded, so the body rests on the floor.</li>
+    <li>It stands up slowly, then waits for a command.</li>
+    <li><code>p</code> starts and stops the push-ups. <code>+</code> and <code>−</code> change the depth in steps of 5°, from 5° to 45°. <code>f</code> and <code>v</code> change the speed.</li>
+  </ol>
+  <figure class="vslot" data-video="pushup" hidden><div class="video"></div><figcaption class="cap">Push-ups on the real robot.</figcaption></figure>
+  <p><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/pushup_v3/pushup_v3.ino" target="_blank" rel="noopener">firmware/pushup_v3/pushup_v3.ino</a></p>
+</section>
+
 <section class="sec" id="simulation">
-  <h2>Simulation <span class="status-tag">Real-robot test pending</span></h2>
-  <p>We built a physics model of the robot, let a search algorithm find a walking gait in it, and wrote that gait into the Arduino sketch v2. Everything labelled "simulation" on this page comes from the model. It has not been measured on the real robot yet.</p>
+  <h2>Simulation</h2>
+  <p>We built a physics model of the robot, let a search algorithm find a walking gait in it, and wrote that gait into the Arduino sketch v2. Everything labelled "simulation" on this page comes from the model, and the real robot's angles are compared with it in Results.</p>
 
   <div class="pipe" role="group" aria-label="From simulation to the real robot">
     <div><small>01</small><strong>URDF model</strong><span>Body, legs and servo limits</span></div>
     <div><small>02</small><strong>PyBullet</strong><span>Physics simulation, 4 ms steps</span></div>
     <div><small>03</small><strong>Search</strong><span>25 generations of 20 gaits</span></div>
     <div><small>04</small><strong>Sketch v2</strong><span>Learned angles written into the Arduino code</span></div>
-    <div><small>05</small><strong>Real robot</strong><span>Test pending</span></div>
+    <div><small>05</small><strong>Real robot</strong><span>Sketch v3 runs the angles, tuned on the robot</span></div>
   </div>
 
   <h3>Robot model</h3>
-  <p>The robot is described in a URDF file: a body, four hips and four legs, joined by eight revolute joints. Each joint is limited like an MG90S servo: 0.2 N·m of torque, 8 rad/s and a range of ±1 rad. The model weighs 342 g in total.</p>
+  <p>The robot is described in a URDF file: a body, four hips and four legs, joined by eight revolute joints. Each joint is limited like an MG90S servo: 0.2 N·m of torque, 8 rad/s and a range of ±1 rad. The model weighs 342 g in total. The finished robot, with its sensors, weighs 363 g.</p>
   <p><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v1.urdf" target="_blank" rel="noopener">crawling-panther_v1.urdf</a> is Rodi's first model. <a href="https://github.com/spiderbot-project/crawling-panther/blob/main/urdf/crawling-panther_v2.urdf" target="_blank" rel="noopener">crawling-panther_v2.urdf</a> is the corrected one, with the right weight, the servo limits and a fix for the root mass (see Challenges).</p>
-  <p>The physics engine is PyBullet. Floor friction and motor strength are estimates, so the simulation shows what is plausible, not what the real robot will do.</p>
+  <p>The physics engine is PyBullet. Floor friction and motor strength are estimates, so the simulation shows what is plausible, not exactly what the real robot does.</p>
 
-  <div class="video simvid" id="simVideo"><div class="ph">A recording of the PyBullet simulation goes here. Set <code>simVideo</code> in the CONFIG block at the end of this file.</div></div>
-  <p class="cap">The learned gait v2 walking in the PyBullet simulation.</p>
+  <div class="vgrid">
+    <figure class="vslot" data-video="sim" hidden><div class="video"></div><figcaption class="cap">The first recording: the learned gait v2 in PyBullet (old code).</figcaption></figure>
+    <figure class="vslot" data-video="simV3" hidden><div class="video"></div><figcaption class="cap">New recording: gait v3 (21° hips, 45° knees) walking straight, rendered with <code>record_video.py</code>.</figcaption></figure>
+    <figure class="vslot" data-video="simV3Avoid" hidden><div class="video"></div><figcaption class="cap">New recording: the robot reads 10 cm to a wall, backs up for 2 cycles, turns left about 90° and walks on.</figcaption></figure>
+  </div>
 
   <h3>How the gait was learned</h3>
   <p>We used an evolutionary search. It needs no extra libraries and runs in a few minutes.</p>
@@ -639,7 +875,7 @@ Servo servos[N];
       <tr><td>Left hip swing</td><td>The same for the left hips</td><td class="num">24.8°</td><td class="num">25°</td></tr>
       <tr><td>Knee lift</td><td>How high the knees raise a foot (both sides)</td><td class="num">45°</td><td class="num">45°</td></tr>
       <tr><td>Speed</td><td>How many small steps one leg movement is split into. More steps is slower</td><td class="num">22.3 steps</td><td class="num">22 steps, 8 ms each</td></tr>
-      <tr><td>Heading-correction gain</td><td>How strongly the gyroscope steers the robot back on course</td><td class="num">0.64</td><td>Not used yet. The sketch does not read the gyroscope</td></tr>
+      <tr><td>Heading-correction gain</td><td>How strongly the heading error steers the robot back on course</td><td class="num">0.64</td><td>Not used on the robot. A hand-set trim key corrects the drift instead</td></tr>
     </tbody>
   </table></div>
   <p>Two values sit at the edge of the allowed range: the knee lift (45°) and the left hip (24.8° of 25°). A wider range might score higher, but it would ask more from the real servos.</p>
@@ -658,37 +894,34 @@ Servo servos[N];
   <p class="cap">Learning curve in simulation: the best score in each generation. It climbed from 32.5 to 167.5. The best single candidate scored 170.4 in generation 24.</p>
 
   <h3>Heading correction</h3>
-  <p>A walking robot drifts off its line. The correction works like a gyroscope loop: when the heading error grows, the stride on one side gets longer and on the other side shorter, in proportion to the error. The strength of the correction is the learned gain.</p>
-  <p>In the simulation the heading comes straight from the physics engine. The MPU6050 gyroscope is already mounted on the robot, but sketch v2 does not read it yet, so it walks without any correction.</p>
-
-  <h3>Cross-check in Gazebo <span class="tag">Experimental</span></h3>
-  <p>We also load the same URDF into Gazebo to check the PyBullet result. The gait runs without feedback there, and the robot still tips over. We treat Gazebo as experimental and do not use its results.</p>
+  <p>A walking robot drifts off its line. In the simulation the heading comes straight from the physics engine, so the search could learn a correction: when the heading error grows, the stride on one side gets longer and on the other side shorter, in proportion to the error. The strength of the correction is the learned gain.</p>
+  <p>The real robot does not do this. The MPU6050 is mounted but the sketches do not read it, and the drift is trimmed by hand with the <code>z</code> and <code>x</code> keys. A gyroscope loop is one of the ideas under Future work.</p>
 
   <h3>Files</h3>
   <ul class="files">
     <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/learn_gait.py" target="_blank" rel="noopener">simulation/learn_gait.py</a><span>Runs the evolutionary search and writes the best gait.</span></li>
     <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/best_gait_v2.json" target="_blank" rel="noopener">simulation/best_gait_v2.json</a><span>The best gait found and its simulated result.</span></li>
     <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/walk_demo.py" target="_blank" rel="noopener">simulation/walk_demo.py</a><span>An earlier, hand-tuned gait with heading correction in PyBullet.</span></li>
-    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/gazebo_make_world.py" target="_blank" rel="noopener">simulation/gazebo_make_world.py</a><span>Builds the Gazebo world from the v2 URDF (experimental).</span></li>
-    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/gazebo_walk.py" target="_blank" rel="noopener">simulation/gazebo_walk.py</a><span>Walks the Gazebo robot without feedback (experimental).</span></li>
+    <li><a href="https://github.com/spiderbot-project/crawling-panther/blob/main/simulation/record_video.py" target="_blank" rel="noopener">simulation/record_video.py</a><span>Renders the v3 walk and the obstacle scene as mp4 videos.</span></li>
   </ul>
 </section>
 
 <section class="sec" id="results">
   <h2>Results</h2>
-  <p>The two columns are not the same experiment. The simulation column is the result of gait v2 in the model, with heading correction switched on. The real-robot column stays empty until we have measured it.</p>
+  <p>The search found its angles in simulation. The sketch that runs on the robot uses angles we set and tuned on the real robot. The table puts them side by side.</p>
   <div class="tblwrap"><table class="tbl">
-    <thead><tr><th></th><th>Simulation</th><th>Real robot</th></tr></thead>
+    <thead><tr><th></th><th>Learned in simulation</th><th>Real robot (v3)</th></tr></thead>
     <tbody>
-      <tr><th scope="row">Gait</th><td>v2 learned</td><td>v2 learned (planned)</td></tr>
-      <tr><th scope="row">Heading correction</th><td>On (gain 0.64)</td><td>Off (the gyroscope is not read yet)</td></tr>
-      <tr><th scope="row">Forward distance in 40 cycles</th><td class="num">175 cm</td><td class="pend">To be tested</td></tr>
-      <tr><th scope="row">Sideways drift</th><td class="num">−0.3 cm</td><td class="pend">To be tested</td></tr>
-      <tr><th scope="row">Heading change</th><td class="num">14.5°</td><td class="pend">To be tested</td></tr>
-      <tr><th scope="row">Maximum tilt</th><td class="num">5.8°</td><td class="pend">To be tested</td></tr>
+      <tr><th scope="row">Right hip swing</th><td class="num">17.4°</td><td class="num">21°</td></tr>
+      <tr><th scope="row">Left hip swing</th><td class="num">24.8°</td><td class="num">21°</td></tr>
+      <tr><th scope="row">Knee lift</th><td class="num">45°</td><td class="num">45°</td></tr>
+      <tr><th scope="row">Sub-steps per move</th><td class="num">22.3</td><td class="num">22</td></tr>
+      <tr><th scope="row">Delay per sub-step</th><td class="num">4 ms (one physics step)</td><td class="num">8 ms</td></tr>
+      <tr><th scope="row">Heading correction</th><td>Learned gain 0.64</td><td>None. A trim key shifts the swing between the two sides</td></tr>
     </tbody>
   </table></div>
-  <p>The walking video at the top of this page shows gait v1.</p>
+  <p>The knee lift and the number of sub-steps came out almost the same. The hips did not: the search preferred 17° on the right and 25° on the left, while the robot walks with 21° on both sides. In our tests the uneven pair made the real robot veer, so the real robot walks with equal hips and a trim key instead.</p>
+  <p>What the simulation predicted for its own gait in 40 cycles: <strong>175 cm</strong> forward, <strong>−0.3 cm</strong> sideways, a heading change of <strong>14.5°</strong> and a maximum tilt of <strong>5.8°</strong>. We did not measure distance or drift on the real robot, so this page compares angles only.</p>
 </section>
 
 <section class="sec" id="challenges">
@@ -703,13 +936,23 @@ Servo servos[N];
       <div class="state fixed">Fixed</div>
     </div>
     <div class="issue">
-      <h3>Servo on pin 11</h3>
-      <p>This servo (L4) sometimes does not respond. We suspect a power drop or a loose connector, but haven't confirmed it.</p>
-      <div class="state open">Open</div>
+      <h3>A leg that did not touch the ground</h3>
+      <p>The robot veered to the left because one leg did not reach the floor. Moving the knee's neutral angle was not enough, since R3 was already at 170° of its 180° range. We adjusted the leg and calibrated every angle again, and the trim key covers what is left.</p>
+      <div class="state fixed">Fixed</div>
+    </div>
+    <div class="issue">
+      <h3>MPU6050 not found</h3>
+      <p>The gyroscope returned only zeros and the I²C scanner found nothing. SDA was connected to ground, and SDA and SCL were swapped. After rewiring them to A4 and A5 the scanner found the MPU6050 at 0x68.</p>
+      <div class="state fixed">Fixed</div>
+    </div>
+    <div class="issue">
+      <h3>Obstacle not detected</h3>
+      <p>The robot walked straight into obstacles because it only reacted below 3 cm, and an HC-SR04 is unreliable that close. The limit is now 10 cm, and two readings in a row must agree.</p>
+      <div class="state fixed">Fixed</div>
     </div>
     <div class="issue">
       <h3>Limited torque</h3>
-      <p>The MG90S has little torque for a 342 g robot, so the gait needs careful tuning of angles and timing. Small changes decide whether a step lifts the body or stalls.</p>
+      <p>The MG90S has little torque for a 363 g robot, so the gait needs careful tuning of angles and timing. Small changes decide whether a step lifts the body or stalls.</p>
       <div class="state managed">Managed by tuning</div>
     </div>
   </div>
@@ -731,23 +974,26 @@ Servo servos[N];
       <p>In the simulation, each joint turns in the direction set by the URDF. On the real robot, the direction depends on how each servo horn was mounted. The two sets of signs differ, so a gait from the simulation can move a real leg the wrong way. We added a command that moves each servo on its own, so every direction can be checked one by one.</p>
       <div class="state managed">Managed by testing</div>
     </div>
-    <div class="issue">
-      <h3>Tipping over in Gazebo</h3>
-      <p>The robot falls over in Gazebo, even with a gait that works in PyBullet. We have not found the cause yet, and Gazebo stays experimental.</p>
-      <div class="state open">Open</div>
-    </div>
   </div>
 </section>
 
-<section class="sec" id="roadmap">
-  <h2>Roadmap</h2>
-  <ol class="track">
-    <li class="now"><b>Test gait v2 on the real robot</b><span>Run sketch v2, measure distance, drift and heading, and fill in the Results table.</span></li>
-    <li><b>Heading correction with the MPU6050</b><span>Wire the gyroscope to the Arduino, read the heading in the sketch and use the same correction as in the simulation.</span></li>
-    <li><b>Bluetooth telemetry (HC-05 or HC-06)</b><span>Send the robot's motion to a computer, so the real movement can be compared with the simulation.</span></li>
-    <li><b>Reinforcement learning with PPO</b><span>Replace the evolutionary search with PPO from <code>stable-baselines3</code> and compare the two gaits.</span></li>
-    <li><b>Cross-check in Gazebo</b><span>Make the robot stay upright in Gazebo and compare it with PyBullet.</span></li>
-  </ol>
+<section class="sec" id="future">
+  <h2>Future work</h2>
+  <p>Ideas for later. None of them is part of the robot yet.</p>
+  <div class="cards">
+    <article class="card">
+      <h3>Heading hold with the gyroscope</h3>
+      <p>The MPU6050 is already mounted upright on the body. Reading its rotation rate would let the robot correct its own heading while it walks, the way the simulation does with its learned gain.</p>
+    </article>
+    <article class="card">
+      <h3>Straighter walking, tested in simulation first</h3>
+      <p>Put the real robot's quirks into the model, such as a leg that does not quite reach the floor, and let the search find angles that compensate. Then compare the result with the trim we set by hand.</p>
+    </article>
+    <article class="card">
+      <h3>Measuring the real robot</h3>
+      <p>Walk a fixed number of cycles on a marked floor and measure the distance, the drift and the heading change, so the real robot can be compared with the simulation number by number.</p>
+    </article>
+  </div>
 </section>
 
 <section class="sec" id="team">
@@ -772,16 +1018,26 @@ Servo servos[N];
 <script>
 /* ========= CONFIG: edit these values, nothing else needs to change ========= */
 var CONFIG = {
-  // Local file in docs/assets/ (e.g. "assets/walk.mp4") OR a YouTube link. Leave "" to show a placeholder.
-  video: "assets/walk.mp4",
-  // Recording of the PyBullet simulation (save as docs/assets/sim.mp4). Leave "" to show a placeholder.
-  simVideo: "assets/sim.mp4",
-  poster: "",                         // optional poster image, e.g. "assets/poster.jpg"
-  // Photos in docs/assets/. Missing files show a placeholder box.
+  // Videos: a file in docs/assets/ (e.g. "assets/walk.mp4") OR a YouTube link.
+  // A video whose file is missing is simply not shown. Leave "" to switch one off.
+  videos: {
+    walkV1:     "assets/walk.mp4",            // first walking test, gait v1, first robot
+    standUp:    "assets/standup.mp4",         // rebuilt robot stands up
+    straight:   "assets/walk-v3.mp4",         // rebuilt robot walks straight
+    avoid:      "assets/avoid.mp4",           // backs away from an obstacle, turns left
+    pushup:     "assets/pushup.mp4",          // push-ups (the Push-ups section is hidden without it)
+    sim:        "assets/sim.mp4",             // old PyBullet recording (gait v2)
+    simV3:      "assets/sim-v3-walk.mp4",     // new recording from simulation/record_video.py walk
+    simV3Avoid: "assets/sim-v3-avoid.mp4"     // new recording from simulation/record_video.py avoid
+  },
+  // Six photos in docs/assets/. A missing file is simply not shown.
   photos: [
-    { src: "assets/robot-front.jpg", alt: "Front view of the robot",          caption: "Front view" },
-    { src: "assets/robot-top.jpg",   alt: "Top view showing the electronics", caption: "Electronics: Uno, Sensor Shield, regulator" },
-    { src: "assets/robot-leg.jpg",   alt: "Close-up of a leg",                caption: "A leg with hip and knee servo" }
+    { src: "assets/photo-1.jpg", alt: "The robot" },
+    { src: "assets/photo-2.jpg", alt: "The robot" },
+    { src: "assets/photo-3.jpg", alt: "The robot" },
+    { src: "assets/photo-4.jpg", alt: "The robot" },
+    { src: "assets/photo-5.jpg", alt: "The robot" },
+    { src: "assets/photo-6.jpg", alt: "The robot" }
   ]
 };
 /* ========================================================================== */
@@ -800,41 +1056,46 @@ function $(s, r) { return (r || document).querySelector(s); }
 function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
 function fmt(n, d) { return (n < 0 ? "−" : "") + Math.abs(n).toFixed(d === undefined ? 1 : d); }
 
-/* ---- videos ---- */
-function loadVideo(sel, v, title) {
-  var box = $(sel);
-  if (!box || !v) return;
+/* ---- videos: a slot appears only when its file loads ---- */
+function syncMedia() {
+  $$("[data-needs-media]").forEach(function (sec) {
+    var any = $$(".vslot", sec).some(function (f) { return !f.hidden; });
+    sec.hidden = !any;
+    $$("li[data-needs='" + sec.id + "']").forEach(function (li) { li.hidden = !any; });
+  });
+}
+$$("li[data-needs]").forEach(function (li) { li.hidden = true; });
+$$(".vslot[data-video]").forEach(function (fig) {
+  var v = CONFIG.videos[fig.getAttribute("data-video")], box = $(".video", fig);
+  if (!v) return;
+  var title = ($(".cap", fig) || fig).textContent;
   var yt = v.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
-  box.innerHTML = "";
   if (yt) {
     var f = document.createElement("iframe");
     f.src = "https://www.youtube-nocookie.com/embed/" + yt[1];
-    f.title = title;
-    f.allow = "accelerometer; encrypted-media; picture-in-picture";
-    f.allowFullscreen = true; f.loading = "lazy";
-    box.appendChild(f);
+    f.title = title; f.allow = "accelerometer; encrypted-media; picture-in-picture"; f.allowFullscreen = true; f.loading = "lazy";
+    box.appendChild(f); fig.hidden = false; syncMedia();
   } else {
     var vid = document.createElement("video");
-    vid.src = v; vid.controls = true; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.preload = "metadata";
-    if (sel === "#video" && CONFIG.poster) vid.poster = CONFIG.poster;
-    box.appendChild(vid);
+    vid.controls = true; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.preload = "metadata";
+    vid.setAttribute("aria-label", title);
+    vid.addEventListener("loadedmetadata", function () { fig.hidden = false; syncMedia(); });
+    vid.addEventListener("error", function () { fig.hidden = true; syncMedia(); });
+    vid.src = v; box.appendChild(vid);
   }
-}
-loadVideo("#video", CONFIG.video, "Walking test video");
-loadVideo("#simVideo", CONFIG.simVideo, "PyBullet simulation video");
+});
+syncMedia();
 
-/* ---- gallery ---- */
+/* ---- gallery: a photo appears only when its file loads ---- */
 (function () {
-  var gal = $("#gallery");
+  var gal = $("#gallery"), block = $("#photosBlock");
   CONFIG.photos.forEach(function (p) {
-    var fig = document.createElement("figure");
-    var wrap = document.createElement("div"); wrap.className = "imgbox"; wrap.textContent = p.src;
+    var fig = document.createElement("figure"); fig.hidden = true;
+    var wrap = document.createElement("div"); wrap.className = "imgbox"; wrap.style.border = "0";
     var img = new Image(); img.alt = p.alt;
-    img.onload = function () { wrap.textContent = ""; wrap.style.border = "0"; wrap.appendChild(img); };
-    img.onerror = function () { wrap.textContent = p.src + " has not been added yet"; };
+    img.onload = function () { fig.hidden = false; block.hidden = false; };
     img.src = p.src;
-    var cap = document.createElement("figcaption"); cap.textContent = p.caption;
-    fig.appendChild(wrap); fig.appendChild(cap); gal.appendChild(fig);
+    wrap.appendChild(img); fig.appendChild(wrap); gal.appendChild(fig);
   });
 })();
 
@@ -849,14 +1110,16 @@ $$("#servoMap tbody tr").forEach(function (tr) {
 
 /* ---- sketch tabs and copy button ---- */
 (function () {
-  var tabs = [$("#tab-v1"), $("#tab-v2")];
-  var panels = [$("#panel-v1"), $("#panel-v2")];
+  var tabs = [$("#tab-v1"), $("#tab-v2"), $("#tab-v3")];
+  var panels = [$("#panel-v1"), $("#panel-v2"), $("#panel-v3")];
   var base = "https://github.com/spiderbot-project/crawling-panther/blob/main/firmware/";
   var info = [
-    { s: "Runs on the real robot. The <code>sign</code> array compensates for how each servo is mounted, since the left side is mirrored.",
+    { s: "Gait v1, tuned by hand, on the first robot. The <code>sign</code> array compensates for how each servo is mounted, since the left side is mirrored.",
       u: base + "trot_gait_v1_manual/trot_gait_v1_manual.ino" },
-    { s: "Learned in simulation. Not tested on the real robot yet. Same structure as v1, with the numbers from <code>best_gait_v2.json</code>.",
-      u: base + "trot_gait_v2_learned/trot_gait_v2_learned.ino" }
+    { s: "Gait v2, learned in simulation, on the first robot. Same structure as v1, with the numbers from <code>best_gait_v2.json</code>.",
+      u: base + "trot_gait_v2_learned/trot_gait_v2_learned.ino" },
+    { s: "Gait v3, the current sketch: walks toward the distance sensor, backs away from obstacles, turns left and walks on.",
+      u: base + "trot_gait_v3_obstacle/trot_gait_v3_obstacle.ino" }
   ];
   function select(n) {
     tabs.forEach(function (t, i) {
@@ -871,10 +1134,11 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     t.addEventListener("click", function () { select(i); });
     t.addEventListener("keydown", function (e) {
       if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        var n = 1 - i; select(n); tabs[n].focus(); e.preventDefault();
+        var n = (i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length; select(n); tabs[n].focus(); e.preventDefault();
       }
     });
   });
+  select(2);
   var btn = $("#copyBtn");
   btn.addEventListener("click", function () {
     var pre = $("[role=tabpanel]:not([hidden]) pre");
@@ -906,33 +1170,40 @@ $$("#servoMap tbody tr").forEach(function (tr) {
 /* ================= Live gait diagram =================
    Same data and same logic as the Arduino sketches:
    target = neutral + sign * amount, applied move by move.
-   v1: firmware/trot_gait_v1_manual   v2: firmware/trot_gait_v2_learned */
+   v1: firmware/trot_gait_v1_manual   v2: firmware/trot_gait_v2_learned   v3: firmware/trot_gait_v3_obstacle
+   v1 and v2 draw the first robot, v3 and Manual draw the rebuilt robot (sensor at the front end). */
 (function () {
-  var NAMES   = ["R1", "R2", "R3", "R4", "L1", "L2", "L3", "L4"];
-  var PINS    = [4, 6, 5, 7, 8, 10, 9, 11];
-  var NEUTRAL = [85, 110, 170, 30, 110, 40, 70, 145];
-  var SIGN    = [1, 1, -1, 1, -1, -1, 1, -1];
+  var NAMES = ["R1", "R2", "R3", "R4", "L1", "L2", "L3", "L4"];
+  var SIGN  = [1, 1, -1, 1, -1, -1, 1, -1];
   var R1 = 0, R2 = 1, R3 = 2, R4 = 3, L1 = 4, L2 = 5, L3 = 6, L4 = 7;
   var KNEE = 45;
+  var ROBOT = {
+    old: { pins: [4, 6, 5, 7, 8, 10, 9, 11], neutral: [85, 110, 170, 30, 110, 40, 70, 145] },
+    now: { pins: [2, 6, 5, 7, 8, 10, 9, 11], neutral: [80, 110, 170, 30, 110, 42, 70, 145] }
+  };
   var V1 = { hip: 20, steps: 5 };
   var V2 = { hipR: 17, hipL: 25 };
+  var V3 = { hip: 21, walk: 3, back: 2, turn: 6, dist: [60, 40, 22], back_d: [11, 15] };
   var NOTES = {
-    v1: "Gait v1, tuned by hand. Runs on the real robot: hips swing 20°, knees lift 45°, 20 sub-steps per move.",
-    man: "Manual mode. Each slider moves one servo from its neutral angle, the same way the sketch does. Try lifting one knee and swinging its hip to see how a step works.",
-    v2: "Gait v2, learned in simulation. Not tested on the real robot yet: right hips swing 17°, left hips 25°, knees lift 45°, 22 sub-steps per move, and lift and swing happen together."
+    v1: "Gait v1, tuned by hand, on the first robot: hips swing 20°, knees lift 45°, 20 sub-steps per move. It walks toward R1 and L1.",
+    v2: "Gait v2, learned in simulation, on the first robot: right hips swing 17°, left hips 25°, knees lift 45°, 22 sub-steps per move, and lift and swing happen together.",
+    v3: "Gait v3 on the rebuilt robot: hips swing 21° on both sides, knees lift 45°, 22 sub-steps. It walks toward the distance sensor. Closer than 10 cm, it backs up 2 cycles, turns left for 6 cycles (about 90°) and walks on.",
+    man: "Manual mode, on the rebuilt robot. Each slider moves one servo from its neutral angle, the same way the sketch does. Try lifting one knee and swinging its hip to see how a step works."
   };
+  var kindOf = function (m) { return (m === "v1" || m === "v2") ? "old" : "now"; };
 
   function build(mode) {
-    var T = NEUTRAL.slice(), out = [];
+    var N = ROBOT[kindOf(mode)].neutral;
+    var T = N.slice(), out = [];
     function add(label, mut, meta, hold) {
       var before = T.slice(); mut();
       var changed = [];
       for (var i = 0; i < 8; i++) if (T[i] !== before[i]) changed.push(i);
       out.push({ label: label, t: T.slice(), changed: changed, meta: meta, hold: hold || 140 });
     }
-    function knee(i, up) { T[i] = NEUTRAL[i] + (up ? SIGN[i] * KNEE : 0); }
+    function knee(i, up) { T[i] = N[i] + (up ? SIGN[i] * KNEE : 0); }
     if (mode === "v1") {
-      var hip = function (i, d, dir) { T[i] = NEUTRAL[i] + SIGN[i] * V1.hip * d * dir; };
+      var hip = function (i, d, dir) { T[i] = N[i] + SIGN[i] * V1.hip * d * dir; };
       [1, -1].forEach(function (dir) {
         var fw = dir > 0 ? "forward" : "back", bw = dir > 0 ? "back" : "forward";
         for (var k = 1; k <= V1.steps; k++) {
@@ -944,115 +1215,247 @@ $$("#servoMap tbody tr").forEach(function (tr) {
           add("Swing R2 and L1 " + fw + ", R1 and L2 " + bw, function () { hip(R2, 1, dir); hip(L1, 1, dir); hip(R1, -1, dir); hip(L2, -1, dir); }, m);
           add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, m);
         }
-        add("Back to the neutral pose", function () { for (var i = 0; i < 8; i++) T[i] = NEUTRAL[i]; }, { dir: dir, rest: true }, 800);
+        add("Back to the neutral pose", function () { for (var i = 0; i < 8; i++) T[i] = N[i]; }, { dir: dir, rest: true }, 800);
       });
-    } else {
-      var hip2 = function (i, d) { T[i] = NEUTRAL[i] + SIGN[i] * ((i === R1 || i === R2) ? V2.hipR : V2.hipL) * d; };
+    } else if (mode === "v2") {
+      var hip2 = function (i, d) { T[i] = N[i] + SIGN[i] * ((i === R1 || i === R2) ? V2.hipR : V2.hipL) * d; };
       add("Lift knees R3 and L4 while R1 and L2 swing forward and R2 and L1 swing back",
         function () { knee(R3, 1); knee(L4, 1); hip2(R1, 1); hip2(L2, 1); hip2(R2, -1); hip2(L1, -1); }, {});
       add("Lower knees R3 and L4", function () { knee(R3, 0); knee(L4, 0); }, {});
       add("Lift knees R4 and L3 while R2 and L1 swing forward and R1 and L2 swing back",
         function () { knee(R4, 1); knee(L3, 1); hip2(R2, 1); hip2(L1, 1); hip2(R1, -1); hip2(L2, -1); }, {});
       add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, {});
+    } else {
+      /* v3, exactly like the sketch: target = neutral + sign * swing * d * FORWARD * side * walkDir, FORWARD = -1 */
+      var walkDir = 1, sideR = 1, sideL = 1;
+      var hip3 = function (i, d) {
+        var side = (i === R1 || i === R2) ? sideR : sideL;
+        T[i] = N[i] + SIGN[i] * V3.hip * d * (-1) * side * walkDir;
+      };
+      var cyc = function (phase, k, total, dist) {
+        var m = { phase: phase, k: k, total: total, dist: dist };
+        var a, b;
+        if (phase === "turn") { a = "Turning left: R servos swing backward, L servos forward"; b = a; }
+        else if (phase === "back") { a = "Backing up: R1 and L2 swing away from the sensor, R2 and L1 toward it"; b = "Backing up: R2 and L1 swing away from the sensor, R1 and L2 toward it"; }
+        else { a = "R1 and L2 swing toward the sensor, R2 and L1 swing back"; b = "R2 and L1 swing toward the sensor, R1 and L2 swing back"; }
+        add("Lift knees R3 and L4. " + a, function () { knee(R3, 1); knee(L4, 1); hip3(R1, 1); hip3(L2, 1); hip3(R2, -1); hip3(L1, -1); }, m);
+        add("Lower knees R3 and L4", function () { knee(R3, 0); knee(L4, 0); }, m);
+        add("Lift knees R4 and L3. " + b, function () { knee(R4, 1); knee(L3, 1); hip3(R2, 1); hip3(L1, 1); hip3(R1, -1); hip3(L2, -1); }, m);
+        add("Lower knees R4 and L3", function () { knee(R4, 0); knee(L3, 0); }, m);
+      };
+      for (var c = 1; c <= V3.walk; c++) cyc("walk", c, V3.walk, V3.dist[c - 1]);
+      add("Two readings in a row are below 10 cm, so the robot reacts", function () {}, { phase: "obstacle", dist: 8 }, 1300);
+      walkDir = -1;
+      for (c = 1; c <= V3.back; c++) cyc("back", c, V3.back, V3.back_d[c - 1]);
+      walkDir = 1; sideR = -1; sideL = 1;
+      for (c = 1; c <= V3.turn; c++) cyc("turn", c, V3.turn);
+      sideR = 1; sideL = 1;
     }
     return out;
   }
 
-  /* legs drawn in the URDF layout (top view, x forward = up, 1300 px per metre):
-     body 0.116 x 0.1262 m, battery slab 0.065 x 0.035 m, hips at +-0.0365 m, leg length 0.068 m */
+  /* ---------- geometry, in the URDF layout (1300 px per metre in the top view) ---------- */
   var CX = 230, CY = 150, K = 1300;
   var BW = 0.1262 * K, BL = 0.116 * K, LEN = 0.068 * K;
-  var C_LEG_A = "#D4452F", C_LEG_B = "#7A2A1E";
-  var LEGS = [
+  var C_LEG_A = "#D4452F", C_LEG_B = "#7A2A1E", INK = "#12161C", SOFT = "#47505C", PAPER = "#ECEEF1";
+  /* hips of the first robot, front (R1, L1) at the top. The rebuilt robot is the same drawing turned by 180 degrees,
+     so its sensor end (old rear, R2/L2) is at the top. */
+  var OLD_LEGS = [
     { h: R1, k: R3, x: CX + BW / 2, y: CY - 0.0365 * K, s: 1,  g: "a" },
     { h: R2, k: R4, x: CX + BW / 2, y: CY + 0.0365 * K, s: 1,  g: "b" },
     { h: L1, k: L3, x: CX - BW / 2, y: CY - 0.0365 * K, s: -1, g: "b" },
     { h: L2, k: L4, x: CX - BW / 2, y: CY + 0.0365 * K, s: -1, g: "a" }
   ];
+  var NEW_LEGS = OLD_LEGS.map(function (L) { return { h: L.h, k: L.k, x: 2 * CX - L.x, y: 2 * CY - L.y, s: -L.s, g: L.g }; });
+
+  function txt(svg, x, y, txt, o) {
+    var t = mk("text", { x: x, y: y, "text-anchor": (o && o.a) || "middle", "font-size": (o && o.size) || 10, "font-weight": 600, fill: (o && o.fill) || PAPER, "font-family": "inherit" }, svg);
+    t.textContent = txt; return t;
+  }
+  function rect(g, x, y, w, h, r, fill, sw) { return mk("rect", { x: x, y: y, width: w, height: h, rx: r, fill: fill, stroke: INK, "stroke-width": sw || 1.5 }, g); }
 
   var view = $("#gView");
-  var svg = mk("svg", { viewBox: "0 0 460 300", role: "img", "aria-label": "Top view of the robot model with its four legs in their current gait pose" }, view);
-  /* ground grid */
-  for (var gx0 = -3; gx0 <= 3; gx0++) mk("line", { x1: CX + gx0 * 60, x2: CX + gx0 * 60, y1: 20, y2: 290, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, svg);
-  for (var gy0 = -2; gy0 <= 2; gy0++) mk("line", { x1: 20, x2: 440, y1: CY + gy0 * 60, y2: CY + gy0 * 60, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, svg);
-  /* body, battery slab, front mark (URDF colours) */
-  mk("rect", { x: CX - BW / 2, y: CY - BL / 2, width: BW, height: BL, rx: 10, fill: "#5E9B7A", stroke: "#12161C", "stroke-width": 2 }, svg);
-  /* Arduino + shield at the front (top), battery lying across the body at the rear (bottom) */
-  mk("rect", { x: CX - 0.055 * K, y: CY - BL / 2 + 8, width: 0.11 * K, height: 0.052 * K, rx: 3, fill: "#2F5FA8", stroke: "#12161C", "stroke-width": 1.5 }, svg);
-  mk("text", { x: CX, y: CY - BL / 2 + 8 + 0.052 * K / 2 + 4, "text-anchor": "middle", "font-size": 10, "font-weight": 600, fill: "#ECEEF1", "font-family": "inherit" }, svg).textContent = "Arduino";
-  var BATW = 0.085 * K, BATH = 0.04 * K, BATY = CY + 0.0285 * K + 0.012 * K;
-  mk("rect", { x: CX - BATW / 2, y: BATY - BATH / 2, width: BATW, height: BATH, rx: 5, fill: "#3D3BF3", stroke: "#12161C", "stroke-width": 1.5 }, svg);
-  mk("text", { x: CX, y: BATY + 4, "text-anchor": "middle", "font-size": 10, "font-weight": 600, fill: "#ECEEF1", "font-family": "inherit" }, svg).textContent = "battery";
-  mk("path", { d: "M" + CX + " " + (CY - BL / 2 - 22) + " l-8 12 h16 z", fill: "#47505C" }, svg);
-  mk("text", { x: CX, y: CY - BL / 2 - 27, "text-anchor": "middle", "font-size": 13, fill: "#47505C", "font-family": "inherit" }, svg).textContent = "front";
+  var top = mk("svg", { viewBox: "0 0 460 300", role: "img", "aria-label": "Top view of the robot model with its four legs in their current gait pose" }, view);
+  var side = mk("svg", { viewBox: "0 0 460 300", role: "img", "aria-label": "Side view of the robot model with its legs in their current gait pose" }, view);
+  side.style.display = "none";
+  for (var gx0 = -3; gx0 <= 3; gx0++) mk("line", { x1: CX + gx0 * 60, x2: CX + gx0 * 60, y1: 20, y2: 290, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, top);
+  for (var gy0 = -2; gy0 <= 2; gy0++) mk("line", { x1: 20, x2: 440, y1: CY + gy0 * 60, y2: CY + gy0 * 60, stroke: "#C3C9D1", "stroke-width": 1, opacity: .45 }, top);
 
-  LEGS.forEach(function (L) {
-    mk("line", { x1: L.x, y1: L.y, x2: L.x + L.s * (LEN + 8), y2: L.y, stroke: "#47505C", "stroke-width": 1, "stroke-dasharray": "4 4", opacity: .7 }, svg);
-    L.shadow = mk("circle", { r: 8, fill: "none", stroke: "#47505C", "stroke-width": 1.5, "stroke-dasharray": "3 3", opacity: 0 }, svg);
-    L.line = mk("line", { x1: L.x, y1: L.y, "stroke-width": 9, "stroke-linecap": "round", stroke: L.g === "a" ? C_LEG_A : C_LEG_B }, svg);
-    L.foot = mk("circle", { r: 7, "stroke-width": 3 }, svg);
-    /* hip servo block, teal */
-    mk("rect", { x: L.x - 11, y: L.y - 11, width: 22, height: 22, rx: 4, fill: "#2A9D8F", stroke: "#12161C", "stroke-width": 1.5 }, svg);
-    mk("circle", { cx: L.x, cy: L.y, r: 3.5, fill: "#ECEEF1", stroke: "#12161C", "stroke-width": 1.5 }, svg);
-    mk("text", { x: L.x + L.s * (LEN + 12), y: L.y + 4, "text-anchor": L.s > 0 ? "start" : "end", "font-size": 11, "font-weight": 600, fill: "#12161C", "font-family": "inherit" }, svg)
-      .textContent = NAMES[L.h] + "/" + NAMES[L.k];
-  });
+  /* ----- top view: the first robot (Arduino at the front, battery across the rear) ----- */
+  var topOld = mk("g", {}, top), topNew = mk("g", {}, top);
+  rect(topOld, CX - BW / 2, CY - BL / 2, BW, BL, 10, "#5E9B7A", 2);
+  rect(topOld, CX - 0.055 * K, CY - BL / 2 + 8, 0.11 * K, 0.052 * K, 3, "#2F5FA8");
+  txt(topOld, CX, CY - BL / 2 + 8 + 0.052 * K / 2 + 4, "Arduino");
+  var BATW = 0.085 * K, BATH = 0.04 * K, BATY = CY + 0.0285 * K + 0.012 * K;
+  rect(topOld, CX - BATW / 2, BATY - BATH / 2, BATW, BATH, 5, "#3D3BF3");
+  txt(topOld, CX, BATY + 4, "battery");
+  mk("path", { d: "M" + CX + " " + (CY - BL / 2 - 22) + " l-8 12 h16 z", fill: SOFT }, topOld);
+  txt(topOld, CX, CY - BL / 2 - 27, "front", { size: 13, fill: SOFT });
+
+  /* ----- top view: the rebuilt robot (sensor at the front end, battery lengthwise, Arduino beside it) ----- */
+  rect(topNew, CX - BW / 2, CY - BL / 2, BW, BL, 10, "#5E9B7A", 2);
+  rect(topNew, CX - 0.0475 * K, CY - 0.045 * K, 0.035 * K, 0.088 * K, 4, "#3D3BF3");
+  txt(topNew, CX - 0.03 * K, CY - 0.001 * K, "battery", { size: 9 }).setAttribute("transform", "rotate(-90 " + (CX - 0.03 * K) + " " + (CY - 0.001 * K) + ")");
+  rect(topNew, CX + 0.004 * K, CY - 0.045 * K, 0.053 * K, 0.075 * K, 3, "#2F5FA8");
+  txt(topNew, CX + 0.0305 * K, CY - 0.004 * K, "Arduino", { size: 10 });
+  /* ultrasonic sensor: a board with two round transducers, sticking out of the front end */
+  rect(topNew, CX - 0.024 * K, CY - BL / 2 - 7, 0.048 * K, 12, 2, "#1E2A3A", 1.5);
+  mk("circle", { cx: CX - 0.0125 * K, cy: CY - BL / 2 - 1, r: 5, fill: "#C9CED6", stroke: INK, "stroke-width": 1.2 }, topNew);
+  mk("circle", { cx: CX + 0.0125 * K, cy: CY - BL / 2 - 1, r: 5, fill: "#C9CED6", stroke: INK, "stroke-width": 1.2 }, topNew);
+  mk("path", { d: "M" + (CX - 74) + " " + (CY - BL / 2 - 12) + " l-8 12 h16 z", fill: SOFT }, topNew);
+  txt(topNew, CX - 90, CY - BL / 2 - 2, "front", { size: 13, fill: SOFT, a: "end" });
+  var wall = mk("g", { opacity: 0 }, topNew);
+  mk("rect", { x: CX - 80, y: CY - BL / 2 - 44, width: 160, height: 7, fill: "#B83E0B", stroke: INK, "stroke-width": 1.5 }, wall);
+  var dText = txt(topNew, CX + 34, CY - BL / 2 - 12, "", { size: 12, fill: INK, a: "start" });
+
+  function makeTopLegs(g, defs) {
+    return defs.map(function (D) {
+      var L = { h: D.h, k: D.k, x: D.x, y: D.y, s: D.s };
+      mk("line", { x1: L.x, y1: L.y, x2: L.x + L.s * (LEN + 8), y2: L.y, stroke: SOFT, "stroke-width": 1, "stroke-dasharray": "4 4", opacity: .7 }, g);
+      L.shadow = mk("circle", { r: 8, fill: "none", stroke: SOFT, "stroke-width": 1.5, "stroke-dasharray": "3 3", opacity: 0 }, g);
+      L.line = mk("line", { x1: L.x, y1: L.y, "stroke-width": 9, "stroke-linecap": "round", stroke: D.g === "a" ? C_LEG_A : C_LEG_B }, g);
+      L.foot = mk("circle", { r: 7, "stroke-width": 3 }, g);
+      rect(g, L.x - 11, L.y - 11, 22, 22, 4, "#2A9D8F");
+      mk("circle", { cx: L.x, cy: L.y, r: 3.5, fill: PAPER, stroke: INK, "stroke-width": 1.5 }, g);
+      txt(g, L.x + L.s * (LEN + 12), L.y + 4, NAMES[L.h] + "/" + NAMES[L.k], { size: 11, fill: INK, a: L.s > 0 ? "start" : "end" });
+      return L;
+    });
+  }
+  var topLegs = { old: makeTopLegs(topOld, OLD_LEGS), now: makeTopLegs(topNew, NEW_LEGS) };
+
+  /* ----- side view: ground, body, the two legs on the near side (full colour) and the two on the far side (pale) ----- */
+  var GY = 250, K2 = 1500, BX = 196, HIPY = 176, LEN2 = 0.068 * K2, FORE = 0.0365 * K2, LIFTH = 24;
+  mk("line", { x1: 20, x2: 440, y1: GY, y2: GY, stroke: INK, "stroke-width": 2 }, side);
+  for (var tx = 30; tx < 440; tx += 40) mk("line", { x1: tx, x2: tx - 8, y1: GY, y2: GY + 8, stroke: "#C3C9D1", "stroke-width": 1.2 }, side);
+  var sideOld = mk("g", {}, side), sideNew = mk("g", {}, side);
+  var sideLegs = { old: [], now: [] };
+
+  function sideRobot(g, kind) {
+    /* far legs first (behind the body), then the body and its parts, then the near legs */
+    var defs = kind === "old"
+      ? [{ h: R1, k: R3, fore: 1, near: true, g: "a" }, { h: R2, k: R4, fore: -1, near: true, g: "b" },
+         { h: L1, k: L3, fore: 1, near: false, g: "b" }, { h: L2, k: L4, fore: -1, near: false, g: "a" }]
+      : [{ h: L2, k: L4, fore: 1, near: true, g: "a" }, { h: L1, k: L3, fore: -1, near: true, g: "b" },
+         { h: R2, k: R4, fore: 1, near: false, g: "b" }, { h: R1, k: R3, fore: -1, near: false, g: "a" }];
+    function legs(near) {
+      defs.filter(function (D) { return D.near === near; }).forEach(function (D) {
+        var L = { h: D.h, k: D.k, hx: BX + D.fore * FORE + (near ? 0 : 16), hy: HIPY - (near ? 0 : 9), near: near };
+        L.line = mk("line", { x1: L.hx, y1: L.hy, "stroke-width": near ? 9 : 7, "stroke-linecap": "round", stroke: D.g === "a" ? C_LEG_A : C_LEG_B, opacity: near ? 1 : .4 }, g);
+        L.foot = mk("circle", { r: near ? 7 : 5.5, "stroke-width": 3, opacity: near ? 1 : .55 }, g);
+        L.shadow = mk("circle", { r: 9, fill: "none", stroke: SOFT, "stroke-width": 1.5, "stroke-dasharray": "3 3", opacity: 0 }, g);
+        rect(g, L.hx - 8, L.hy - 8, 16, 14, 3, "#2A9D8F", 1.2).setAttribute("opacity", near ? 1 : .45);
+        L.label = txt(g, L.hx, L.hy + (near ? 30 : -14), NAMES[D.h], { size: 10, fill: near ? INK : SOFT });
+        sideLegs[kind].push(L);
+      });
+    }
+    legs(false);
+    var BWID = 0.116 * K2, BY = HIPY - 32;
+    rect(g, BX - BWID / 2, BY, BWID, 32, 6, "#5E9B7A", 2);
+    if (kind === "old") {
+      rect(g, BX + 0.004 * K2, BY - 26, 0.052 * K2, 26, 3, "#2F5FA8"); txt(g, BX + 0.004 * K2 + 0.026 * K2, BY - 8, "Arduino");
+      rect(g, BX - 0.052 * K2, BY - 24, 0.04 * K2, 24, 4, "#3D3BF3"); txt(g, BX - 0.052 * K2 + 0.02 * K2, BY - 8, "battery", { size: 9 });
+      mk("path", { d: "M" + (BX + 100) + " " + (BY + 16) + " h26 l-8 -8 m8 8 l-8 8", fill: "none", stroke: SOFT, "stroke-width": 2 }, g);
+      txt(g, BX + 134, BY + 20, "front", { size: 13, fill: SOFT, a: "start" });
+    } else {
+      rect(g, BX - 0.052 * K2, BY - 28, 0.069 * K2, 28, 3, "#2F5FA8").setAttribute("opacity", .55);
+      rect(g, BX - 0.058 * K2, BY - 22, 0.085 * K2, 22, 4, "#3D3BF3"); txt(g, BX - 0.0155 * K2, BY - 7, "battery", { size: 9 });
+      /* sensor at the front (right) end */
+      rect(g, BX + BWID / 2 - 2, BY - 2, 12, 26, 2, "#1E2A3A", 1.5);
+      mk("circle", { cx: BX + BWID / 2 + 11, cy: BY + 5, r: 4.5, fill: "#C9CED6", stroke: INK, "stroke-width": 1.2 }, g);
+      mk("circle", { cx: BX + BWID / 2 + 11, cy: BY + 18, r: 4.5, fill: "#C9CED6", stroke: INK, "stroke-width": 1.2 }, g);
+      mk("path", { d: "M" + (BX + 100) + " " + (BY + 16) + " h26 l-8 -8 m8 8 l-8 8", fill: "none", stroke: SOFT, "stroke-width": 2 }, g);
+      txt(g, BX + 134, BY + 20, "front (sensor)", { size: 13, fill: SOFT, a: "start" });
+    }
+    legs(true);
+  }
+  sideRobot(sideOld, "old"); sideRobot(sideNew, "now");
 
   /* readout table */
   var table = $("#gTable"), rows = [];
   for (var i = 0; i < 8; i++) {
     var tr = document.createElement("tr");
-    tr.innerHTML = "<td>" + NAMES[i] + "</td><td class='dim'>pin " + PINS[i] + "</td><td class='dim'>" + (i === 2 || i === 3 || i === 6 || i === 7 ? "knee" : "hip") + "</td><td></td>";
+    tr.innerHTML = "<td>" + NAMES[i] + "</td><td class='dim'></td><td class='dim'>" + (i === 2 || i === 3 || i === 6 || i === 7 ? "knee" : "hip") + "</td><td></td>";
     table.appendChild(tr); rows.push(tr);
   }
 
-  var mode = "v1", moves = build(mode), cycles = 0;
+  var mode = "v3", kind = "now", NEUTRAL = ROBOT.now.neutral, moves = build(mode), cycles = 0, viewSide = false;
   var cur = NEUTRAL.slice(), from = NEUTRAL.slice();
   var idx = -1, elapsed = 0, DUR = 620, moving = false, gap = 500;
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var playing = !reduce, stepping = false, last = null;
   var head = $("#gHead"), mv = $("#gMove"), playBtn = $("#gPlay"), stepBtn = $("#gStep"), note = $("#gNote");
-  var b1 = $("#gV1"), b2 = $("#gV2"), b3 = $("#gMan"), manual = $("#gManual");
+  var bV = { v1: $("#gV1"), v2: $("#gV2"), v3: $("#gV3"), man: $("#gMan") };
+  var bTop = $("#gTop"), bSide = $("#gSide"), manual = $("#gManual");
   var sliders = [];
 
+  function toward(h) {                     /* swing toward the front of the drawn robot, in degrees */
+    var s = (cur[h] - NEUTRAL[h]) * SIGN[h];
+    return kind === "old" ? s : -s;
+  }
+  function liftOf(k) { return Math.max(0, Math.min(1, (cur[k] - NEUTRAL[k]) * SIGN[k] / KNEE)); }
+  function footStyle(foot, lift, near) {
+    foot.setAttribute("fill", lift > 0.5 ? PAPER : INK);
+    foot.setAttribute("stroke", lift > 0.05 ? "#3D3BF3" : INK);
+  }
+
   function draw() {
-    LEGS.forEach(function (L) {
-      var swing = (cur[L.h] - NEUTRAL[L.h]) * SIGN[L.h];
-      var lift = Math.max(0, Math.min(1, (cur[L.k] - NEUTRAL[L.k]) * SIGN[L.k] / KNEE));
-      var th = swing * Math.PI / 180;
-      var reach = LEN + 7 * lift;                       /* a lifted foot swings slightly outward */
+    topLegs[kind].forEach(function (L) {
+      var lift = liftOf(L.k), th = toward(L.h) * Math.PI / 180;
+      var reach = LEN + 7 * lift;
       var fx = L.x + L.s * reach * Math.cos(th), fy = L.y - reach * Math.sin(th);
       L.line.setAttribute("x2", fx); L.line.setAttribute("y2", fy);
+      L.foot.setAttribute("cx", fx); L.foot.setAttribute("cy", fy); L.foot.setAttribute("r", 7 + 5 * lift);
+      footStyle(L.foot, lift);
+      L.shadow.setAttribute("cx", fx); L.shadow.setAttribute("cy", fy); L.shadow.setAttribute("opacity", lift > 0.05 ? 1 : 0);
+    });
+    sideLegs[kind].forEach(function (L) {
+      var lift = liftOf(L.k), th = toward(L.h) * Math.PI / 180;
+      var fx = L.hx + LEN2 * Math.sin(th), fy = (L.near ? GY : GY - 9) - LIFTH * lift;
+      L.line.setAttribute("x2", fx); L.line.setAttribute("y2", fy);
       L.foot.setAttribute("cx", fx); L.foot.setAttribute("cy", fy);
-      L.foot.setAttribute("r", 7 + 5 * lift);
-      L.foot.setAttribute("fill", lift > 0.5 ? "#ECEEF1" : "#12161C");
-      L.foot.setAttribute("stroke", lift > 0.05 ? "#3D3BF3" : "#12161C");
-      L.shadow.setAttribute("cx", fx); L.shadow.setAttribute("cy", fy);
-      L.shadow.setAttribute("opacity", lift > 0.05 ? 1 : 0);
+      footStyle(L.foot, lift);
+      L.shadow.setAttribute("cx", fx); L.shadow.setAttribute("cy", GY - (L.near ? 0 : 9)); L.shadow.setAttribute("opacity", L.near && lift > 0.05 ? 1 : 0);
     });
     var m = idx >= 0 ? moves[idx] : null;
     for (var i = 0; i < 8; i++) {
       rows[i].lastChild.textContent = Math.round(cur[i]) + "°";
       rows[i].className = (m && moving && m.changed.indexOf(i) > -1) ? "moving" : "";
     }
+    var ph = mode === "v3" && m ? m.meta.phase : "";
+    wall.setAttribute("opacity", (ph === "obstacle" || ph === "back") ? 1 : 0);
+    dText.textContent = (mode === "v3" && m && m.meta.dist !== undefined) ? m.meta.dist + " cm" : "";
   }
   function label() {
-    if (mode === "man") { head.textContent = "Manual"; mv.textContent = "Drag a slider to move one servo. Hips: plus swings the leg forward. Knees: plus lifts the foot."; return; }
+    if (mode === "man") { head.textContent = "Manual"; mv.textContent = "Drag a slider to move one servo. Hips: plus swings the leg toward the sensor. Knees: plus lifts the foot."; return; }
     var m = idx >= 0 ? moves[idx] : null;
-    if (!m) { head.textContent = mode === "v1" ? "Gait v1" : "Gait v2"; mv.textContent = playing ? "" : "Press Play or Step to start."; return; }
+    var names = { v1: "Gait v1", v2: "Gait v2", v3: "Gait v3" };
+    if (!m) { head.textContent = names[mode]; mv.textContent = playing ? "" : "Press Play or Step to start."; return; }
     if (mode === "v2") head.textContent = "Forward, cycle " + cycles;
+    else if (mode === "v3") {
+      var p = m.meta;
+      head.textContent = p.phase === "walk" ? "Walking, cycle " + p.k + " of " + p.total
+        : p.phase === "obstacle" ? "Obstacle"
+        : p.phase === "back" ? "Backing up, cycle " + p.k + " of " + p.total
+        : "Turning left, cycle " + p.k + " of " + p.total;
+    }
     else head.textContent = m.meta.rest ? "Rest" : (m.meta.dir > 0 ? "Forward" : "Backward") + ", step " + m.meta.step + " of " + V1.steps;
-    mv.textContent = m.label;
+    mv.textContent = m.label + (mode === "v3" && m.meta.dist !== undefined ? ". Distance: " + m.meta.dist + " cm" : "");
   }
   function begin(i) {
     if (mode === "v2" && i === 0) cycles++;
     idx = i; from = cur.slice(); elapsed = 0; moving = true; label();
   }
+  function showView() {
+    top.style.display = viewSide ? "none" : ""; side.style.display = viewSide ? "" : "none";
+    bTop.setAttribute("aria-pressed", viewSide ? "false" : "true"); bSide.setAttribute("aria-pressed", viewSide ? "true" : "false");
+  }
   function setMode(m) {
     var prev = mode; mode = m; idx = -1; moving = false; stepping = false; cycles = 0; gap = 300;
-    b1.setAttribute("aria-pressed", m === "v1" ? "true" : "false");
-    b2.setAttribute("aria-pressed", m === "v2" ? "true" : "false");
-    b3.setAttribute("aria-pressed", m === "man" ? "true" : "false");
+    kind = kindOf(m); NEUTRAL = ROBOT[kind].neutral;
+    topOld.style.display = kind === "old" ? "" : "none"; topNew.style.display = kind === "now" ? "" : "none";
+    sideOld.style.display = kind === "old" ? "" : "none"; sideNew.style.display = kind === "now" ? "" : "none";
+    for (var j = 0; j < 8; j++) { cur[j] = NEUTRAL[j]; rows[j].children[1].textContent = "pin " + ROBOT[kind].pins[j]; }
+    Object.keys(bV).forEach(function (k) { bV[k].setAttribute("aria-pressed", k === m ? "true" : "false"); });
     manual.hidden = m !== "man";
     playBtn.disabled = stepBtn.disabled = (m === "man");
     if (m === "man") {
@@ -1061,9 +1464,9 @@ $$("#servoMap tbody tr").forEach(function (tr) {
       note.textContent = NOTES.man;
     } else {
       moves = build(m); note.textContent = NOTES[m];
-      if (prev === "man") { for (var j = 0; j < 8; j++) cur[j] = NEUTRAL[j]; playing = !reduce; playBtn.textContent = playing ? "Pause" : "Play"; }
+      if (prev === "man") { playing = !reduce; playBtn.textContent = playing ? "Pause" : "Play"; }
     }
-    label();
+    label(); draw();
   }
   function resetManual() {
     sliders.forEach(function (sl) { sl.input.value = 0; sl.out.textContent = "0°"; });
@@ -1079,7 +1482,7 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     var out = document.createElement("output"); out.textContent = "0°";
     inp.addEventListener("input", function () {
       var d = +inp.value; out.textContent = d + "°";
-      cur[i] = NEUTRAL[i] + SIGN[i] * d;
+      cur[i] = ROBOT.now.neutral[i] + SIGN[i] * (isKnee ? d : -d);   /* hips: FORWARD = -1, plus is toward the sensor */
     });
     lab.appendChild(inp); lab.appendChild(out); manual.appendChild(lab);
     sliders.push({ input: inp, out: out });
@@ -1116,12 +1519,11 @@ $$("#servoMap tbody tr").forEach(function (tr) {
     if (moving) { stepping = true; return; }
     stepping = true; begin((idx + 1) % moves.length);
   });
-  b1.addEventListener("click", function () { if (mode !== "v1") setMode("v1"); });
-  b2.addEventListener("click", function () { if (mode !== "v2") setMode("v2"); });
-  b3.addEventListener("click", function () { if (mode !== "man") setMode("man"); });
+  Object.keys(bV).forEach(function (k) { bV[k].addEventListener("click", function () { if (mode !== k) setMode(k); }); });
+  bTop.addEventListener("click", function () { viewSide = false; showView(); });
+  bSide.addEventListener("click", function () { viewSide = true; showView(); });
 
-  note.textContent = NOTES.v1;
-  label(); draw();
+  showView(); setMode("v3");
   requestAnimationFrame(frame);
 })();
 
